@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beauty Analysis</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #fff; color: #333; }
+    h1 { text-align: center; }
+    form { max-width: 400px; margin: 0 auto; background: #f9f9f9; padding: 20px; border-radius: 10px; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 10px; border-radius: 5px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h1>Profile Analysis</h1>
+  <form id="uploadForm" enctype="multipart/form-data" method="POST" action="/analyze-face">
+    <label>Upload a clear selfie</label>
+    <input type="file" name="image" accept="image/*" required>
+
+    <label>Enter your age</label>
+    <input type="number" name="age" min="12" max="99" required>
+
+    <label>Focus Area</label>
+    <select name="focus">
+      <option value="anti-aging">Anti-Aging</option>
+      <option value="makeup">Makeup</option>
+      <option value="hair">Hair</option>
+      <option value="lips">Lips</option>
+      <option value="skincare">Skincare Tips</option>
+    </select>
+
+    <button type="submit">Analyze My Beauty</button>
+  </form>
+</body>
+</html>

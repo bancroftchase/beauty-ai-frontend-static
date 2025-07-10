@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Beauty Chat - Luminous AI</title>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="#B8860B" name="theme-color"/>
+<script>
+        // Check for splash redirect IMMEDIATELY - before any content loads
+        const splashShown = sessionStorage.getItem('splashShown');
+        if (!splashShown) {
+            window.location.href = '/splash.html';
+        }
+    </script>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-charcoal: #2C2C2C;
+            --luminous-gold: #B8860B;
+            --pearl-white: #F8F8F8;
+            --radiant-rose: #E8D5D5;
+            --premium-gradient: linear-gradient(135deg, #B8860B, #DAA520);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-charcoal);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: var(--primary-charcoal);
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--primary-charcoal);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #3A3A3A;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            background: var(--premium-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            background: var(--pearl-white);
+            color: #333;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        .welcome-message {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-action-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-content {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            max-width: 80%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .message.user .message-content {
+            background: var(--premium-gradient);
+            color: white;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .product-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 120px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .image-skeleton {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .product-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--primary-charcoal);
+            margin-bottom: 4px;
+        }
+
+        .product-brand {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .product-country {
+            font-size: 10px;
+            color: var(--luminous-gold);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .product-price {
+            font-size: 14px;
+            color: var(--luminous-gold);
+            font-weight: 700;
+        }
+
+        .typing-indicator {
+            background: white;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            max-width: 80%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            color: #666;
+            font-style: italic;
+            display: none;
+        }
+
+        .input-area {
+            background: var(--primary-charcoal);
+            padding: 20px;
+            border-top: 1px solid #3A3A3A;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .input-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .refresh-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            border-radius: 25px;
+            padding: 12px 20px;
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: transparent;
+        }
+
+        .send-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .load-more-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .pagination-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+<div id="category-banner" style="text-align: center; margin: 20px 0;">
+<img alt="Category Visual" id="rotating-image" src="https://via.placeholder.com/300x150?text=Anti-Aging+1" style="max-width: 100%; height: auto; border-radius: 10px;"/>
+</div>
+<script>
+  const images = [
+    "https://via.placeholder.com/300x150?text=Anti-Aging+1",
+    "https://via.placeholder.com/300x150?text=Anti-Aging+2",
+    "https://via.placeholder.com/300x150?text=Anti-Aging+3"
+  ];
+  let current = 0;
+  setInterval(() => {
+    current = (current + 1) % images.length;
+    document.getElementById("rotating-image").src = images[current];
+  }, 4000);
+</script>
+
+<div class="container">
+<div class="header">
+<a class="back-btn" href="../../index.html">← Back</a>
+<div class="logo">✨ Beauty Chat</div>
+</div>
+<div class="chat-area" id="chatArea">
+<div class="welcome-message">
+<h3 style="color: var(--primary-charcoal); margin-bottom: 10px;">Hi! I'm your Beauty AI assistant ✨</h3>
+<div class="quick-actions">
+<button class="quick-action-btn" onclick="sendQuickMessage('🌍 Global Beauty')">🌍 Global Beauty</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('📸 Instagram Trends')">📸 Instagram Trends</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('🌸 K-Beauty')">🌸 K-Beauty</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('🛒 Amazon Finds')">🛒 Amazon Finds</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('🌿 Natural Beauty')">🌿 Natural Beauty</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('💎 Luxury Skincare')">💎 Luxury Skincare</button>
+</div>
+</div>
+</div>
+<div class="input-area">
+<div class="input-controls">
+<button class="refresh-btn" onclick="refreshChat()">🔄 New Search</button>
+</div>
+<div class="input-container">
+<input class="message-input" id="messageInput" onkeypress="handleKeyPress(event)" placeholder="Ask about beauty products..." type="text"/>
+<button class="send-btn" onclick="sendMessage()">▶</button>
+</div>
+</div>
+</div>
+<script>
+        let isTyping = false;
+        let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        let currentProducts = [];
+        let displayedCount = 0;
+
+        // Handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Send message function
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+
+            if (!message || isTyping) return;
+
+            // Clear previous results
+            clearPreviousResults();
+
+            // Add user message to chat
+            addUserMessage(message);
+            messageInput.value = '';
+
+            // Show typing indicator
+            isTyping = true;
+            showTyping();
+
+            try {
+                console.log('🚀 Sending message:', message);
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        includeProducts: true,
+                        maxProducts: 2000,
+                        userProfile: {},
+                        sessionId: sessionId
+                    })
+                });
+
+                const data = await response.json();
+                console.log('✅ Received response:', data);
+
+                hideTyping();
+                isTyping = false;
+
+                if (data.success && data.response) {
+                    addBotMessage(data.response);
+
+                    if (data.products && data.products.length > 0) {
+                        currentProducts = data.products;
+                        displayedCount = 0;
+                        displayProducts(data.products.slice(0, 20)); // Show first 20
+
+                        if (data.products.length > 20) {
+                            addLoadMoreButton();
+                        }
+                    }
+                } else {
+                    addBotMessage('Sorry, I encountered an error. Please try again.');
+                }
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                hideTyping();
+                isTyping = false;
+                addBotMessage('Sorry, something went wrong. Please try again.');
+            }
+        }
+
+        // Clear previous chat results (keep welcome message)
+        function clearPreviousResults() {
+            const chatArea = document.getElementById('chatArea');
+            const messages = chatArea.querySelectorAll('.message, .products-grid, .pagination-container, .load-more-btn');
+            messages.forEach(message => message.remove());
+        }
+
+        // Add user message to chat
+        function addUserMessage(message) {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user';
+            messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+            chatArea.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Add bot message to chat
+        function addBotMessage(message) {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+            messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+            chatArea.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Display products in grid
+        function displayProducts(products) {
+            const chatArea = document.getElementById('chatArea');
+            const productsGrid = document.createElement('div');
+            productsGrid.className = 'products-grid';
+
+            products.forEach((product, index) => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+
+                // Create image HTML with safe fallback
+                let imageHTML = '';
+                if (product.imageUrl) {
+                    imageHTML = `
+                        <div class="product-image">
+                            <img src="${product.imageUrl}" alt="${product.name}" 
+                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'; console.log('Image failed:', '${product.name}');"
+                                 onload="console.log('Image loaded:', '${product.name}');"
+                                 loading="lazy">
+                            <div class="image-fallback" style="display: none; width: 100%; height: 100%; background: var(--premium-gradient); color: white; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; border-radius: 8px;">
+                                ✨ ${product.category || 'Beauty'}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    imageHTML = `
+                        <div class="product-image">
+                            <div style="width: 100%; height: 100%; background: var(--premium-gradient); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; border-radius: 8px;">
+                                ✨ ${product.category || 'Beauty'}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                productCard.innerHTML = `
+                    ${imageHTML}
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-brand">${product.brand}</div>
+                        <div class="product-price">${product.price}</div>
+                        <div class="product-country">🌍 ${product.country || 'Global'}</div>
+                        <div class="product-description">${(product.description || '').substring(0, 80)}...</div>
+                    </div>
+                    <button class="add-to-cart-btn" onclick="addToCart('${product.name}', '${product.brand}', '${product.price}')">
+                        🛒 Add to Cart
+                    </button>
+                `;
+
+                productCard.onclick = () => showProductDetails(displayedCount + index);
+
+                productsGrid.appendChild(productCard);
+            });
+
+            chatArea.appendChild(productsGrid);
+            displayedCount += products.length;
+            scrollToBottom();
+        }
+
+        // Add load more button
+        function addLoadMoreButton() {
+            const chatArea = document.getElementById('chatArea');
+            const loadMoreDiv = document.createElement('div');
+            loadMoreDiv.className = 'pagination-container';
+
+            const remaining = currentProducts.length - displayedCount;
+            loadMoreDiv.innerHTML = `
+                <div style="margin-bottom: 10px; color: #666;">
+                    Showing ${displayedCount} of ${currentProducts.length} products
+                </div>
+                <button class="load-more-btn" onclick="loadMoreProducts()">
+                    Load More (${remaining} remaining)
+                </button>
+            `;
+
+            chatArea.appendChild(loadMoreDiv);
+            scrollToBottom();
+        }
+
+        // Load more products
+        function loadMoreProducts() {
+            const nextBatch = currentProducts.slice(displayedCount, displayedCount + 20);
+
+            // Remove existing load more button
+            const existing = document.querySelector('.pagination-container');
+            if (existing) existing.remove();
+
+            // Display next batch
+            displayProducts(nextBatch);
+
+            // Add new load more button if needed
+            if (displayedCount < currentProducts.length) {
+                addLoadMoreButton();
+            } else {
+                const chatArea = document.getElementById('chatArea');
+                const completedDiv = document.createElement('div');
+                completedDiv.className = 'pagination-container';
+                completedDiv.innerHTML = `
+                    <div style="color: #666;">
+                        ✨ All ${currentProducts.length} products loaded!
+                    </div>
+                `;
+                chatArea.appendChild(completedDiv);
+            }
+        }
+
+        // Show product details modal
+        function showProductDetails(index) {
+            if (!currentProducts || !currentProducts[index]) return;
+
+            const product = currentProducts[index];
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); z-index: 10000;
+                display: flex; align-items: center; justify-content: center;
+                padding: 20px;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 30px; max-width: 90%; max-height: 80%; overflow-y: auto; position: relative;">
+                    <button onclick="this.closest('[style*=position]').remove()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">×</button>
+
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <h2 style="color: var(--primary-charcoal); margin-bottom: 8px;">${product.name || 'Beauty Product'}</h2>
+                        <p style="color: #666; margin-bottom: 8px;">${product.brand || 'Premium Brand'}</p>
+                        <p style="color: var(--luminous-gold); font-weight: 600; margin-bottom: 16px;">🌍 ${product.country || 'Global'}</p>
+                        <div style="font-size: 28px; color: var(--luminous-gold); font-weight: 700;">${product.price || '$25'}</div>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <h3 style="color: var(--primary-charcoal); margin-bottom: 10px;">Description</h3>
+                        <p style="color: #666; line-height: 1.5;">${product.description || 'Premium beauty product with high-quality ingredients for exceptional results.'}</p>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button onclick="this.closest('[style*=position]').remove()" style="background: var(--premium-gradient); color: white; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-weight: bold;">Close</button>
+                    </div>
+                </div>
+            `;
+
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+
+            document.body.appendChild(modal);
+        }
+
+        // Send quick message
+        function sendQuickMessage(message) {
+            clearPreviousResults();
+            const messageInput = document.getElementById('messageInput');
+
+            const enhancedMessages = {
+                '🌍 Global Beauty': 'Show me beauty products from 50+ countries including French luxury, K-beauty, Brazilian botanicals, German science, Japanese innovation, and American brands',
+                '📸 Instagram Trends': 'Show me viral beauty trends from Instagram and TikTok including trending makeup looks, viral skincare routines, and social media beauty discoveries',
+                '🌸 K-Beauty': 'Show me K-beauty products including Korean skincare essentials, glass skin routines, snail mucin, ginseng treatments, and innovative Korean cosmetics',
+                '🛒 Amazon Finds': 'Show me best-selling beauty products on Amazon including drugstore favorites, cult beauty products, and highly-rated skincare and makeup items',
+                '🌿 Natural Beauty': 'Show me natural and organic beauty products including clean beauty brands, botanical skincare, eco-friendly cosmetics, and sustainable beauty solutions',
+                '💎 Luxury Skincare': 'Show me luxury skincare and premium beauty products including high-end serums, designer cosmetics, and professional-grade treatments'
+            };
+
+            messageInput.value = enhancedMessages[message] || message;
+            sendMessage();
+        }
+
+        // Show typing indicator
+        function showTyping() {
+            const chatArea = document.getElementById('chatArea');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = 'AI is thinking...';
+            typingDiv.style.display = 'block';
+            chatArea.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        // Hide typing indicator
+        function hideTyping() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Refresh chat
+        function refreshChat() {
+            clearPreviousResults();
+            currentProducts = [];
+            displayedCount = 0;
+
+            const messageInput = document.getElementById('messageInput');
+            if (messageInput) {
+                messageInput.value = '';
+                messageInput.focus();
+            }
+
+            const refreshBtn = document.querySelector('.refresh-btn');
+            if (refreshBtn) {
+                const originalText = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = '✨ Ready!';
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalText;
+                }, 1000);
+            }
+        }
+
+        // Scroll to bottom
+        function scrollToBottom() {
+            const chatArea = document.getElementById('chatArea');
+            setTimeout(() => {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 100);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('💬 Beauty Chat loaded!');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('query');
+
+            if (query) {
+                const searchInput = document.getElementById('messageInput');
+                if (searchInput) {
+                    searchInput.value = decodeURIComponent(query);
+                    setTimeout(() => sendMessage(), 500);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

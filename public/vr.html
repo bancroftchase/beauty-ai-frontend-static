@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conceptual Facial Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark gray background */
+            color: #e5e7eb; /* Light gray text */
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background-color: #1f2937; /* Darker card background */
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #3b82f6; /* Blue button */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #2563eb;
+        }
+        .btn-secondary {
+            background-color: #4b5563; /* Gray button */
+        }
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .results-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #93c5fd; /* Light blue for headings */
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .results-section p {
+            margin-bottom: 0.25rem;
+            color: #d1d5db; /* Lighter gray for text */
+        }
+        .results-section strong {
+            color: #e5e7eb; /* Even lighter for strong text */
+        }
+        .vr-overlay-concept {
+            border: 2px dashed #3b82f6;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #60a5fa;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            margin: 10px auto;
+            display: block;
+            border: 2px solid #374151;
+        }
+        /* Custom modal for messages */
+        .modal {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #1f2937;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .modal-content h2 {
+            color: #e5e7eb;
+            margin-bottom: 10px;
+        }
+        .modal-content p {
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="text-center py-8">
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                AI Facial Analysis Engine
+            </h1>
+            <p class="text-lg text-gray-400 mt-2">Upload an image to analyze facial features (Luminous AI)</p>
+        </header>
+
+        <div class="vr-overlay-concept">
+            <p><strong>VR Viewport Simulation:</strong> Your image and analysis will appear below.</p>
+        </div>
+
+        <div class="card">
+            <h2 class="text-2xl font-semibold mb-4 text-center text-blue-300">Upload Facial Image</h2>
+            <input type="file" id="imageUpload" accept="image/*" class="block w-full text-sm text-gray-300
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-lg file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-500 file:text-white
+                hover:file:bg-blue-600 mb-4 cursor-pointer">
+            
+            <div class="text-center">
+                <img id="imagePreview" src="https://placehold.co/400x300/1f2937/e5e7eb?text=Upload+Image+To+Preview" alt="Image preview">
+            </div>
+        </div>
+
+        <div class="text-center mb-6">
+            <button id="analyzeButton" class="btn w-full sm:w-auto" disabled>Analyze Face</button>
+        </div>
+
+        <div id="loader" class="loader hidden"></div>
+
+        <div id="resultsCard" class="card hidden">
+            <h2 class="text-2xl font-semibold mb-4 text-center text-blue-300">Analysis Results</h2>
+            <div id="analysisResults" class="results-section space-y-4">
+                </div>
+        </div>
+    </div>
+
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Message</h2>
+            <p id="modalMessage"></p>
+            <button id="modalCloseButton" class="btn">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        const analyzeButton = document.getElementById('analyzeButton');
+        const loader = document.getElementById('loader');
+        const resultsCard = document.getElementById('resultsCard');
+        const analysisResults = document.getElementById('analysisResults');
+        
+        const messageModal = document.getElementById('messageModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseButton = document.getElementById('modalCloseButton');
+
+        let base64ImageData = null;
+
+        // Function to show modal messages
+        function showModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            messageModal.classList.add('active');
+        }
+
+        // Close modal
+        modalCloseButton.addEventListener('click', () => {
+            messageModal.classList.remove('active');
+        });
+        messageModal.addEventListener('click', (event) => {
+            if (event.target === messageModal) { // Click outside the content
+                 messageModal.classList.remove('active');
+            }
+        });
+
+
+        imageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    base64ImageData = e.target.result.split(',')[1]; // Get base64 part
+                    analyzeButton.disabled = false;
+                    resultsCard.classList.add('hidden'); // Hide previous results
+                    analysisResults.innerHTML = ''; // Clear previous results
+                }
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.src = 'https://placehold.co/400x300/1f2937/e5e7eb?text=Upload+Image+To+Preview';
+                base64ImageData = null;
+                analyzeButton.disabled = true;
+            }
+        });
+
+        analyzeButton.addEventListener('click', async () => {
+            if (!base64ImageData) {
+                showModal('Error', 'Please upload an image first.');
+                return;
+            }
+
+            loader.classList.remove('hidden');
+            resultsCard.classList.add('hidden');
+            analyzeButton.disabled = true;
+            analysisResults.innerHTML = ''; // Clear previous results
+
+            const prompt = `Analyze the uploaded photo of a face. Provide a detailed description including:
+1.  **Estimated Skin Tone**: Describe the overall skin color (e.g., Fair, Light, Medium, Tan, Dark) and any discernible undertone (e.g., Warm, Cool, Neutral, Olive).
+2.  **Prominent Facial Features**:
+    * **Face Shape**: (e.g., Oval, Round, Square, Heart, Diamond, Long).
+    * **Eye Shape and Color**: (e.g., Almond, Round, Hooded, Monolid; Brown, Blue, Green).
+    * **Nose Shape**: (e.g., Straight, Roman, Snub, Hawk, Button).
+    * **Lip Shape**: (e.g., Full, Thin, Heart-shaped, Bow-shaped).
+    * **Eyebrow Shape**: (e.g., Arched, Straight, Rounded, S-shaped).
+3.  **Noticeable Lines or Wrinkles**: Describe any visible lines, such as forehead lines, crow's feet (around eyes), glabellar lines (between brows), nasolabial folds (smile lines), or marionette lines. Specify if they appear as fine lines or deeper wrinkles.
+4.  **Other Notable Features**: Mention any other distinct features like freckles, moles, dimples, or beard/mustache if present.
+5.  **Overall Impression**: A brief summary of the facial appearance.
+
+Present the analysis in a structured JSON format according to the following schema:
+{
+  "skinTone": {
+    "tone": "string",
+    "undertone": "string"
+  },
+  "facialFeatures": {
+    "faceShape": "string",
+    "eyeDescription": { "shape": "string", "color": "string" },
+    "noseShape": "string",
+    "lipShape": "string",
+    "eyebrowShape": "string"
+  },
+  "linesAndWrinkles": [
+    {
+      "location": "string (e.g., Forehead, Crow's feet)",
+      "type": "string (e.g., Fine lines, Deep wrinkles)"
+    }
+  ],
+  "otherNotableFeatures": ["string"],
+  "overallImpression": "string"
+}
+If a feature is not clearly discernible, indicate that (e.g., "Not clearly discernible").`;
+            
+            const payload = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: prompt },
+                            {
+                                inlineData: {
+                                    mimeType: "image/jpeg", // Assuming JPEG, could be PNG
+                                    data: base64ImageData
+                                }
+                            }
+                        ]
+                    }
+                ],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "skinTone": {
+                                type: "OBJECT",
+                                properties: {
+                                    "tone": { "type": "STRING" },
+                                    "undertone": { "type": "STRING" }
+                                }
+                            },
+                            "facialFeatures": {
+                                type: "OBJECT",
+                                properties: {
+                                    "faceShape": { "type": "STRING" },
+                                    "eyeDescription": { 
+                                        type: "OBJECT",
+                                        properties: {
+                                            "shape": { "type": "STRING" },
+                                            "color": { "type": "STRING" }
+                                        }
+                                    },
+                                    "noseShape": { "type": "STRING" },
+                                    "lipShape": { "type": "STRING" },
+                                    "eyebrowShape": { "type": "STRING" }
+                                }
+                            },
+                            "linesAndWrinkles": {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        "location": { "type": "STRING" },
+                                        "type": { "type": "STRING" }
+                                    }
+                                }
+                            },
+                            "otherNotableFeatures": {
+                                type: "ARRAY",
+                                items: { "type": "STRING" }
+                            },
+                            "overallImpression": { "type": "STRING" }
+                        }
+                    }
+                }
+            };
+
+            const apiKey = ""; // API key will be handled by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`API request failed with status ${response.status}: ${errorBody}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    
+                    const jsonText = result.candidates[0].content.parts[0].text;
+                    const parsedJson = JSON.parse(jsonText);
+                    displayResults(parsedJson);
+                } else {
+                    console.error("Unexpected API response structure:", result);
+                    showModal('Error', 'Failed to get a valid analysis from the AI. The response structure was unexpected.');
+                }
+            } catch (error) {
+                console.error('Error during API call:', error);
+                showModal('Error', `An error occurred during analysis: ${error.message}. Please check the console for more details.`);
+            } finally {
+                loader.classList.add('hidden');
+                analyzeButton.disabled = false;
+            }
+        });
+
+        function displayResults(data) {
+            analysisResults.innerHTML = ''; // Clear previous results
+
+            if (!data) {
+                analysisResults.innerHTML = '<p>No analysis data received.</p>';
+                resultsCard.classList.remove('hidden');
+                return;
+            }
+            
+            let htmlContent = '';
+
+            // Skin Tone
+            if (data.skinTone) {
+                htmlContent += `<h3>Skin Tone</h3>`;
+                htmlContent += `<p><strong>Tone:</strong> ${data.skinTone.tone || 'N/A'}</p>`;
+                htmlContent += `<p><strong>Undertone:</strong> ${data.skinTone.undertone || 'N/A'}</p>`;
+            }
+
+            // Facial Features
+            if (data.facialFeatures) {
+                htmlContent += `<h3>Facial Features</h3>`;
+                htmlContent += `<p><strong>Face Shape:</strong> ${data.facialFeatures.faceShape || 'N/A'}</p>`;
+                if (data.facialFeatures.eyeDescription) {
+                    htmlContent += `<p><strong>Eye Shape:</strong> ${data.facialFeatures.eyeDescription.shape || 'N/A'}</p>`;
+                    htmlContent += `<p><strong>Eye Color:</strong> ${data.facialFeatures.eyeDescription.color || 'N/A'}</p>`;
+                }
+                htmlContent += `<p><strong>Nose Shape:</strong> ${data.facialFeatures.noseShape || 'N/A'}</p>`;
+                htmlContent += `<p><strong>Lip Shape:</strong> ${data.facialFeatures.lipShape || 'N/A'}</p>`;
+                htmlContent += `<p><strong>Eyebrow Shape:</strong> ${data.facialFeatures.eyebrowShape || 'N/A'}</p>`;
+            }
+
+            // Lines and Wrinkles
+            if (data.linesAndWrinkles && data.linesAndWrinkles.length > 0) {
+                htmlContent += `<h3>Lines & Wrinkles</h3>`;
+                data.linesAndWrinkles.forEach(line => {
+                    htmlContent += `<p><strong>Location:</strong> ${line.location || 'N/A'} - <strong>Type:</strong> ${line.type || 'N/A'}</p>`;
+                });
+            } else {
+                 htmlContent += `<h3>Lines & Wrinkles</h3><p>No prominent lines or wrinkles specifically identified, or not clearly discernible.</p>`;
+            }
+
+            // Other Notable Features
+            if (data.otherNotableFeatures && data.otherNotableFeatures.length > 0) {
+                htmlContent += `<h3>Other Notable Features</h3>`;
+                htmlContent += `<ul>`;
+                data.otherNotableFeatures.forEach(feature => {
+                    htmlContent += `<li>${feature}</li>`;
+                });
+                htmlContent += `</ul>`;
+            } else {
+                 htmlContent += `<h3>Other Notable Features</h3><p>No other specific notable features identified.</p>`;
+            }
+            
+            // Overall Impression
+            if (data.overallImpression) {
+                htmlContent += `<h3>Overall Impression</h3>`;
+                htmlContent += `<p>${data.overallImpression}</p>`;
+            }
+
+            analysisResults.innerHTML = htmlContent;
+            resultsCard.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
+

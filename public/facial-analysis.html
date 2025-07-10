@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Facial Analysis - Luminous AI</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#B8860B">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-charcoal: #2C2C2C;
+            --luminous-gold: #B8860B;
+            --pearl-white: #F8F8F8;
+            --premium-gradient: linear-gradient(135deg, #B8860B, #DAA520);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-charcoal);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: var(--primary-charcoal);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            background: var(--primary-charcoal);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #3A3A3A;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            background: var(--premium-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-content {
+            background: var(--pearl-white);
+            min-height: calc(100vh - 80px);
+            padding: 20px;
+        }
+
+        .trial-info {
+            background: linear-gradient(135deg, #e8f5e8, #ffffff);
+            border: 1px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #155724;
+            font-size: 14px;
+        }
+
+        .analysis-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-charcoal);
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #B8860B;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #DAA520;
+            background: #f5f5f5;
+        }
+
+        .upload-area.dragover {
+            border-color: #DAA520;
+            background: #f0f8ff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-charcoal);
+            margin-bottom: 5px;
+        }
+
+        .upload-subtext {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-charcoal);
+            font-size: 14px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--luminous-gold);
+        }
+
+        .analyze-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .analyze-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .analyze-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ffcdd2;
+        }
+
+        .success-upload {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .camera-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="account.html" class="back-btn">← Back</a>
+            <div class="logo">✨ Facial Analysis</div>
+        </div>
+
+        <div class="main-content">
+            <!-- Trial Info -->
+            <div class="trial-info" id="trialInfo">
+                🔬 AI Facial Analysis - Get personalized beauty recommendations based on your facial features
+            </div>
+
+            <!-- Upload Section -->
+            <div class="analysis-section">
+                <div class="section-title">Upload Your Photo</div>
+                <div class="section-subtitle">Take or upload a clear selfie for AI analysis</div>
+
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageInput').click()">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">Click to upload photo</div>
+                    <div class="upload-subtext">or drag and drop your image here</div>
+                </div>
+
+                <input type="file" id="imageInput" class="hidden-input" accept="image/*" onchange="handleImageUpload(event)">
+                <img id="previewImage" class="preview-image">
+
+                <div id="successMessage" class="success-upload" style="display: none;">
+                    <div class="upload-icon">✅</div>
+                    <div class="upload-text">Photo uploaded successfully!</div>
+                </div>
+
+                <button type="button" class="camera-btn" onclick="openCamera()">📱 Use Camera</button>
+                <button type="button" class="camera-btn" onclick="clearImage()">🗑️ Clear</button>
+
+                <div class="form-group">
+                    <label class="form-label">Your Age Range</label>
+                    <select class="form-select" id="ageRange">
+                        <option value="">Select your age range</option>
+                        <option value="18-25">18-25 years</option>
+                        <option value="26-35">26-35 years</option>
+                        <option value="36-45">36-45 years</option>
+                        <option value="46-55">46-55 years</option>
+                        <option value="56+">56+ years</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Analysis Focus</label>
+                    <select class="form-select" id="analysisFocus">
+                        <option value="">What would you like to focus on?</option>
+                        <option value="general">General Beauty Analysis</option>
+                        <option value="skincare">Skincare Recommendations</option>
+                        <option value="makeup">Makeup Suggestions</option>
+                        <option value="anti-aging">Anti-Aging Solutions</option>
+                        <option value="hair">Hair & Style Analysis</option>
+                    </select>
+                </div>
+
+                <button type="button" id="analyzeBtn" class="analyze-btn" onclick="analyzePhoto()" disabled>
+                    🔬 Analyze My Photo
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section">
+                <div id="analysisResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        let selectedImage = null;
+        let userProfile = null;
+
+        // Mobile detection function
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                   (window.innerWidth <= 768);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔬 Facial Analysis loaded!');
+
+            // Mobile-specific optimizations
+            if (isMobileDevice()) {
+                console.log('📱 Mobile device detected');
+                document.body.classList.add('mobile-device');
+
+                // Improve file input for mobile
+                const fileInput = document.getElementById('imageUpload');
+                if (fileInput) {
+                    fileInput.setAttribute('accept', 'image/*');
+                    fileInput.setAttribute('capture', 'environment');
+                }
+            }
+        });
+
+        // Load user profile and check if account is complete
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserProfile();
+            setupDragAndDrop();
+            setupFormValidation();
+        });
+
+        function loadUserProfile() {
+            // Check if user is authenticated via auth system
+            if (!authSystem.isAuthenticated()) {
+                showError('Please sign in first to use facial analysis.');
+                setTimeout(() => {
+                    window.location.href = 'signin.html';
+                }, 2000);
+                return;
+            }
+
+            // Get current authenticated user
+            const authUser = authSystem.getCurrentUser();
+
+            // Load existing profile or create from auth user
+            userProfile = JSON.parse(localStorage.getItem('beautyProfile') || '{}');
+
+            // If no profile exists, create from authenticated user
+            if (!userProfile.email || !userProfile.fullName) {
+                userProfile = {
+                    fullName: authUser.fullName,
+                    email: authUser.email,
+                    created: new Date().toISOString()
+                };
+                localStorage.setItem('beautyProfile', JSON.stringify(userProfile));
+            }
+
+            console.log('✅ Profile loaded for facial analysis:', userProfile.fullName);
+
+            // Enable the upload functionality immediately for authenticated users
+            document.getElementById('analyzeBtn').disabled = false;
+        }
+
+        function setupDragAndDrop() {
+            const uploadArea = document.getElementById('uploadArea');
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleImageFile(files[0]);
+                }
+            });
+        }
+
+        function setupFormValidation() {
+            const ageRange = document.getElementById('ageRange');
+            const analysisFocus = document.getElementById('analysisFocus');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+
+            function checkFormComplete() {
+                // Only check if user is authenticated
+                if (!authSystem.isAuthenticated()) {
+                    analyzeBtn.disabled = true;
+                    return;
+                }
+
+                const hasImage = selectedImage !== null;
+                const hasAge = ageRange.value !== '';
+                const hasFocus = analysisFocus.value !== '';
+
+                analyzeBtn.disabled = !(hasImage && hasAge && hasFocus);
+
+                // Show helper text
+                if (!hasImage) {
+                    console.log('Need photo upload');
+                } else if (!hasAge || !hasFocus) {
+                    console.log('Need form completion');
+                } else {
+                    console.log('✅ Ready to analyze!');
+                }
+            }
+
+            ageRange.addEventListener('change', checkFormComplete);
+            analysisFocus.addEventListener('change', checkFormComplete);
+
+            // Initial check
+            checkFormComplete();
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleImageFile(file);
+            }
+        }
+
+        function handleImageFile(file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showError('Please select a valid image file.');
+                return;
+            }
+
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showError('Image size must be less than 5MB.');
+                return;
+            }
+
+            // Convert to base64
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedImage = e.target.result;
+                displayPreview(selectedImage);
+                showSuccessMessage();
+                checkFormComplete();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function displayPreview(imageSrc) {
+            const previewImage = document.getElementById('previewImage');
+            const uploadArea = document.getElementById('uploadArea');
+
+            previewImage.src = imageSrc;
+            previewImage.style.display = 'block';
+            uploadArea.style.display = 'none';
+        }
+
+        function showSuccessMessage() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        function clearImage() {
+            selectedImage = null;
+            const previewImage = document.getElementById('previewImage');
+            const uploadArea = document.getElementById('uploadArea');
+            const imageInput = document.getElementById('imageInput');
+
+            previewImage.style.display = 'none';
+            uploadArea.style.display = 'block';
+            imageInput.value = '';
+
+            checkFormComplete();
+        }
+
+        function openCamera() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                // Mobile-optimized camera constraints
+                const constraints = {
+                    video: {
+                        facingMode: 'user',
+                        width: { min: 320, ideal: 640, max: 1280 },
+                        height: { min: 240, ideal: 480, max: 720 }
+                    }
+                };
+
+                // Additional mobile constraints
+                if (isMobileDevice()) {
+                    constraints.video.aspectRatio = 1.0; // Square for better mobile experience
+                }
+
+                navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(stream) {
+                    const videoTrack = stream.getVideoTracks()[0];
+                    const imageCapture = new ImageCapture(videoTrack);
+
+                    return imageCapture.takePhoto();
+                })
+                .then(function(blob) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        selectedImage = reader.result;
+                        displayPreview(selectedImage);
+                        showSuccessMessage();
+                        checkFormComplete();
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(function(error) {
+                    console.error('Camera access error:', error);
+                    showError('Could not access camera. Please check your permissions and try again.');
+                });
+            } else {
+                showError('Your browser does not support camera access. Please try uploading an image.');
+            }
+        }
+
+        function checkFormComplete() {
+            // Only check if user is authenticated
+            if (!authSystem.isAuthenticated()) {
+                document.getElementById('analyzeBtn').disabled = true;
+                return;
+            }
+
+            const ageRange = document.getElementById('ageRange');
+            const analysisFocus = document.getElementById('analysisFocus');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+
+            const hasImage = selectedImage !== null;
+            const hasAge = ageRange.value !== '';
+            const hasFocus = analysisFocus.value !== '';
+
+            analyzeBtn.disabled = !(hasImage && hasAge && hasFocus);
+
+            // Provide visual feedback
+            if (hasImage && hasAge && hasFocus) {
+                analyzeBtn.style.opacity = '1';
+                analyzeBtn.style.cursor = 'pointer';
+            } else {
+                analyzeBtn.style.opacity = '0.6';
+                analyzeBtn.style.cursor = 'not-allowed';
+            }
+        }
+
+        async function analyzePhoto() {
+            if (!selectedImage) {
+                showError('Please upload a photo first.');
+                return;
+            }
+
+            const ageRange = document.getElementById('ageRange').value;
+            const analysisFocus = document.getElementById('analysisFocus').value;
+
+            if (!ageRange || !analysisFocus) {
+                showError('Please fill in all required fields.');
+                return;
+            }
+
+            // Show loading
+            const resultsSection = document.getElementById('resultsSection');
+            const analysisResults = document.getElementById('analysisResults');
+
+            resultsSection.style.display = 'block';
+            analysisResults.innerHTML = `
+                <div class="loading">
+                    <div style="font-size: 48px; margin-bottom: 15px;">🔬</div>
+                    <div style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">Analyzing your beautiful features...</div>
+                    <div style="font-size: 14px; color: #666;">This may take a few moments</div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/facial-analysis', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'session-id': 'user_' + Date.now()
+                    },
+                    body: JSON.stringify({
+                        imageData: selectedImage,
+                        age: ageRange,
+                        focus: analysisFocus,
+                        userProfile: userProfile
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayAnalysisResults(result.analysis);
+                } else {
+                    showError(result.error || 'Analysis failed. Please try again.');
+                    resultsSection.style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                showError('Network error. Please check your connection and try again.');
+                resultsSection.style.display = 'none';
+            }
+        }
+
+        function displayAnalysisResults(analysis) {
+            const analysisResults = document.getElementById('analysisResults');
+
+            let resultsHTML = `
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">✨</div>
+                    <h3 style="color: var(--primary-charcoal); margin-bottom: 10px;">Your Personalized Beauty Analysis</h3>
+                    <p style="color: #666;">Based on your facial features and preferences</p>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: var(--luminous-gold); margin-bottom: 15px;">🌟 Skin Tone Analysis</h4>
+                    <p><strong>Skin Tone:</strong> ${analysis.skinTone?.tone || 'Beautiful'}</p>
+                    <p><strong>Undertone:</strong> ${analysis.skinTone?.undertone || 'Warm'}</p>
+                    <p style="margin-top: 10px; font-style: italic;">${analysis.skinTone?.description || 'You have beautiful skin that will look amazing with the right products!'}</p>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: var(--luminous-gold); margin-bottom: 15px;">👁️ Facial Features</h4>
+                    <p><strong>Face Shape:</strong> ${analysis.facialFeatures?.faceShape || 'Beautifully balanced'}</p>
+                    <p><strong>Eye Shape:</strong> ${analysis.facialFeatures?.eyeDescription?.shape || 'Captivating'}</p>
+                    <p><strong>Lip Shape:</strong> ${analysis.facialFeatures?.lipShape || 'Perfect'}</p>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: var(--luminous-gold); margin-bottom: 15px;">💄 Makeup Recommendations</h4>
+                    <p><strong>Foundation:</strong> ${analysis.makeupRecommendations?.foundation || 'Look for medium coverage foundation that matches your beautiful skin tone.'}</p>
+                    <p><strong>Blush:</strong> ${analysis.makeupRecommendations?.blush || 'Coral or peach blushes will complement your features beautifully.'}</p>
+                    <p><strong>Eyeshadow:</strong> ${analysis.makeupRecommendations?.eyeshadow || 'Warm tones will enhance your natural eye color.'}</p>
+                    <p><strong>Lipstick:</strong> ${analysis.makeupRecommendations?.lipstick || 'Try warm nudes or soft berry shades for a natural yet polished look.'}</p>
+                </div>
+            `;
+
+            if (analysis.hairstyleSuggestions) {
+                resultsHTML += `
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h4 style="color: var(--luminous-gold); margin-bottom: 15px;">💇‍♀️ Hairstyle Suggestions</h4>
+                        <ul style="margin-left: 20px;">
+                            ${analysis.hairstyleSuggestions.map(suggestion => `<li style="margin-bottom: 8px;">${suggestion}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (analysis.skincare) {
+                resultsHTML += `
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h4 style="color: var(--luminous-gold); margin-bottom: 15px;">🧴 Skincare Recommendations</h4>
+                        <p><strong>Routine:</strong> ${analysis.skincare.routine}</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            ${analysis.skincare.recommendations.map(rec => `<li style="margin-bottom: 5px;">${rec}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            resultsHTML += `
+                <div style="background: linear-gradient(135deg, #B8860B, #DAA520); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h4 style="margin-bottom: 10px;">✨ Overall Impression</h4>
+                    <p>${analysis.overallImpression || 'You have beautiful, unique features that are perfectly suited for enhancing your natural beauty!'}</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 25px;">
+                    <button onclick="window.location.href='chat.html'" style="background: var(--premium-gradient); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 16px; cursor: pointer; margin-right: 10px;">
+                        💬 Get Product Recommendations
+                    </button>
+                    <button onclick="window.location.href='catalog.html'" style="background: #28a745; color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 16px; cursor: pointer;">
+                        🛍️ Shop Products
+                    </button>
+                </div>
+            `;
+
+            analysisResults.innerHTML = resultsHTML;
+        }
+
+        function showError(message) {
+            // Remove existing error messages
+            const existingErrors = document.querySelectorAll('.error');
+            existingErrors.forEach(error => error.remove());
+
+            // Create new error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+
+            // Insert at the top of main content
+            const mainContent = document.querySelector('.main-content');
+            mainContent.insertBefore(errorDiv, mainContent.firstChild);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

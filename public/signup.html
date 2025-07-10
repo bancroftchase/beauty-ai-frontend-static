@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Sign Up - Luminous AI</title>
+  <meta name="theme-color" content="#B8860B" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="../index.html" class="back-btn">← Back</a>
+      <div class="logo">📝 Sign Up</div>
+    </div>
+
+    <div class="form-area">
+      <form id="signupForm">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" required />
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required />
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" required />
+
+        <button type="submit" class="submit-btn">Create Account</button>
+      </form>
+
+      <div id="resultMessage" class="result-message"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const result = await response.json();
+      const resultMessage = document.getElementById('resultMessage');
+
+      if (result.success) {
+        resultMessage.textContent = '🎉 Account created successfully!';
+        resultMessage.style.color = 'green';
+        document.getElementById('signupForm').reset();
+      } else {
+        resultMessage.textContent = result.error || 'Error creating account.';
+        resultMessage.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>

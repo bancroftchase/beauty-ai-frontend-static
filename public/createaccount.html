@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Create Account - Luminous AI</title>
+  <meta name="theme-color" content="#B8860B" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="../index.html" class="back-btn">← Back</a>
+      <div class="logo">✨ Create Account</div>
+    </div>
+
+    <div class="form-area">
+      <form id="createAccountForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required />
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required />
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" required />
+
+        <button type="submit" class="submit-btn">Create Account</button>
+      </form>
+
+      <div id="createResultMessage" class="result-message"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('createAccountForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      const response = await fetch('/api/create-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const result = await response.json();
+      const createResultMessage = document.getElementById('createResultMessage');
+
+      if (result.success) {
+        createResultMessage.textContent = '🎉 Account created successfully!';
+        createResultMessage.style.color = 'green';
+        setTimeout(() => {
+          window.location.href = '/account.html';
+        }, 1000);
+      } else {
+        createResultMessage.textContent = result.error || 'Unable to create account.';
+        createResultMessage.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>

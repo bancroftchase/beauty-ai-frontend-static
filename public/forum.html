@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty AI - Community Forum</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-charcoal: #2C2C2C;
+            --luminous-gold: #B8860B;
+            --pearl-white: #F8F8F8;
+            --premium-gradient: linear-gradient(135deg, #B8860B, #DAA520);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--pearl-white);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .header {
+            background: var(--primary-charcoal);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            background: var(--premium-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .forum-tabs {
+            display: flex;
+            background: var(--primary-charcoal);
+            border-top: 1px solid #444;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--luminous-gold);
+            border-bottom: 2px solid var(--luminous-gold);
+        }
+
+        .content {
+            padding: 20px;
+            min-height: calc(100vh - 120px);
+        }
+
+        .ask-question-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--luminous-gold);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .question-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-charcoal);
+            margin-bottom: 5px;
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .question-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .stat {
+            background: var(--pearl-white);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .question-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: var(--luminous-gold);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .question-preview {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+            margin-top: 8px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 350px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--luminous-gold);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-charcoal);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--luminous-gold);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .popular-topics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .topic-card {
+            background: linear-gradient(135deg, var(--pearl-white), white);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e1e8ed;
+        }
+
+        .topic-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .topic-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-charcoal);
+        }
+
+        .topic-count {
+            font-size: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-btn">← Back</a>
+            <div class="logo">💬 Beauty Community</div>
+        </div>
+
+        <div class="forum-tabs">
+            <button class="tab active" onclick="switchTab('questions')">❓ Questions</button>
+            <button class="tab" onclick="switchTab('popular')">🔥 Popular</button>
+            <button class="tab" onclick="switchTab('topics')">📚 Topics</button>
+        </div>
+
+        <div class="content">
+            <div id="questionsTab">
+                <button class="ask-question-btn" onclick="openAskModal()">✨ Ask a Question</button>
+                <div id="questionsList">
+                    <!-- Questions will be loaded here -->
+                </div>
+            </div>
+
+            <div id="popularTab" style="display: none;">
+                <div class="popular-topics">
+                    <div class="topic-card">
+                        <div class="topic-icon">💄</div>
+                        <div class="topic-name">Makeup</div>
+                        <div class="topic-count">234 questions</div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-icon">🧴</div>
+                        <div class="topic-name">Skincare</div>
+                        <div class="topic-count">456 questions</div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-icon">💇</div>
+                        <div class="topic-name">Hair Care</div>
+                        <div class="topic-count">123 questions</div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-icon">🌍</div>
+                        <div class="topic-name">K-Beauty</div>
+                        <div class="topic-count">189 questions</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="topicsTab" style="display: none;">
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <div style="font-size: 40px; margin-bottom: 15px;">📚</div>
+                    <h3>Beauty Topics</h3>
+                    <p style="font-size: 14px; margin-top: 10px;">Organize discussions by categories</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ask Question Modal -->
+    <div class="modal" id="askModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Ask a Question</div>
+                <button class="close-btn" onclick="closeAskModal()">×</button>
+            </div>
+            <form id="askForm">
+                <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" class="form-input" id="userName" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Question Title</label>
+                    <input type="text" class="form-input" id="questionTitle" placeholder="What's your question?" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Question Details</label>
+                    <textarea class="form-textarea" id="questionText" placeholder="Provide more details..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tags (comma separated)</label>
+                    <input type="text" class="form-input" id="questionTags" placeholder="e.g., skincare, acne, routine">
+                </div>
+                <button type="submit" class="submit-btn">Post Question</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+
+        // Load questions on page load
+        async function loadQuestions() {
+            try {
+                const response = await fetch('/api/forum/questions');
+                const data = await response.json();
+                
+                if (data.success) {
+                    questions = data.questions;
+                    renderQuestions();
+                }
+            } catch (error) {
+                console.error('Error loading questions:', error);
+            }
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsList');
+            
+            if (questions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <div style="font-size: 40px; margin-bottom: 15px;">💬</div>
+                        <h3>No questions yet</h3>
+                        <p style="font-size: 14px; margin-top: 10px;">Be the first to ask a beauty question!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = questions.map(q => `
+                <div class="question-card">
+                    <div class="question-title">${q.title}</div>
+                    <div class="question-meta">
+                        <span>👤 ${q.author}</span>
+                        <span>🕒 ${formatDate(q.date)}</span>
+                    </div>
+                    <div class="question-preview">${truncateText(q.question, 100)}</div>
+                    <div class="question-stats">
+                        <span class="stat">💬 ${q.answers} answers</span>
+                        <span class="stat">👁️ ${q.views} views</span>
+                    </div>
+                    <div class="question-tags">
+                        ${q.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide content
+            document.getElementById('questionsTab').style.display = tabName === 'questions' ? 'block' : 'none';
+            document.getElementById('popularTab').style.display = tabName === 'popular' ? 'block' : 'none';
+            document.getElementById('topicsTab').style.display = tabName === 'topics' ? 'block' : 'none';
+        }
+
+        function openAskModal() {
+            document.getElementById('askModal').style.display = 'flex';
+        }
+
+        function closeAskModal() {
+            document.getElementById('askModal').style.display = 'none';
+            document.getElementById('askForm').reset();
+        }
+
+        // Handle form submission
+        document.getElementById('askForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                userName: document.getElementById('userName').value || 'Anonymous',
+                title: document.getElementById('questionTitle').value,
+                question: document.getElementById('questionText').value,
+                tags: document.getElementById('questionTags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
+            };
+
+            try {
+                const response = await fetch('/api/forum/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Question posted successfully! 🎉');
+                    closeAskModal();
+                    
+                    // Add question to local array for immediate display
+                    const newQuestion = {
+                        id: data.questionId,
+                        title: formData.title,
+                        question: formData.question,
+                        author: formData.userName,
+                        date: new Date().toISOString(),
+                        answers: 0,
+                        views: 0,
+                        tags: formData.tags
+                    };
+                    questions.unshift(newQuestion);
+                    renderQuestions();
+                } else {
+                    showToast('Failed to post question. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error posting question:', error);
+                showToast('Failed to post question. Please try again.');
+            }
+        });
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffHours = Math.floor((now - date) / (1000 * 60 * 60));
+            
+            if (diffHours < 1) return 'Just now';
+            if (diffHours < 24) return `${diffHours}h ago`;
+            
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffDays < 7) return `${diffDays}d ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function truncateText(text, maxLength) {
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--premium-gradient);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                z-index: 1000;
+                font-size: 14px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('askModal');
+            if (e.target === modal) {
+                closeAskModal();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadQuestions);
+    </script>
+</body>
+</html>

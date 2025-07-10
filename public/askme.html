@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luminous AI – Chat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <h1>Luminous AI Chat</h1>
+    </header>
+
+    <div class="chat-box" id="chat-box"></div>
+
+    <div class="input-container">
+      <input type="text" id="user-input" placeholder="Type your question..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById('user-input');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const chatBox = document.getElementById('chat-box');
+      chatBox.innerHTML += `<div class="user-message">${query}</div>`;
+
+      input.value = '';
+      try {
+        const response = await fetch(`/chat.html?query=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        chatBox.innerHTML += `<div class="bot-message">${data.reply || 'No response received.'}</div>`;
+      } catch (err) {
+        console.error(err);
+        chatBox.innerHTML += `<div class="bot-message error">Sorry, something went wrong.</div>`;
+      }
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>

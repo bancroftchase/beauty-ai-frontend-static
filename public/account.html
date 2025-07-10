@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>My Account - Luminous AI</title>
+  <meta name="theme-color" content="#B8860B" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="../index.html" class="back-btn">← Back</a>
+      <div class="logo">✨ My Account</div>
+    </div>
+
+    <div class="account-info">
+      <h2>Welcome, <span id="accountName">User</span>!</h2>
+      <p>Email: <span id="accountEmail">email@example.com</span></p>
+
+      <div class="account-actions">
+        <button class="action-btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchAccountInfo() {
+      const response = await fetch('/api/account');
+      const data = await response.json();
+
+      if (data.success) {
+        document.getElementById('accountName').textContent = data.user.name;
+        document.getElementById('accountEmail').textContent = data.user.email;
+      } else {
+        window.location.href = '/login.html';
+      }
+    }
+
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/login.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchAccountInfo);
+  </script>
+</body>
+</html>

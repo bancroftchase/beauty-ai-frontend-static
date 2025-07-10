@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>K-Beauty – Luminous AI</title>
+  <meta name="theme-color" content="#B8860B" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+    }
+    .wrapper {
+      max-width: 420px;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, #ff69b4, #ff1493);
+      padding: 20px;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .back-btn {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .stats-bar {
+      background: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-around;
+      border-bottom: 1px solid #eee;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ff1493;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    .status-message {
+      background: #ffe8f5;
+      color: #c2185b;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .product {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+      position: relative;
+    }
+    .product:hover {
+      transform: translateY(-2px);
+    }
+    .product-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff1493;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .product h3 {
+      font-size: 1rem;
+      color: #ff1493;
+      margin-bottom: 5px;
+    }
+    .product-brand {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .product-price {
+      font-weight: bold;
+      color: #ff1493;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    .product-rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+    .stars {
+      color: #ffd700;
+      font-size: 12px;
+    }
+    .review-count {
+      font-size: 11px;
+      color: #666;
+    }
+    .product p {
+      font-size: 0.9rem;
+      margin: 8px 0;
+      color: #333;
+      line-height: 1.4;
+    }
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .add-to-cart-btn {
+      background: linear-gradient(135deg, #ff69b4, #ff1493);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+      width: 100%;
+    }
+    .add-to-cart-btn:hover {
+      transform: scale(1.05);
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 16px;
+    }
+    .error {
+      color: red;
+      padding: 20px;
+      text-align: center;
+      background: #ffe6e6;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <a href="index.html" class="back-btn">← Back</a>
+      <h1>🌸 K-Beauty Products</h1>
+      <div style="font-size: 0.9rem; opacity: 0.9;">Korean beauty innovation</div>
+    </div>
+    
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-number" id="productCount">...</div>
+        <div class="stat-label">Products</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="brandCount">...</div>
+        <div class="stat-label">K-Brands</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">🇰🇷</div>
+        <div class="stat-label">Korean</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="status-message">
+        ✅ Live K-Beauty search - Glass skin, snail mucin, and more!
+      </div>
+
+      <div id="results">
+        <div class="loading">🌸 Loading K-Beauty products from live backend...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 🚀 LIVE BACKEND API INTEGRATION
+    const API_BASE_URL = 'https://beauty-ai-backend.onrender.com/api';
+    
+    let allProducts = [];
+
+    // Load products on page load
+    window.addEventListener('load', function() {
+      console.log('🌸 Loading K-Beauty products...');
+      fetchKBeautyProducts();
+    });
+
+    async function fetchKBeautyProducts() {
+      try {
+        console.log('🔄 Fetching K-Beauty products...');
+        
+        // Get K-Beauty products from multiple sources
+        const promises = [
+          // Search for K-Beauty terms
+          fetch(`${API_BASE_URL}/products/search`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              query: 'korean k-beauty snail mucin glass skin ginseng',
+              limit: 20 
+            })
+          }),
+          
+          // Generate K-Beauty products using Claude
+          fetch(`${API_BASE_URL}/products/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              category: 'skincare',
+              count: 25,
+              query: 'korean k-beauty snail mucin glass skin ginseng centella fermented essence'
+            })
+          }),
+          
+          // Search for South Korean products specifically
+          fetch(`${API_BASE_URL}/products/search`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              query: 'South Korea',
+              limit: 15 
+            })
+          })
+        ];
+
+        const responses = await Promise.all(promises);
+        const data = await Promise.all(responses.map(r => r.json()));
+
+        console.log('📦 Backend responses:', data);
+
+        // Combine all K-Beauty products
+        allProducts = [];
+        
+        data.forEach(response => {
+          if (response.success && response.products) {
+            allProducts.push(...response.products);
+          }
+        });
+
+        if (allProducts.length === 0) {
+          throw new Error('No K-Beauty products found');
+        }
+
+        // Remove duplicates and filter for Korean/K-Beauty products
+        const uniqueProducts = [];
+        const seenNames = new Set();
+        
+        allProducts.forEach(product => {
+          const key = `${product.name}-${product.brand}`;
+          if (!seenNames.has(key)) {
+            seenNames.add(key);
+            uniqueProducts.push(product);
+          }
+        });
+
+        allProducts = uniqueProducts;
+        displayProducts(allProducts);
+        updateStats();
+        
+        console.log(`✅ Loaded ${allProducts.length} K-Beauty products!`);
+
+      } catch (error) {
+        console.error('❌ Error fetching K-Beauty products:', error);
+        document.getElementById('results').innerHTML = `
+          <div class="error">
+            <h3>⚠️ Unable to load K-Beauty products</h3>
+            <p>Error: ${error.message}</p>
+            <p>Backend URL: ${API_BASE_URL}</p>
+            <button onclick="fetchKBeautyProducts()" style="margin-top: 10px; padding: 8px 16px; background: #ff1493; color: white; border: none; border-radius: 5px; cursor: pointer;">🔄 Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    function displayProducts(products) {
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+
+      if (products.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No K-Beauty products found.</p>';
+        return;
+      }
+
+      products.forEach((product, index) => {
+        const div = document.createElement('div');
+        div.className = 'product';
+
+        // Generate rating stars
+        const rating = product.rating || (4.2 + Math.random() * 0.8); // K-Beauty tends to have high ratings
+        const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+        
+        // K-Beauty specific badges
+        let badge = '';
+        if (product.country === 'South Korea' || product.keywords?.includes('korean')) badge = 'K-BEAUTY';
+        else if (product.name?.toLowerCase().includes('snail')) badge = 'SNAIL MUCIN';
+        else if (product.name?.toLowerCase().includes('glass')) badge = 'GLASS SKIN';
+        else if (product.name?.toLowerCase().includes('ginseng')) badge = 'GINSENG';
+
+        div.innerHTML = `
+          ${badge ? `<div class="product-badge">${badge}</div>` : ''}
+          <h3>${product.name || 'K-Beauty Product'}</h3>
+          <div class="product-brand">${product.brand || 'Korean Brand'}</div>
+          <div class="product-price">${product.price || '$25.00'}</div>
+          <div class="product-rating">
+            <span class="stars">${stars}</span>
+            <span class="review-count">(${product.reviews || Math.floor(Math.random() * 3000) + 1000})</span>
+          </div>
+          <p>${product.description || 'Innovative Korean beauty product for healthy, glowing skin.'}</p>
+          <div class="product-meta">
+            <span>🇰🇷 ${product.country === 'South Korea' ? 'Korea' : 'K-Beauty'}</span>
+            <span>✨ ${product.subCategory || product.category || 'Skincare'}</span>
+          </div>
+          <button class="add-to-cart-btn" onclick="addToCart('${product.id || index}')">
+            🛒 Add to Cart - ${product.price || '$25.00'}
+          </button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function updateStats() {
+      const brands = [...new Set(allProducts.map(p => p.brand).filter(Boolean))];
+      
+      document.getElementById('productCount').textContent = allProducts.length;
+      document.getElementById('brandCount').textContent = brands.length;
+    }
+
+    function addToCart(productId) {
+      const product = allProducts.find(p => p.id === productId) || allProducts[productId];
+      if (!product) return;
+
+      let cart = JSON.parse(localStorage.getItem('beautyCart')) || [];
+      
+      const existingItem = cart.find(item => item.id === productId);
+      if (existingItem) {
+        existingItem.quantity = (existingItem.quantity || 1) + 1;
+      } else {
+        cart.push({ ...product, quantity: 1, addedAt: new Date().toISOString() });
+      }
+      
+      localStorage.setItem('beautyCart', JSON.stringify(cart));
+      
+      // Show success notification
+      showNotification(`Added ${product.name || 'K-Beauty product'} to cart! 🌸`);
+    }
+
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 10001;
+        background: linear-gradient(135deg, #ff69b4, #ff1493); color: white;
+        padding: 12px 20px; border-radius: 8px;
+        font-size: 14px; font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      `;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart – Luminous AI</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background-color: #fefefe;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+    .cart-item {
+      padding: 12px;
+      background: #f4f4f4;
+      margin-bottom: 10px;
+      border-left: 4px solid #0077cc;
+      animation: fadeInUp 0.5s ease-in-out;
+    }
+    .upsell-section {
+      margin-top: 30px;
+    }
+    .upsell-section h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+    .upsell-item {
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #fafafa;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      animation: fadeInUp 0.5s ease-in-out;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 12px;
+      background: #0077cc;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      background: #777;
+      margin-left: 10px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #323232;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      z-index: 1000;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 id="greeting">Your Cart 🛒</h1>
+  <div id="cart"></div>
+
+  <div class="upsell-section" id="upsellSection">
+    <h2>✨ You may also love:</h2>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <audio id="successSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0b0184e800.mp3?filename=correct-2-46134.mp3"></audio>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(function (registration) {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, function (err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+
+    const upsellOptions = {
+      lipstick: [
+        "Precision Lip Liner – $12",
+        "Glossy Lip Topper – $14",
+        "Lip Scrub – $10",
+        "Lip Primer – $9",
+        "Long-Lasting Matte Lipstick – $19"
+      ],
+      skincare: [
+        "Hydrating Serum – $25",
+        "Moisturizing Cream – $22",
+        "Face Mask – $20",
+        "Vitamin C Brightener – $30",
+        "Exfoliating Cleanser – $18"
+      ],
+      hair: [
+        "Scalp Massager – $15",
+        "Strengthening Shampoo – $19",
+        "Leave-in Conditioner – $22",
+        "Hair Repair Oil – $27",
+        "Volumizing Spray – $21"
+      ],
+      footcare: [
+        "Foot Scrub – $14",
+        "Heel Balm – $12",
+        "Detox Foot Soak – $10",
+        "Moisturizing Socks – $16",
+        "Callus Remover Gel – $13"
+      ],
+      wellness: [
+        "Herbal Tea – $9",
+        "Collagen Gummies – $22",
+        "Essential Oil Roll-on – $12",
+        "Hair, Skin & Nails Supplement – $19",
+        "Sleep Mask – $11"
+      ],
+      general: [
+        "Beauty Sleep Mask – $19",
+        "Brightening Eye Cream – $17",
+        "Hydrating Face Mist – $13",
+        "Detox Face Patches – $20",
+        "Glow Enhancer – $15"
+      ]
+    };
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      const audio = document.getElementById("successSound");
+      toast.textContent = message;
+      toast.classList.add("show");
+      audio.play();
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+
+    function removeFromCart() {
+      localStorage.removeItem("selectedProduct");
+      showToast("Item removed from cart.");
+      setTimeout(() => location.reload(), 1000);
+    }
+
+    function continueShopping() {
+      showToast("Returning to product search...");
+      setTimeout(() => {
+        window.location.href = "/index.html";
+      }, 1000);
+    }
+
+    function personalizeGreeting(profile) {
+      if (profile && profile.name) {
+        document.getElementById("greeting").innerText = `Hi ${profile.name}, here's what's trending for your profile 🛍️`;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const cartData = JSON.parse(localStorage.getItem("selectedProduct"));
+      const profile = JSON.parse(localStorage.getItem("userProfile"));
+      const cartContainer = document.getElementById("cart");
+      const upsellContainer = document.getElementById("upsellSection");
+      personalizeGreeting(profile);
+
+      if (cartData && cartData.name) {
+        const smartPrompt = cartData.category === 'skincare' ?
+          "Would you like a serum with that moisturizer?" :
+          cartData.category === 'lipstick' ?
+          "Since you selected lipstick, would you like a gloss too?" :
+          "You may also like these options.";
+
+        cartContainer.innerHTML = `
+          <div class="cart-item">
+            <strong>• ${cartData.name}</strong><br>
+            <small>Saved from your last search</small><br>
+            <em>${smartPrompt}</em><br>
+            <button class="btn" onclick="removeFromCart()">Remove</button>
+            <button class="btn btn-secondary" onclick="continueShopping()">Continue Shopping</button>
+          </div>
+        `;
+
+        const related = upsellOptions[cartData.category] || upsellOptions.general;
+        related.forEach(item => {
+          const el = document.createElement("div");
+          el.className = "upsell-item";
+          el.innerHTML = `${item} <button class="btn">Add</button>`;
+          upsellContainer.appendChild(el);
+        });
+
+        setTimeout(() => {
+          showToast("Session expired. Returning home soon...");
+          setTimeout(() => window.location.href = "/index.html", 5000);
+        }, 25000);
+      } else {
+        cartContainer.innerHTML = "<p>Your cart is empty. Explore more products to get started!</p>";
+      }
+    });
+  </script>
+</body>
+</html>

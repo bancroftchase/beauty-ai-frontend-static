@@ -1,0 +1,429 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty AI - Subscription Plans</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-charcoal: #2C2C2C;
+            --luminous-gold: #B8860B;
+            --pearl-white: #F8F8F8;
+            --premium-gradient: linear-gradient(135deg, #B8860B, #DAA520);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--primary-charcoal);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--premium-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .current-plan {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .subscription-tiers {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .tier-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tier-card.popular {
+            border-color: var(--luminous-gold);
+            background: linear-gradient(135deg, rgba(184, 134, 11, 0.2), rgba(255,255,255,0.1));
+        }
+
+        .tier-card.current {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(255,255,255,0.1));
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tier-name {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .tier-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--luminous-gold);
+        }
+
+        .tier-price .period {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .popular-badge {
+            background: var(--premium-gradient);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            position: absolute;
+            top: -10px;
+            right: 20px;
+        }
+
+        .tier-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .tier-features li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .tier-features li::before {
+            content: '✓';
+            color: var(--luminous-gold);
+            font-weight: bold;
+        }
+
+        .upgrade-btn {
+            width: 100%;
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .upgrade-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .upgrade-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .analytics-preview {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .analytics-title {
+            color: var(--luminous-gold);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .locked-feature {
+            opacity: 0.6;
+            filter: blur(2px);
+            position: relative;
+        }
+
+        .unlock-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--premium-gradient);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back</a>
+        
+        <div class="header">
+            <div class="logo">✨ Beauty AI Subscriptions</div>
+            <div class="subtitle">Unlock the full power of AI beauty</div>
+        </div>
+
+        <div class="current-plan" id="currentPlan">
+            <div style="font-size: 14px; color: #ccc; margin-bottom: 5px;">Current Plan</div>
+            <div style="font-size: 18px; font-weight: 600;" id="currentTier">Basic (Free)</div>
+            <div style="font-size: 12px; color: #ccc;" id="currentStatus">No expiration</div>
+        </div>
+
+        <div class="subscription-tiers" id="subscriptionTiers">
+            <!-- Subscription tiers will be loaded here -->
+        </div>
+
+        <!-- Analytics Preview -->
+        <div class="analytics-preview">
+            <div class="analytics-title">📊 Premium Analytics Preview</div>
+            <div class="locked-feature" id="analyticsPreview">
+                <div style="font-size: 12px; line-height: 1.5;">
+                    • Emerging Ingredients: Bakuchiol, Azelaic Acid<br>
+                    • Rising Categories: Clean Beauty (+23%)<br>
+                    • Color Trends: Coral Blush, Brown Lipstick<br>
+                    • Price Analysis: Under $25 segment growing +15%
+                </div>
+                <div class="unlock-overlay">Upgrade to unlock</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSubscription = { tier: 'basic', expires: null };
+
+        // Generate session ID
+        function getSessionId() {
+            let sessionId = localStorage.getItem('sessionId');
+            if (!sessionId) {
+                sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('sessionId', sessionId);
+            }
+            return sessionId;
+        }
+
+        // Load current subscription
+        async function loadSubscription() {
+            try {
+                const response = await fetch('/api/subscription/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'session-id': getSessionId()
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    currentSubscription = data.subscription;
+                    renderSubscriptionTiers(data.tiers);
+                    updateCurrentPlan();
+                    
+                    if (data.subscription.tier !== 'basic') {
+                        loadAnalytics();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading subscription:', error);
+            }
+        }
+
+        function updateCurrentPlan() {
+            const currentPlan = document.getElementById('currentPlan');
+            const currentTier = document.getElementById('currentTier');
+            const currentStatus = document.getElementById('currentStatus');
+
+            const tierNames = {
+                'basic': 'Basic (Free)',
+                'premium': 'Premium ($9.99/month)',
+                'vip': 'VIP ($19.99/month)'
+            };
+
+            currentTier.textContent = tierNames[currentSubscription.tier] || 'Basic (Free)';
+            
+            if (currentSubscription.expires) {
+                const expireDate = new Date(currentSubscription.expires);
+                currentStatus.textContent = `Expires: ${expireDate.toLocaleDateString()}`;
+            } else {
+                currentStatus.textContent = 'No expiration';
+            }
+        }
+
+        function renderSubscriptionTiers(tiers) {
+            const container = document.getElementById('subscriptionTiers');
+            container.innerHTML = '';
+
+            Object.entries(tiers).forEach(([tierKey, tier]) => {
+                const tierCard = document.createElement('div');
+                tierCard.className = 'tier-card';
+                
+                if (tierKey === 'premium') {
+                    tierCard.classList.add('popular');
+                }
+                
+                if (tierKey === currentSubscription.tier) {
+                    tierCard.classList.add('current');
+                }
+
+                const isUpgrade = getTierLevel(tierKey) > getTierLevel(currentSubscription.tier);
+                const buttonText = tierKey === currentSubscription.tier ? 'Current Plan' : 
+                                   isUpgrade ? `Upgrade to ${tier.name}` : 'Downgrade';
+                const buttonDisabled = tierKey === currentSubscription.tier;
+
+                tierCard.innerHTML = `
+                    ${tierKey === 'premium' ? '<div class="popular-badge">Most Popular</div>' : ''}
+                    <div class="tier-header">
+                        <div class="tier-name">${tier.name}</div>
+                        <div class="tier-price">
+                            $${tier.price}
+                            ${tier.price > 0 ? '<span class="period">/month</span>' : ''}
+                        </div>
+                    </div>
+                    <ul class="tier-features">
+                        ${tier.features.map(feature => `<li>${feature}</li>`).join('')}
+                    </ul>
+                    <button class="upgrade-btn" 
+                            onclick="upgradeTier('${tierKey}')" 
+                            ${buttonDisabled ? 'disabled' : ''}>
+                        ${buttonText}
+                    </button>
+                `;
+
+                container.appendChild(tierCard);
+            });
+        }
+
+        function getTierLevel(tier) {
+            const levels = { 'basic': 1, 'premium': 2, 'vip': 3 };
+            return levels[tier] || 1;
+        }
+
+        async function upgradeTier(tier) {
+            if (tier === currentSubscription.tier) return;
+
+            try {
+                const response = await fetch('/api/subscription/upgrade', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'session-id': getSessionId()
+                    },
+                    body: JSON.stringify({ tier })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showToast(data.message);
+                    currentSubscription = data.subscription;
+                    loadSubscription(); // Reload to update UI
+                } else {
+                    showToast('Upgrade failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Upgrade error:', error);
+                showToast('Upgrade failed. Please try again.');
+            }
+        }
+
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('/api/analytics/trends', {
+                    headers: {
+                        'session-id': getSessionId()
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    const preview = document.getElementById('analyticsPreview');
+                    preview.classList.remove('locked-feature');
+                    preview.innerHTML = `
+                        <div style="font-size: 12px; line-height: 1.5;">
+                            • Emerging: ${data.analytics.emergingIngredients.join(', ')}<br>
+                            • Rising: ${data.analytics.risingCategories.join(', ')}<br>
+                            • Colors: ${data.analytics.colorTrends.join(', ')}<br>
+                            • Prediction: ${data.analytics.seasonalPredictions}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Analytics error:', error);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--premium-gradient);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                z-index: 1000;
+                font-size: 14px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadSubscription);
+    </script>
+</body>
+</html>

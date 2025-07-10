@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Anti-Aging – Luminous AI</title>
+  <meta name="theme-color" content="#B8860B" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+    }
+    .wrapper {
+      max-width: 420px;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, #B8860B, #DAA520);
+      padding: 20px;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .back-btn {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .stats-bar {
+      background: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-around;
+      border-bottom: 1px solid #eee;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #B8860B;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    .status-message {
+      background: #e8f5e8;
+      color: #2e7d32;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .filter-section {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .filter-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .filter-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: #f0f0f0;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn.active {
+      background: #B8860B;
+      color: white;
+    }
+    .product {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+      position: relative;
+    }
+    .product:hover {
+      transform: translateY(-2px);
+    }
+    .product-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #B8860B;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .product h3 {
+      font-size: 1rem;
+      color: #B8860B;
+      margin-bottom: 5px;
+    }
+    .product-brand {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .product-price {
+      font-weight: bold;
+      color: #B8860B;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    .product-rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+    .stars {
+      color: #ffd700;
+      font-size: 12px;
+    }
+    .review-count {
+      font-size: 11px;
+      color: #666;
+    }
+    .product p {
+      font-size: 0.9rem;
+      margin: 8px 0;
+      color: #333;
+      line-height: 1.4;
+    }
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .add-to-cart-btn {
+      background: linear-gradient(135deg, #B8860B, #DAA520);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+      width: 100%;
+    }
+    .add-to-cart-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <a href="index.html" class="back-btn">← Back</a>
+      <h1>✨ Anti-Aging Products</h1>
+      <div style="font-size: 0.9rem; opacity: 0.9;">Frontend-powered instant search</div>
+    </div>
+    
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-number" id="productCount">25</div>
+        <div class="stat-label">Products</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="countryCount">8</div>
+        <div class="stat-label">Countries</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="brandCount">15</div>
+        <div class="stat-label">Brands</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="status-message">
+        ✅ Frontend-only mode - Instant anti-aging product search!
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">Filter by Category</div>
+        <div class="filter-buttons">
+          <button class="filter-btn active" onclick="filterByCategory('all')">All</button>
+          <button class="filter-btn" onclick="filterByCategory('Serum')">Serums</button>
+          <button class="filter-btn" onclick="filterByCategory('Moisturizer')">Moisturizers</button>
+          <button class="filter-btn" onclick="filterByCategory('Treatment')">Treatments</button>
+          <button class="filter-btn" onclick="filterByCategory('Mask')">Masks</button>
+          <button class="filter-btn" onclick="filterByCategory('Eye Cream')">Eye Care</button>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">Filter by Country</div>
+        <div class="filter-buttons">
+          <button class="filter-btn active" onclick="filterByCountry('all')">All</button>
+          <button class="filter-btn" onclick="filterByCountry('South Korea')">🇰🇷 K-Beauty</button>
+          <button class="filter-btn" onclick="filterByCountry('USA')">🇺🇸 American</button>
+          <button class="filter-btn" onclick="filterByCountry('France')">🇫🇷 French</button>
+          <button class="filter-btn" onclick="filterByCountry('Japan')">🇯🇵 Japanese</button>
+          <button class="filter-btn" onclick="filterByCountry('Germany')">🇩🇪 German</button>
+        </div>
+      </div>
+
+      <div id="results">
+        <!-- Products will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 🌟 ANTI-AGING PRODUCT DATABASE
+    const ANTIAGING_PRODUCTS = [
+      // Serums
+      { id: 'as1', name: 'Retinol Anti-Aging Serum', brand: 'CeraVe', price: '$29.99', country: 'USA', category: 'Serum', description: 'Powerful retinol formula that reduces fine lines and wrinkles while improving skin texture and tone.', rating: 4.3, reviews: 1247 },
+      { id: 'as2', name: 'Vitamin C Brightening Serum', brand: 'The Ordinary', price: '$7.90', country: 'Canada', category: 'Serum', description: 'Antioxidant-rich vitamin C serum that brightens skin and protects against environmental damage.', rating: 4.1, reviews: 892 },
+      { id: 'as3', name: 'Time Revolution Night Repair Serum', brand: 'Missha', price: '$49.00', country: 'South Korea', category: 'Serum', description: 'Fermented yeast extract serum that works overnight to repair and rejuvenate aging skin.', rating: 4.5, reviews: 2156 },
+      { id: 'as4', name: 'Advanced Night Repair Serum', brand: 'Estée Lauder', price: '$98.00', country: 'USA', category: 'Serum', description: 'Iconic anti-aging serum that helps repair daily environmental damage while you sleep.', rating: 4.4, reviews: 3421 },
+      { id: 'as5', name: 'Hyaluronic Acid 2% + B5', brand: 'The Ordinary', price: '$9.90', country: 'Canada', category: 'Serum', description: 'Concentrated hyaluronic acid serum that provides deep hydration and plumps fine lines.', rating: 4.2, reviews: 1876 },
+      
+      // Moisturizers
+      { id: 'am1', name: 'Peptide Renewal Cream', brand: 'L\'Oréal', price: '$45.00', country: 'France', category: 'Moisturizer', description: 'Advanced peptide complex that stimulates collagen production for firmer, younger-looking skin.', rating: 4.2, reviews: 634 },
+      { id: 'am2', name: 'Regenerist Micro-Sculpting Cream', brand: 'Olay', price: '$24.99', country: 'USA', category: 'Moisturizer', description: 'Anti-aging moisturizer with amino-peptides and niacinamide for firmer, smoother skin.', rating: 4.0, reviews: 2341 },
+      { id: 'am3', name: 'Time Revolution Immortal Youth Moisturizer', brand: 'Missha', price: '$52.00', country: 'South Korea', category: 'Moisturizer', description: 'Luxury anti-aging moisturizer with fermented ingredients and peptides for youthful skin.', rating: 4.3, reviews: 876 },
+      { id: 'am4', name: 'Revitalift Anti-Wrinkle Cream', brand: 'L\'Oréal', price: '$19.99', country: 'France', category: 'Moisturizer', description: 'Pro-retinol and vitamin C cream that reduces wrinkles and improves skin firmness.', rating: 3.9, reviews: 1523 },
+      { id: 'am5', name: 'Resurfacing Retinol Serum', brand: 'CeraVe', price: '$32.99', country: 'USA', category: 'Moisturizer', description: 'Encapsulated retinol cream that smooths skin texture and minimizes pores.', rating: 4.1, reviews: 967 },
+      
+      // Treatments
+      { id: 'at1', name: 'Clinical Resurfacing Treatment', brand: 'Paula\'s Choice', price: '$55.00', country: 'USA', category: 'Treatment', description: 'Clinical-strength retinol treatment for advanced anti-aging and skin renewal.', rating: 4.4, reviews: 723 },
+      { id: 'at2', name: 'Redermic R Anti-Age Treatment', brand: 'La Roche-Posay', price: '$63.99', country: 'France', category: 'Treatment', description: 'Intensive retinol treatment for mature skin with visible signs of aging.', rating: 4.2, reviews: 541 },
+      { id: 'at3', name: 'Granactive Retinoid 2% Emulsion', brand: 'The Ordinary', price: '$12.90', country: 'Canada', category: 'Treatment', description: 'Next-generation retinoid treatment that provides anti-aging benefits with less irritation.', rating: 4.0, reviews: 1234 },
+      { id: 'at4', name: 'Bio-Performance Glow Revival Serum', brand: 'Shiseido', price: '$75.00', country: 'Japan', category: 'Treatment', description: 'Japanese bio-technology treatment that revitalizes skin for a youthful glow.', rating: 4.3, reviews: 432 },
+      { id: 'at5', name: 'Idealist Pore Minimizing Serum', brand: 'Estée Lauder', price: '$65.00', country: 'USA', category: 'Treatment', description: 'Advanced treatment serum that minimizes pores and refines skin texture.', rating: 4.1, reviews: 876 },
+      
+      // Masks
+      { id: 'mask1', name: 'Overnight Renewal Mask', brand: 'Origins', price: '$42.00', country: 'USA', category: 'Mask', description: 'Overnight mask with fruit acids and botanicals for smoother, more radiant skin.', rating: 4.2, reviews: 654 },
+      { id: 'mask2', name: 'Vital Perfection Overnight Firming Mask', brand: 'Shiseido', price: '$85.00', country: 'Japan', category: 'Mask', description: 'Luxury overnight mask that firms and lifts skin while providing intense hydration.', rating: 4.4, reviews: 321 },
+      { id: 'mask3', name: 'Honey Halo Ultra-Hydrating Mask', brand: 'Farmacy', price: '$56.00', country: 'USA', category: 'Mask', description: 'Clean beauty mask with manuka honey and ceramides for deep hydration and anti-aging.', rating: 4.3, reviews: 789 },
+      { id: 'mask4', name: 'Glow Recipe Watermelon Sleeping Mask', brand: 'Glow Recipe', price: '$45.00', country: 'USA', category: 'Mask', description: 'AHA and BHA overnight mask that gently exfoliates and hydrates for glowing skin.', rating: 4.1, reviews: 1456 },
+      { id: 'mask5', name: 'Snail Repair Intensive Mask', brand: 'COSRX', price: '$18.00', country: 'South Korea', category: 'Mask', description: 'K-beauty sheet mask with 96% snail mucin for intensive repair and hydration.', rating: 4.5, reviews: 2134 },
+      
+      // Eye Creams
+      { id: 'eye1', name: 'Advanced Night Repair Eye Cream', brand: 'Estée Lauder', price: '$68.00', country: 'USA', category: 'Eye Cream', description: 'Targeted eye cream that reduces dark circles, puffiness, and fine lines.', rating: 4.2, reviews: 1234 },
+      { id: 'eye2', name: 'Retinol Eye Cream', brand: 'Neutrogena', price: '$15.97', country: 'USA', category: 'Eye Cream', description: 'Gentle retinol eye cream that smooths fine lines around the delicate eye area.', rating: 3.9, reviews: 876 },
+      { id: 'eye3', name: 'Ginseng Eye Cream', brand: 'Beauty of Joseon', price: '$18.00', country: 'South Korea', category: 'Eye Cream', description: 'Traditional Korean ginseng eye cream that firms and brightens the eye area.', rating: 4.4, reviews: 543 },
+      { id: 'eye4', name: 'Ceramide Eye Cream', brand: 'CeraVe', price: '$14.99', country: 'USA', category: 'Eye Cream', description: 'Gentle eye cream with ceramides and hyaluronic acid for hydration without irritation.', rating: 4.0, reviews: 1876 },
+      { id: 'eye5', name: 'Ultra Lift Eye Cream', brand: 'Clarins', price: '$89.00', country: 'France', category: 'Eye Cream', description: 'Luxury French eye cream with plant extracts that lift and firm the eye contour.', rating: 4.3, reviews: 432 }
+    ];
+
+    let filteredProducts = [...ANTIAGING_PRODUCTS];
+    let currentFilter = { category: 'all', country: 'all' };
+
+    function displayProducts(products) {
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+
+      if (products.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No products found for current filters.</p>';
+        return;
+      }
+
+      products.forEach((product, index) => {
+        const div = document.createElement('div');
+        div.className = 'product';
+
+        // Generate rating stars
+        const rating = product.rating || (3.5 + Math.random() * 1.5);
+        const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+        
+        // Product badge
+        let badge = '';
+        if (product.country === 'South Korea') badge = 'K-BEAUTY';
+        else if (parseFloat(product.price.replace('$', '')) > 50) badge = 'PREMIUM';
+        else if (product.brand === 'The Ordinary') badge = 'AFFORDABLE';
+
+        div.innerHTML = `
+          ${badge ? `<div class="product-badge">${badge}</div>` : ''}
+          <h3>${product.name}</h3>
+          <div class="product-brand">${product.brand}</div>
+          <div class="product-price">${product.price}</div>
+          <div class="product-rating">
+            <span class="stars">${stars}</span>
+            <span class="review-count">(${product.reviews})</span>
+          </div>
+          <p>${product.description}</p>
+          <div class="product-meta">
+            <span>🌍 ${product.country}</span>
+            <span>📦 ${product.category}</span>
+          </div>
+          <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">
+            🛒 Add to Cart - ${product.price}
+          </button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function filterByCategory(category) {
+      currentFilter.category = category;
+      updateFilterButtons('category', category);
+      applyFilters();
+    }
+
+    function filterByCountry(country) {
+      currentFilter.country = country;
+      updateFilterButtons('country', country);
+      applyFilters();
+    }
+
+    function updateFilterButtons(type, value) {
+      const buttons = document.querySelectorAll(`.filter-section:${type === 'category' ? 'nth-child(2)' : 'nth-child(3)'} .filter-btn`);
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function applyFilters() {
+      filteredProducts = ANTIAGING_PRODUCTS.filter(product => {
+        const categoryMatch = currentFilter.category === 'all' || product.category === currentFilter.category;
+        const countryMatch = currentFilter.country === 'all' || product.country === currentFilter.country;
+        return categoryMatch && countryMatch;
+      });
+      
+      displayProducts(filteredProducts);
+      updateStats();
+    }
+
+    function updateStats() {
+      const countries = [...new Set(filteredProducts.map(p => p.country))];
+      const brands = [...new Set(filteredProducts.map(p => p.brand))];
+      
+      document.getElementById('productCount').textContent = filteredProducts.length;
+      document.getElementById('countryCount').textContent = countries.length;
+      document.getElementById('brandCount').textContent = brands.length;
+    }
+
+    function addToCart(productId) {
+      const product = ANTIAGING_PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+
+      let cart = JSON.parse(localStorage.getItem('beautyCart')) || [];
+      
+      const existingItem = cart.find(item => item.id === productId);
+      if (existingItem) {
+        existingItem.quantity = (existingItem.quantity || 1) + 1;
+      } else {
+        cart.push({ ...product, quantity: 1, addedAt: new Date().toISOString() });
+      }
+      
+      localStorage.setItem('beautyCart', JSON.stringify(cart));
+      
+      // Show success notification
+      showNotification(`Added ${product.name} to cart! 🛒`);
+    }
+
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 10001;
+        background: linear-gradient(135deg, #B8860B, #DAA520); color: white;
+        padding: 12px 20px; border-radius: 8px;
+        font-size: 14px; font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      `;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Initialize
+    window.addEventListener('load', function() {
+      console.log('✨ Frontend Anti-aging page loaded!');
+      displayProducts(ANTIAGING_PRODUCTS);
+      updateStats();
+    });
+  </script>
+</body>
+</html>
