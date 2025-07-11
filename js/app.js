@@ -2,7 +2,8 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let selectedProduct = null;
 
 function updateCartCount() {
-  document.getElementById('cartCount').textContent = cart.length;
+  const cartCount = document.getElementById('cartCount');
+  if (cartCount) cartCount.textContent = cart.length;
 }
 
 function addToCartFromModal() {
@@ -17,28 +18,38 @@ function addToCartFromModal() {
 
 function openModal(product) {
   selectedProduct = product;
+  const modal = document.getElementById('productModal');
+  if (!modal) return;
   document.getElementById('modalName').textContent = product.name;
   document.getElementById('modalBrand').textContent = `Brand: ${product.brand}`;
   document.getElementById('modalPrice').textContent = `Price: $${Number(product.price).toFixed(2)}`;
   document.getElementById('modalDescription').textContent = product.description;
   document.getElementById('modalCountry').textContent = `Country: ${product.country}`;
-  document.getElementById('productModal').style.display = 'flex';
+  modal.style.display = 'flex';
 }
 
 function closeModal() {
-  document.getElementById('productModal').style.display = 'none';
+  const modal = document.getElementById('productModal');
+  if (modal) modal.style.display = 'none';
   selectedProduct = null;
 }
 
 async function fetchProducts(query, containerId, statsId) {
   const container = document.getElementById(containerId);
   const statsElement = document.getElementById(statsId);
+  if (!container || !statsElement) {
+    console.error(`Container (${containerId}) or stats (${statsId}) element not found`);
+    return;
+  }
   container.innerHTML = `<p>Loading ${query} products from live backend...</p>`;
+  statsElement.textContent = 'Loading...';
 
   try {
-    const response = await fetch(`https://beauty-ai-backend.onrender.com/api/products/search?q=${encodeURIComponent(query)}`);
+    const response = await fetch(`https://beauty-ai-backend.onrender.com/api/products/search?q=${encodeURIComponent(query)}`, {
+      timeout: 15000, // 15s timeout
+    });
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      throw new Error(`HTTP error! Status: ${response.status} ${response.statusText}`);
     }
     const data = await response.json();
 
@@ -62,18 +73,17 @@ async function fetchProducts(query, containerId, statsId) {
       </div>
     `).join('');
 
-    statsElement.textContent = `${data.stats.productCount} Products • ${data.stats.brandCount} Brands • ${data.stats.countryCount} Countries`;
+    statsElement.textContent = `${data.stats?.productCount || 0} Products • ${data.stats?.brandCount || 0} Brands • ${data.stats?.countryCount || 0} Countries`;
   } catch (error) {
-    console.error(`Error fetching ${query} products:`, error);
-    container.innerHTML = `<p>Failed to load ${query} products. Please try again.</p>`;
-    statsElement.textContent = 'Error: undefined';
+    console.error(`Error fetching ${query} products:`, error.message);
+    container.innerHTML = `<p>Failed to load ${query} products. ${error.message.includes('503') ? 'Server is temporarily unavailable. Please try again later.' : 'Please try again.'}</p>`;
+    statsElement.textContent = `Error: ${error.message}`;
   }
 }
 
-// Initialize cart count and fetch products on page load
+// Initialize cart and fetch products
 document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
-  // Example: Fetch for specific pages
   if (document.getElementById('kbeauty-products')) {
     fetchProducts('k-beauty', 'kbeauty-products', 'kbeauty-stats');
   }
@@ -82,5 +92,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (document.getElementById('global-products')) {
     fetchProducts('global', 'global-products', 'global-stats');
+  }
+  if (document.getElementById('eyecare-products')) {
+    fetchProducts('eye care', 'eyecare-products', 'eyecare-stats');
+  }
+  if (document.getElementById('tanning-products')) {
+    fetchProducts('tanning', 'tanning-products', 'tanning-stats');
+  }
+  if (document.getElementById('eyelashes-products')) {
+    fetchProducts('eyelashes', 'eyelashes-products', 'eyelashes-stats');
+  }
+  if (document.getElementById('lipproducts-products')) {
+    fetchProducts('lip products', 'lipproducts-products', 'lipproducts-stats');
   }
 });
