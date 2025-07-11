@@ -55,7 +55,6 @@
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       text-align: center;
-      cursor: pointer;
     }
     .product h2 {
       font-size: 0.9rem;
@@ -66,57 +65,17 @@
       color: #666;
       margin: 0;
     }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 90%;
-      max-height: 80%;
-      overflow-y: auto;
-      text-align: center;
-    }
-    .modal-content h2 {
-      font-size: 1.2rem;
-      margin: 0 0 10px;
-    }
-    .modal-content p {
-      font-size: 0.9rem;
-      color: #333;
-      margin: 5px 0;
-    }
-    .modal-content button {
-      font-size: 0.9rem;
-      padding: 8px 16px;
-      margin: 5px;
+    .product button {
+      font-size: 0.7rem;
+      padding: 5px;
+      background: #6200ea;
+      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-    .modal-content .add-to-cart {
-      background: #6200ea;
-      color: white;
-    }
-    .modal-content .add-to-cart:hover {
+    .product button:hover {
       background: #7f39fb;
-    }
-    .modal-content .go-back {
-      background: #ccc;
-      color: #333;
-    }
-    .modal-content .go-back:hover {
-      background: #aaa;
     }
     .nav {
       position: fixed;
@@ -164,9 +123,6 @@
       .logo {
         font-size: 1.5rem;
       }
-      .modal-content {
-        max-width: 500px;
-      }
     }
   </style>
 </head>
@@ -183,57 +139,25 @@
     <p>✅ Loading eye care products from live backend...</p>
   </div>
   <div class="products" id="products"></div>
-  <div class="modal" id="productModal">
-    <div class="modal-content">
-      <h2 id="modalName"></h2>
-      <p id="modalBrand"></p>
-      <p id="modalPrice"></p>
-      <p id="modalDescription"></p>
-      <p id="modalCountry"></p>
-      <button class="add-to-cart" onclick="addToCartFromModal()">Add to Cart</button>
-      <button class="go-back" onclick="closeModal()">Go Back</button>
-    </div>
-  </div>
   <nav class="nav">
     <a href="/index.html"><span class="icon">🏠</span>Home</a>
     <a href="/catalog.html"><span class="icon">🌍</span>Catalog</a>
-    <a href="/tanning.html"><span class="icon">☀️</span>Tanning</a>
-    <a href="/eyelashes.html"><span class="icon">👀</span>Eyelashes</a>
-    <a href="/lipproducts.html"><span class="icon">💋</span>Lip Products</a>
     <a href="/signin.html"><span class="icon">🔑</span>Sign In</a>
+    <a href="/signup.html"><span class="icon">👤</span>Create Account</a>
   </nav>
 
   <script>
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    let selectedProduct = null;
 
     function updateCartCount() {
       document.getElementById('cartCount').textContent = cart.length;
     }
 
-    function addToCartFromModal() {
-      if (selectedProduct) {
-        cart.push(selectedProduct);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
-        alert(`${selectedProduct.name} added to cart!`);
-        closeModal();
-      }
-    }
-
-    function openModal(product) {
-      selectedProduct = product;
-      document.getElementById('modalName').textContent = product.name;
-      document.getElementById('modalBrand').textContent = `Brand: ${product.brand}`;
-      document.getElementById('modalPrice').textContent = `Price: $${Number(product.price).toFixed(2)}`;
-      document.getElementById('modalDescription').textContent = product.description;
-      document.getElementById('modalCountry').textContent = `Country: ${product.country}`;
-      document.getElementById('productModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('productModal').style.display = 'none';
-      selectedProduct = null;
+    function addToCart(product) {
+      cart.push(product);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      alert(`${product.name} added to cart!`);
     }
 
     async function fetchProducts() {
@@ -247,19 +171,15 @@
           <p>${stats.productCount} Products • ${stats.brandCount} Brands • ${stats.countryCount} Countries</p>
         `;
         const productsDiv = document.getElementById('products');
-        productsDiv.innerHTML = '';
-        if (products.length === 0) {
-          statsDiv.innerHTML += '<p>No products found. Try a different search.</p>';
-          return;
-        }
         products.forEach(product => {
           const productDiv = document.createElement('div');
           productDiv.className = 'product';
           productDiv.innerHTML = `
             <h2>${product.name}</h2>
-            <p>${product.brand} - $${Number(product.price).toFixed(2)}</p>
+            <p>${product.brand} - $${product.price.toFixed(2)}</p>
+            <p>${product.description}</p>
+            <button onclick='addToCart(${JSON.stringify(product)})'>Add to Cart</button>
           `;
-          productDiv.onclick = () => openModal(product);
           productsDiv.appendChild(productDiv);
         });
       } catch (error) {
