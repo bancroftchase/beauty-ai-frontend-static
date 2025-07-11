@@ -45,7 +45,9 @@ async function fetchProducts(query, containerId, statsId) {
   statsElement.textContent = 'Loading...';
 
   try {
-    const response = await fetch(`https://beauty-ai-backend.onrender.com/api/products/search?q=${encodeURIComponent(query)}`);
+    const response = await fetch(`https://beauty-ai-backend.onrender.com/api/products/search?q=${encodeURIComponent(query)}`, {
+      timeout: 15000, // 15s timeout
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status} ${response.statusText}`);
     }
@@ -74,7 +76,7 @@ async function fetchProducts(query, containerId, statsId) {
     statsElement.textContent = `${data.stats?.productCount || 0} Products • ${data.stats?.brandCount || 0} Brands • ${data.stats?.countryCount || 0} Countries`;
   } catch (error) {
     console.error(`Error fetching ${query} products:`, error.message);
-    container.innerHTML = `<p>Failed to load ${query} products. Please try again.</p>`;
+    container.innerHTML = `<p>Failed to load ${query} products. ${error.message.includes('503') ? 'Server is temporarily unavailable. Please try again later.' : 'Please try again.'}</p>`;
     statsElement.textContent = `Error: ${error.message}`;
   }
 }
