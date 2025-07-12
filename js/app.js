@@ -63,20 +63,13 @@ async function fetchProducts(query, containerId, statsId) {
   }
   container.innerHTML = '<p>Loading products...</p>';
   statsElement.textContent = '';
-
   try {
     const response = await fetch(`https://beauty-ai-backend.onrender.com/api/products/search?q=${encodeURIComponent(query)}`, {
       timeout: 15000,
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
     const data = await response.json();
-
-    if (!data.success || !Array.isArray(data.products)) {
-      throw new Error('Invalid product data');
-    }
-
+    if (!data.success || !Array.isArray(data.products)) throw new Error('Invalid product data');
     container.innerHTML = data.products.length > 0 ?
       data.products.map(product => `
         <div class="product-card">
@@ -89,7 +82,6 @@ async function fetchProducts(query, containerId, statsId) {
         </div>
       `).join('') :
       `<p>No ${query} products available at this time.</p>`;
-
     statsElement.textContent = `${data.stats?.productCount || 0} Products • ${data.stats?.brandCount || 0} Brands • ${data.stats?.countryCount || 0} Countries`;
   } catch (error) {
     console.error(`Failed to load ${query} products: ${error.message}`);
@@ -141,10 +133,8 @@ async function sendMessage() {
   const chatInput = document.getElementById('chatInput');
   const message = chatInput?.value.trim();
   if (!message) return;
-
   addMessage(`You: ${message}`);
   chatInput.value = '';
-
   try {
     const response = await fetch('https://beauty-ai-backend.onrender.com/api/chat/claude', {
       method: 'POST',
@@ -183,7 +173,6 @@ function displaySavedProducts() {
   statsElement.textContent = `${cart.length} Products`;
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
   if (document.getElementById('chatInput')) {
