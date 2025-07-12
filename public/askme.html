@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Luminous AI - Ask Me</title>
+  <title>✨ Beauty Chat</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="/favicon.ico">
 </head>
 <body>
-  <header>
-    <h1>Luminous AI</h1>
+  <div class="header">
     <nav>
       <a href="/index.html">Home</a>
       <a href="/eyecare.html">Eye Care</a>
@@ -17,17 +17,30 @@
       <a href="/lipproducts.html">Lip Products</a>
       <a href="/globalbeauty.html">Global Beauty</a>
       <a href="/askme.html">Ask Me</a>
-      <a href="/cart.html">Cart (<span id="cartCount">0</span>)</a>
+      <a href="/viralsocial.html">Viral Social</a>
+      <span class="cart">🛒 <span id="cartCount">0</span></span>
     </nav>
-  </header>
-  <main>
-    <section>
-      <h2>Ask Me About Beauty Products</h2>
-      <input type="text" id="searchQuery" placeholder="Search for products (e.g., k-beauty, anti-aging)">
-      <button onclick="searchProducts()">Search</button>
-      <p id="search-stats">Enter a query to see results</p>
-      <div id="search-products"></div>
-    </section>
+  </div>
+  <h1>✨ Ask Me About Beauty Products</h1>
+  <div class="chat-container">
+    <p>Enter a query to see results</p>
+    <div class="topics">
+      <button class="topic-btn" onclick="setTopic('Global Beauty')">🌍 Global Beauty</button>
+      <button class="topic-btn" onclick="setTopic('K-Beauty')">🌸 K-Beauty</button>
+      <button class="topic-btn" onclick="setTopic('Amazon Finds')">🛒 Amazon Finds</button>
+      <button class="topic-btn" onclick="setTopic('Natural Beauty')">🌿 Natural Beauty</button>
+      <button class="topic-btn" onclick="setTopic('Luxury Skincare')">💎 Luxury Skincare</button>
+    </div>
+    <div class="chat-output" id="chatOutput">
+      <p>Hi! I'm your Beauty AI assistant ✨</p>
+    </div>
+    <button onclick="clearChat()">🔄 New Chat</button>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Ask about beauty products (e.g., k-beauty, eye care)">
+      <button onclick="sendMessage()">▶</button>
+    </div>
+    <div id="search-products"></div>
+    <p id="search-stats"></p>
     <div id="productModal" class="modal">
       <div class="modal-content">
         <span class="close" onclick="closeModal()">×</span>
@@ -37,18 +50,11 @@
         <p id="modalDescription"></p>
         <p id="modalCountry"></p>
         <button onclick="addToCartFromModal()">Add to Cart</button>
+        <button onclick="openProductPage()">View Product</button>
         <button onclick="closeModal()">Go Back</button>
       </div>
     </div>
-  </main>
-  <script>
-    function searchProducts() {
-      const query = document.getElementById('searchQuery').value.trim();
-      if (query) {
-        fetchProducts(query, 'search-products', 'search-stats');
-      }
-    }
-  </script>
+  </div>
   <script src="/js/app.js"></script>
 </body>
 </html>
