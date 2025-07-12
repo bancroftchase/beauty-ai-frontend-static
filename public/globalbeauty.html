@@ -3,50 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Luminous AI - Global Beauty</title>
+  <title>🌍 Global Beauty Catalog</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="/favicon.ico">
 </head>
 <body>
-  <header>
-    <h1>Luminous AI</h1>
+  <div class="header">
     <nav>
-      <a href="/index.html">Home</a>
+      <a href="/index.html">🏠 Home</a>
       <a href="/eyecare.html">Eye Care</a>
       <a href="/tanning.html">Tanning</a>
       <a href="/eyelashes.html">Eyelashes</a>
       <a href="/lipproducts.html">Lip Products</a>
-      <a href="/cart.html">Cart (<span id="cartCount">0</span>)</a>
+      <a href="/globalbeauty.html">🌍 Products</a>
+      <a href="/askme.html">💬 Chat</a>
+      <a href="/viralsocial.html">Viral Social</a>
+      <a href="/saved.html">💖 Saved</a>
+      <span class="cart">🛒 <span id="cartCount">0</span></span>
+      <a href="#" onclick="alert('Translation feature coming soon!')">🌍 Translate</a>
     </nav>
-  </header>
-  <main>
-    <section>
-      <h2>K-Beauty Products</h2>
-      <p id="kbeauty-stats">Loading...</p>
-      <div id="kbeauty-products"></div>
-    </section>
-    <section>
-      <h2>Global Beauty Products Available</h2>
-      <p id="global-stats">Loading...</p>
-      <div id="global-products"></div>
-    </section>
-    <section>
-      <h2>Anti-Aging Products</h2>
-      <p id="antiaging-stats">Loading...</p>
-      <div id="antiaging-products"></div>
-    </section>
-    <div id="productModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2 id="modalName"></h2>
-        <p id="modalBrand"></p>
-        <p id="modalPrice"></p>
-        <p id="modalDescription"></p>
-        <p id="modalCountry"></p>
-        <button onclick="addToCartFromModal()">Add to Cart</button>
-        <button onclick="closeModal()">Go Back</button>
-      </div>
+  </div>
+  <h1>🌍 Global Beauty Catalog</h1>
+  <h2>Global Beauty Products</h2>
+  <div id="global-products"></div>
+  <p id="global-stats"></p>
+  <h2>✨ Anti-Aging Products</h2>
+  <div id="antiaging-products"></div>
+  <p id="antiaging-stats"></p>
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">×</span>
+      <h2 id="modalName"></h2>
+      <p id="modalBrand"></p>
+      <p id="modalPrice"></p>
+      <p id="modalDescription"></p>
+      <p id="modalCountry"></p>
+      <button onclick="addToCartFromModal()">Add to Cart</button>
+      <button onclick="openProductPage()">View Product</button>
+      <button onclick="closeModal()">Go Back</button>
     </div>
-  </main>
+  </div>
   <script src="/js/app.js"></script>
 </body>
 </html>
