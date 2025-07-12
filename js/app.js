@@ -26,7 +26,7 @@ function openProductPage() {
         <span class="close" onclick="this.parentElement.parentElement.remove()">×</span>
         <h2>${selectedProduct.name || 'Unknown Product'}</h2>
         <p>Brand: ${selectedProduct.brand || 'Unknown'}</p>
-        <p>Price: $${Number(selectedProduct.price || 0).toFixed(2)}</p>
+        <p>Price: $${selectedProduct.price || '0.00'}</p>
         <p>${selectedProduct.description || 'No description'}</p>
         <p>Country: ${selectedProduct.country || 'Unknown'}</p>
         <button onclick="addToCartFromModal()">Add to Cart</button>
@@ -42,7 +42,7 @@ function openModal(product) {
   if (!modal) return;
   document.getElementById('modalName').textContent = product.name || 'Unknown Product';
   document.getElementById('modalBrand').textContent = `Brand: ${product.brand || 'Unknown'}`;
-  document.getElementById('modalPrice').textContent = `Price: $${Number(product.price || 0).toFixed(2)}`;
+  document.getElementById('modalPrice').textContent = `Price: $${product.price || '0.00'}`;
   document.getElementById('modalDescription').textContent = product.description || 'No description';
   document.getElementById('modalCountry').textContent = `Country: ${product.country || 'Unknown'}`;
   modal.style.display = 'block';
@@ -61,7 +61,7 @@ async function fetchProducts(query, containerId, statsId) {
     console.error(`Container (${containerId}) or stats (${statsId}) not found`);
     return;
   }
-  container.innerHTML = '';
+  container.innerHTML = '<p>Loading products...</p>';
   statsElement.textContent = '';
 
   try {
@@ -82,10 +82,10 @@ async function fetchProducts(query, containerId, statsId) {
         <div class="product-card">
           <h3>${product.name || 'Unknown Product'}</h3>
           <p>Brand: ${product.brand || 'Unknown'}</p>
-          <p>Price: $${Number(product.price || 0).toFixed(2)}</p>
+          <p>Price: $${product.price || '0.00'}</p>
           <p>${product.description || 'No description'}</p>
-          <button onclick="openModal(${JSON.stringify(product)})">View Details</button>
-          <button onclick="addToCart(${JSON.stringify(product)})">Add to Cart</button>
+          <button onclick='openModal(${JSON.stringify(product)})'>View Details</button>
+          <button onclick='addToCart(${JSON.stringify(product)})'>Add to Cart</button>
         </div>
       `).join('') :
       `<p>No ${query} products available at this time.</p>`;
@@ -164,6 +164,25 @@ async function sendMessage() {
   }
 }
 
+function displaySavedProducts() {
+  const container = document.getElementById('saved-products');
+  const statsElement = document.getElementById('saved-stats');
+  if (!container || !statsElement) return;
+  container.innerHTML = cart.length > 0 ?
+    cart.map(product => `
+      <div class="product-card">
+        <h3>${product.name || 'Unknown Product'}</h3>
+        <p>Brand: ${product.brand || 'Unknown'}</p>
+        <p>Price: $${product.price || '0.00'}</p>
+        <p>${product.description || 'No description'}</p>
+        <button onclick='openModal(${JSON.stringify(product)})'>View Details</button>
+        <button onclick='addToCart(${JSON.stringify(product)})'>Add to Cart</button>
+      </div>
+    `).join('') :
+    '<p>No saved products yet.</p>';
+  statsElement.textContent = `${cart.length} Products`;
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
@@ -182,5 +201,9 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchProducts('anti-aging', 'antiaging-products', 'antiaging-stats');
   } else if (path.includes('viralsocial.html')) {
     fetchProducts('global', 'viralsocial-products', 'viralsocial-stats');
+  } else if (path.includes('askme.html')) {
+    fetchProducts('global', 'search-products', 'search-stats');
+  } else if (path.includes('saved.html')) {
+    displaySavedProducts();
   }
 });
