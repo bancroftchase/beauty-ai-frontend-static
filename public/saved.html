@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💖 Saved Products</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="/favicon.ico">
+</head>
+<body>
+  <div class="header">
+    <nav>
+      <a href="/index.html">🏠 Home</a>
+      <a href="/eyecare.html">Eye Care</a>
+      <a href="/tanning.html">Tanning</a>
+      <a href="/eyelashes.html">Eyelashes</a>
+      <a href="/lipproducts.html">Lip Products</a>
+      <a href="/globalbeauty.html">🌍 Products</a>
+      <a href="/askme.html">💬 Chat</a>
+      <a href="/viralsocial.html">Viral Social</a>
+      <a href="/saved.html">💖 Saved</a>
+      <span class="cart">🛒 <span id="cartCount">0</span></span>
+      <a href="#" onclick="alert('Translation feature coming soon!')">🌍 Translate</a>
+    </nav>
+  </div>
+  <h1>💖 Saved Products</h1>
+  <div id="saved-products"></div>
+  <p id="saved-stats"></p>
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">×</span>
+      <h2 id="modalName"></h2>
+      <p id="modalBrand"></p>
+      <p id="modalPrice"></p>
+      <p id="modalDescription"></p>
+      <p id="modalCountry"></p>
+      <button onclick="addToCartFromModal()">Add to Cart</button>
+      <button onclick="openProductPage()">View Product</button>
+      <button onclick="closeModal()">Go Back</button>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>
