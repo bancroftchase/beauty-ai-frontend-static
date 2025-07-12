@@ -66,7 +66,7 @@ async function fetchProducts(query, containerId, statsId) {
 
   try {
     const response = await fetch(`https://beauty-ai-backend.onrender.com/api/products/search?q=${encodeURIComponent(query)}`, {
-      timeout: 10000,
+      timeout: 15000,
     });
     if (!response.ok) {
       throw new Error(`HTTP error: ${response.status}`);
@@ -150,7 +150,7 @@ async function sendMessage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message, context: currentTopic || 'beauty consultation' }),
-      timeout: 10000,
+      timeout: 15000,
     });
     const data = await response.json();
     if (data.success) {
