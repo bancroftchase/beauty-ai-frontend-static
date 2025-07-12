@@ -205,5 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchProducts('global', 'search-products', 'search-stats');
   } else if (path.includes('saved.html')) {
     displaySavedProducts();
+  } else if (path.includes('index.html') || path === '/' || path === '') {
+    fetchProducts('global', 'global-products', 'global-stats');
   }
 });
