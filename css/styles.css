@@ -5,40 +5,84 @@ body {
   padding: 20px;
   background-color: #f9f9f9;
 }
-.header {
+.header nav {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 10px;
 }
-.back-btn {
+.header a {
   text-decoration: none;
   color: #333;
-  font-size: 18px;
+  font-size: 16px;
 }
+.header a:hover { color: #6200ea; }
 .cart {
-  font-size: 24px;
+  font-size: 20px;
 }
-h2 {
-  margin-top: 20px;
+.chat-container {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+.chat-output {
+  min-height: 200px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 20px;
+  overflow-y: auto;
+}
+.chat-output p { margin: 5px 0; }
+.chat-output .user { color: #333; }
+.chat-output .bot { color: #6200ea; }
+.chat-output .system { color: #888; font-style: italic; }
+.chat-output .error { color: red; }
+.topics { margin-bottom: 20px; }
+.topic-btn {
+  background: #f0f0f0;
+  border: none;
+  padding: 8px 12px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.topic-btn:hover { background: #e0e0e0; }
+.chat-input {
+  display: flex;
+  gap: 10px;
+}
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+.chat-input button {
+  padding: 10px 20px;
+  background: #6200ea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.chat-input button:hover { background: #3700b3; }
 .product-card {
   border: 1px solid #ddd;
   padding: 10px;
   margin: 10px 0;
   border-radius: 5px;
+  background: #fff;
 }
 .product-card button {
   background: #6200ea;
   color: white;
   border: none;
   padding: 5px 10px;
+  margin: 5px;
   border-radius: 5px;
   cursor: pointer;
 }
-.product-card button:hover {
-  background: #3700b3;
-}
-.modal {
+.product-card button:hover { background: #3700b3; }
+.modal, .product-page {
   display: none;
   position: fixed;
   top: 0;
@@ -49,7 +93,7 @@ h2 {
   justify-content: center;
   align-items: center;
 }
-.modal-content {
+.modal-content, .product-page-content {
   background: white;
   padding: 20px;
   border-radius: 5px;
@@ -61,3 +105,4 @@ h2 {
   cursor: pointer;
   font-size: 20px;
 }
+.product-page { display: flex; }
