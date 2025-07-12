@@ -201,7 +201,22 @@
       <h1>✨ Anti-Aging Products</h1>
       <div style="font-size: 0.9rem; opacity: 0.9;">Frontend-powered instant search</div>
     </div>
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-number" id="productCount">0</div>
+        <div class="stat-label">Products</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="countryCount">0</div>
+        <div class="stat-label">Countries</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="brandCount">0</div>
+        <div class="stat-label">Brands</div>
+      </div>
+    </div>
     <div class="content">
+      <div class="status-message" id="statusMessage" style="display: none;"></div>
       <div class="filter-section">
         <div class="filter-title">Filter by Category</div>
         <div class="filter-buttons">
@@ -213,7 +228,6 @@
           <button class="filter-btn" onclick="filterByCategory('Eye Cream')">Eye Care</button>
         </div>
       </div>
-
       <div class="filter-section">
         <div class="filter-title">Filter by Country</div>
         <div class="filter-buttons">
@@ -225,54 +239,87 @@
           <button class="filter-btn" onclick="filterByCountry('Germany')">🇩🇪 German</button>
         </div>
       </div>
-
       <div id="results">
         <!-- Products will be loaded here -->
       </div>
     </div>
   </div>
-
   <script>
-    // 🌟 ANTI-AGING PRODUCT DATABASE
-    const ANTIAGING_PRODUCTS = [
-      // Serums
-      { id: 'as1', name: 'Retinol Anti-Aging Serum', brand: 'CeraVe', price: '$29.99', country: 'USA', category: 'Serum', description: 'Powerful retinol formula that reduces fine lines and wrinkles while improving skin texture and tone.', rating: 4.3, reviews: 1247 },
-      { id: 'as2', name: 'Vitamin C Brightening Serum', brand: 'The Ordinary', price: '$7.90', country: 'Canada', category: 'Serum', description: 'Antioxidant-rich vitamin C serum that brightens skin and protects against environmental damage.', rating: 4.1, reviews: 892 },
-      { id: 'as3', name: 'Time Revolution Night Repair Serum', brand: 'Missha', price: '$49.00', country: 'South Korea', category: 'Serum', description: 'Fermented yeast extract serum that works overnight to repair and rejuvenate aging skin.', rating: 4.5, reviews: 2156 },
-      { id: 'as4', name: 'Advanced Night Repair Serum', brand: 'Estée Lauder', price: '$98.00', country: 'USA', category: 'Serum', description: 'Iconic anti-aging serum that helps repair daily environmental damage while you sleep.', rating: 4.4, reviews: 3421 },
-      { id: 'as5', name: 'Hyaluronic Acid 2% + B5', brand: 'The Ordinary', price: '$9.90', country: 'Canada', category: 'Serum', description: 'Concentrated hyaluronic acid serum that provides deep hydration and plumps fine lines.', rating: 4.2, reviews: 1876 },
-      
-      // Moisturizers
-      { id: 'am1', name: 'Peptide Renewal Cream', brand: 'L\'Oréal', price: '$45.00', country: 'France', category: 'Moisturizer', description: 'Advanced peptide complex that stimulates collagen production for firmer, younger-looking skin.', rating: 4.2, reviews: 634 },
-      { id: 'am2', name: 'Regenerist Micro-Sculpting Cream', brand: 'Olay', price: '$24.99', country: 'USA', category: 'Moisturizer', description: 'Anti-aging moisturizer with amino-peptides and niacinamide for firmer, smoother skin.', rating: 4.0, reviews: 2341 },
-      { id: 'am3', name: 'Time Revolution Immortal Youth Moisturizer', brand: 'Missha', price: '$52.00', country: 'South Korea', category: 'Moisturizer', description: 'Luxury anti-aging moisturizer with fermented ingredients and peptides for youthful skin.', rating: 4.3, reviews: 876 },
-      { id: 'am4', name: 'Revitalift Anti-Wrinkle Cream', brand: 'L\'Oréal', price: '$19.99', country: 'France', category: 'Moisturizer', description: 'Pro-retinol and vitamin C cream that reduces wrinkles and improves skin firmness.', rating: 3.9, reviews: 1523 },
-      { id: 'am5', name: 'Resurfacing Retinol Serum', brand: 'CeraVe', price: '$32.99', country: 'USA', category: 'Moisturizer', description: 'Encapsulated retinol cream that smooths skin texture and minimizes pores.', rating: 4.1, reviews: 967 },
-      
-      // Treatments
-      { id: 'at1', name: 'Clinical Resurfacing Treatment', brand: 'Paula\'s Choice', price: '$55.00', country: 'USA', category: 'Treatment', description: 'Clinical-strength retinol treatment for advanced anti-aging and skin renewal.', rating: 4.4, reviews: 723 },
-      { id: 'at2', name: 'Redermic R Anti-Age Treatment', brand: 'La Roche-Posay', price: '$63.99', country: 'France', category: 'Treatment', description: 'Intensive retinol treatment for mature skin with visible signs of aging.', rating: 4.2, reviews: 541 },
-      { id: 'at3', name: 'Granactive Retinoid 2% Emulsion', brand: 'The Ordinary', price: '$12.90', country: 'Canada', category: 'Treatment', description: 'Next-generation retinoid treatment that provides anti-aging benefits with less irritation.', rating: 4.0, reviews: 1234 },
-      { id: 'at4', name: 'Bio-Performance Glow Revival Serum', brand: 'Shiseido', price: '$75.00', country: 'Japan', category: 'Treatment', description: 'Japanese bio-technology treatment that revitalizes skin for a youthful glow.', rating: 4.3, reviews: 432 },
-      { id: 'at5', name: 'Idealist Pore Minimizing Serum', brand: 'Estée Lauder', price: '$65.00', country: 'USA', category: 'Treatment', description: 'Advanced treatment serum that minimizes pores and refines skin texture.', rating: 4.1, reviews: 876 },
-      
-      // Masks
-      { id: 'mask1', name: 'Overnight Renewal Mask', brand: 'Origins', price: '$42.00', country: 'USA', category: 'Mask', description: 'Overnight mask with fruit acids and botanicals for smoother, more radiant skin.', rating: 4.2, reviews: 654 },
-      { id: 'mask2', name: 'Vital Perfection Overnight Firming Mask', brand: 'Shiseido', price: '$85.00', country: 'Japan', category: 'Mask', description: 'Luxury overnight mask that firms and lifts skin while providing intense hydration.', rating: 4.4, reviews: 321 },
-      { id: 'mask3', name: 'Honey Halo Ultra-Hydrating Mask', brand: 'Farmacy', price: '$56.00', country: 'USA', category: 'Mask', description: 'Clean beauty mask with manuka honey and ceramides for deep hydration and anti-aging.', rating: 4.3, reviews: 789 },
-      { id: 'mask4', name: 'Glow Recipe Watermelon Sleeping Mask', brand: 'Glow Recipe', price: '$45.00', country: 'USA', category: 'Mask', description: 'AHA and BHA overnight mask that gently exfoliates and hydrates for glowing skin.', rating: 4.1, reviews: 1456 },
-      { id: 'mask5', name: 'Snail Repair Intensive Mask', brand: 'COSRX', price: '$18.00', country: 'South Korea', category: 'Mask', description: 'K-beauty sheet mask with 96% snail mucin for intensive repair and hydration.', rating: 4.5, reviews: 2134 },
-      
-      // Eye Creams
-      { id: 'eye1', name: 'Advanced Night Repair Eye Cream', brand: 'Estée Lauder', price: '$68.00', country: 'USA', category: 'Eye Cream', description: 'Targeted eye cream that reduces dark circles, puffiness, and fine lines.', rating: 4.2, reviews: 1234 },
-      { id: 'eye2', name: 'Retinol Eye Cream', brand: 'Neutrogena', price: '$15.97', country: 'USA', category: 'Eye Cream', description: 'Gentle retinol eye cream that smooths fine lines around the delicate eye area.', rating: 3.9, reviews: 876 },
-      { id: 'eye3', name: 'Ginseng Eye Cream', brand: 'Beauty of Joseon', price: '$18.00', country: 'South Korea', category: 'Eye Cream', description: 'Traditional Korean ginseng eye cream that firms and brightens the eye area.', rating: 4.4, reviews: 543 },
-      { id: 'eye4', name: 'Ceramide Eye Cream', brand: 'CeraVe', price: '$14.99', country: 'USA', category: 'Eye Cream', description: 'Gentle eye cream with ceramides and hyaluronic acid for hydration without irritation.', rating: 4.0, reviews: 1876 },
-      { id: 'eye5', name: 'Ultra Lift Eye Cream', brand: 'Clarins', price: '$89.00', country: 'France', category: 'Eye Cream', description: 'Luxury French eye cream with plant extracts that lift and firm the eye contour.', rating: 4.3, reviews: 432 }
+    let filteredProducts = [];
+    let currentFilter = { category: 'all', country: 'all' };
+    const API_URL = 'https://beauty-ai-backend.onrender.com/api/products/search?q=anti-aging';
+    
+    // Fallback data for offline or failed fetch
+    const FALLBACK_PRODUCTS = [
+      { id: 'as1', name: 'Retinol Anti-Aging Serum', brand: 'CeraVe', price: '$29.99', country: 'USA', category: 'Serum', description: 'Powerful retinol formula that reduces fine lines and wrinkles.', rating: 4.3, reviews: 1247 },
+      { id: 'as2', name: 'Vitamin C Brightening Serum', brand: 'The Ordinary', price: '$7.90', country: 'Canada', category: 'Serum', description: 'Antioxidant-rich vitamin C serum that brightens skin.', rating: 4.1, reviews: 892 },
+      { id: 'am1', name: 'Peptide Renewal Cream', brand: 'L\'Oréal', price: '$45.00', country: 'France', category: 'Moisturizer', description: 'Advanced peptide complex for firmer skin.', rating: 4.2, reviews: 634 },
+      { id: 'mask1', name: 'Overnight Renewal Mask', brand: 'Origins', price: '$42.00', country: 'USA', category: 'Mask', description: 'Overnight mask for smoother skin.', rating: 4.2, reviews: 654 },
+      { id: 'eye1', name: 'Advanced Night Repair Eye Cream', brand: 'Estée Lauder', price: '$68.00', country: 'USA', category: 'Eye Cream', description: 'Reduces dark circles and puffiness.', rating: 4.2, reviews: 1234 }
     ];
 
-    let filteredProducts = [...ANTIAGING_PRODUCTS];
-    let currentFilter = { category: 'all', country: 'all' };
+    async function fetchProducts(attempt = 1, maxAttempts = 3) {
+      const statusMessage = document.getElementById('statusMessage');
+      statusMessage.style.display = 'none';
+      try {
+        statusMessage.textContent = 'Loading anti-aging products...';
+        statusMessage.style.background = '#e8f5e8';
+        statusMessage.style.color = '#2e7d32';
+        statusMessage.style.display = 'block';
+        const response = await fetch(API_URL, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          mode: 'cors',
+          credentials: 'omit'
+        });
+        if (!response.ok) {
+          const errorText = await response.text();
+          const corsError = response.status === 0 || errorText.includes('CORS');
+          throw new Error(`HTTP error! Status: ${response.status}, Response: ${errorText}, CORS Issue: ${corsError}`);
+        }
+        const data = await response.json();
+        if (!data.success || !data.products) {
+          throw new Error(`Invalid API response: ${JSON.stringify(data)}`);
+        }
+        filteredProducts = data.products.map(product => ({
+          ...product,
+          category: product.category === 'anti-aging' ? assignSubCategory(product.name) : product.category,
+          rating: product.rating || (3.5 + Math.random() * 1.5),
+          reviews: product.reviews || Math.floor(Math.random() * 2000) + 100
+        }));
+        console.log(`Fetched ${filteredProducts.length} anti-aging products on attempt ${attempt}`);
+        console.log('Response headers:', [...response.headers.entries()]);
+        applyFilters();
+        statusMessage.style.display = 'none';
+      } catch (error) {
+        console.error(`Fetch error on attempt ${attempt}: ${error.message}`);
+        if (error.message.includes('CORS')) {
+          statusMessage.textContent = 'Failed to load products due to CORS restrictions. Showing limited products.';
+        } else if (attempt < maxAttempts) {
+          console.log(`Retrying fetch... Attempt ${attempt + 1} of ${maxAttempts}`);
+          setTimeout(() => fetchProducts(attempt + 1, maxAttempts), 5000);
+          return;
+        } else {
+          console.error('All fetch attempts failed, using fallback data');
+          filteredProducts = FALLBACK_PRODUCTS;
+          statusMessage.textContent = 'Failed to load products from server. Showing limited products.';
+        }
+        statusMessage.style.background = '#ffebee';
+        statusMessage.style.color = '#c62828';
+        statusMessage.style.display = 'block';
+        applyFilters();
+      }
+    }
+
+    function assignSubCategory(productName) {
+      const name = productName.toLowerCase();
+      if (name.includes('serum')) return 'Serum';
+      if (name.includes('moisturizer') || (name.includes('cream') && !name.includes('eye'))) return 'Moisturizer';
+      if (name.includes('treatment')) return 'Treatment';
+      if (name.includes('mask')) return 'Mask';
+      if (name.includes('eye')) return 'Eye Cream';
+      return 'Serum'; // Default for anti-aging
+    }
 
     function displayProducts(products) {
       const container = document.getElementById('results');
@@ -287,11 +334,9 @@
         const div = document.createElement('div');
         div.className = 'product';
 
-        // Generate rating stars
         const rating = product.rating || (3.5 + Math.random() * 1.5);
         const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
-        
-        // Product badge
+
         let badge = '';
         if (product.country === 'South Korea') badge = 'K-BEAUTY';
         else if (parseFloat(product.price.replace('$', '')) > 50) badge = 'PREMIUM';
@@ -332,19 +377,20 @@
     }
 
     function updateFilterButtons(type, value) {
-      const buttons = document.querySelectorAll(`.filter-section:${type === 'category' ? 'nth-child(2)' : 'nth-child(3)'} .filter-btn`);
+      const buttons = document.querySelectorAll(`.filter-section:${type === 'category' ? 'first-of-type' : 'nth-of-type(2)'} .filter-btn`);
       buttons.forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      const activeBtn = Array.from(buttons).find(btn => btn.textContent.includes(value) || (value === 'all' && btn.textContent === 'All'));
+      if (activeBtn) activeBtn.classList.add('active');
     }
 
     function applyFilters() {
-      filteredProducts = ANTIAGING_PRODUCTS.filter(product => {
+      const filtered = filteredProducts.filter(product => {
         const categoryMatch = currentFilter.category === 'all' || product.category === currentFilter.category;
         const countryMatch = currentFilter.country === 'all' || product.country === currentFilter.country;
         return categoryMatch && countryMatch;
       });
       
-      displayProducts(filteredProducts);
+      displayProducts(filtered);
       updateStats();
     }
 
@@ -358,7 +404,7 @@
     }
 
     function addToCart(productId) {
-      const product = ANTIAGING_PRODUCTS.find(p => p.id === productId);
+      const product = filteredProducts.find(p => p.id === productId);
       if (!product) return;
 
       let cart = JSON.parse(localStorage.getItem('beautyCart')) || [];
@@ -372,7 +418,6 @@
       
       localStorage.setItem('beautyCart', JSON.stringify(cart));
       
-      // Show success notification
       showNotification(`Added ${product.name} to cart! 🛒`);
     }
 
@@ -396,8 +441,7 @@
     // Initialize
     window.addEventListener('load', function() {
       console.log('✨ Frontend Anti-aging page loaded!');
-      displayProducts(ANTIAGING_PRODUCTS);
-      updateStats();
+      fetchProducts();
     });
   </script>
 </body>
