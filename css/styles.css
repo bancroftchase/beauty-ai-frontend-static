@@ -1,92 +1,85 @@
 body {
-  font-family: Arial, sans-serif;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-}
-.header nav {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.header a {
-  text-decoration: none;
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
   color: #333;
-  font-size: 16px;
 }
-.header a:hover { color: #6200ea; }
-.cart {
-  font-size: 20px;
-}
-h1 { color: #6200ea; }
-.chat-container {
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px;
+
+.header {
+  background: linear-gradient(to right, #ff6f61, #ffb88c);
+  padding: 10px 20px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-.chat-output {
-  min-height: 200px;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-bottom: 20px;
-  overflow-y: auto;
-}
-.chat-output p { margin: 5px 0; }
-.chat-output .user { color: #333; }
-.chat-output .bot { color: #6200ea; }
-.chat-output .system { color: #888; font-style: italic; }
-.chat-output .error { color: red; }
-.topics { margin-bottom: 20px; }
-.topic-btn {
-  background: #f0f0f0;
-  border: none;
-  padding: 8px 12px;
-  margin: 5px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.topic-btn:hover { background: #e0e0e0; }
-.chat-input {
+
+nav {
   display: flex;
-  gap: 10px;
+  justify-content: center;
+  gap: 15px;
 }
-.chat-input input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-.chat-input button {
-  padding: 10px 20px;
-  background: #6200ea;
+
+nav a, nav .cart {
   color: white;
-  border: none;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 15px;
   border-radius: 5px;
-  cursor: pointer;
+  transition: background 0.3s;
 }
-.chat-input button:hover { background: #3700b3; }
-.product-card {
-  border: 1px solid #ddd;
-  padding: 15px;
+
+nav a:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+h1, h2 {
+  text-align: center;
+  color: #ff6f61;
+}
+
+p {
+  text-align: center;
   margin: 10px 0;
-  border-radius: 5px;
-  background: #fff;
-  transition: transform 0.2s;
 }
-.product-card:hover { transform: scale(1.02); }
+
+.product-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin: 10px auto;
+  padding: 15px;
+  max-width: 600px;
+  transition: transform 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-card h3 {
+  margin: 0 0 10px;
+  color: #333;
+}
+
+.product-card p {
+  margin: 5px 0;
+}
+
 .product-card button {
-  background: #6200ea;
+  background: #ff6f61;
   color: white;
   border: none;
-  padding: 8px 12px;
-  margin: 5px;
+  padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  margin: 5px;
+  transition: background 0.3s;
 }
-.product-card button:hover { background: #3700b3; }
-.modal, .product-page {
+
+.product-card button:hover {
+  background: #e55a50;
+}
+
+.modal {
   display: none;
   position: fixed;
   top: 0;
@@ -94,19 +87,89 @@ h1 { color: #6200ea; }
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
+  z-index: 1000;
 }
-.modal-content, .product-page-content {
+
+.modal-content {
   background: white;
+  margin: 10% auto;
   padding: 20px;
-  border-radius: 5px;
   max-width: 500px;
-  width: 90%;
+  border-radius: 10px;
+  position: relative;
 }
+
 .close {
-  float: right;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
   cursor: pointer;
-  font-size: 20px;
 }
-.product-page { display: flex; }
+
+.chat-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.topics {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.topic-btn {
+  background: #ffb88c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.topic-btn:hover {
+  background: #ff9f7a;
+}
+
+.chat-output {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chat-output p {
+  margin: 5px 0;
+}
+
+.chat-output .user { color: #ff6f61; }
+.chat-output .bot { color: #333; }
+.chat-output .system { color: #888; font-style: italic; }
+.chat-output .error { color: #e55a50; }
+
+.chat-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.chat-input button {
+  background: #ff6f61;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
