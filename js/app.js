@@ -61,7 +61,7 @@ async function fetchProducts(query, containerId, statsId) {
     console.error(`Container (${containerId}) or stats (${statsId}) not found`);
     return;
   }
-  container.innerHTML = `<p>Loading ${query} products...</p>`;
+  container.innerHTML = '';
   statsElement.textContent = '';
 
   try {
@@ -88,12 +88,12 @@ async function fetchProducts(query, containerId, statsId) {
           <button onclick="addToCart(${JSON.stringify(product)})">Add to Cart</button>
         </div>
       `).join('') :
-      `<p>No ${query} products found.</p>`;
+      `<p>No ${query} products available at this time.</p>`;
 
     statsElement.textContent = `${data.stats?.productCount || 0} Products • ${data.stats?.brandCount || 0} Brands • ${data.stats?.countryCount || 0} Countries`;
   } catch (error) {
     console.error(`Failed to load ${query} products: ${error.message}`);
-    container.innerHTML = `<p>Failed to load ${query} products. Please try again.</p>`;
+    container.innerHTML = `<p>Unable to load ${query} products. Please try again later.</p>`;
     statsElement.textContent = 'Error: Server unavailable';
   }
 }
@@ -180,5 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
   else if (path.includes('globalbeauty.html')) {
     fetchProducts('global', 'global-products', 'global-stats');
     fetchProducts('anti-aging', 'antiaging-products', 'antiaging-stats');
-  } else if (path.includes('viralsocial.html')) fetchProducts('global', 'viralsocial-products', 'viralsocial-stats');
+  } else if (path.includes('viralsocial.html')) {
+    fetchProducts('global', 'viralsocial-products', 'viralsocial-stats');
+  }
 });
