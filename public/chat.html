@@ -462,7 +462,7 @@
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <a href="/index.html" class="back-btn">← Back</a>
+      <a href="index.html" class="back-btn">← Back</a>
       <span class="cart">🛒 <span class="cart-count" id="basket-count">0</span></span>
     </div>
 
@@ -927,7 +927,7 @@
       searchProducts(query);
     }
 
-    // Navigation
+    // Navigation - Fixed for your current setup
     function goToPage(page) {
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       if (event && event.currentTarget) {
@@ -936,19 +936,23 @@
 
       switch(page) {
         case 'home':
-          window.location.href = '/index.html';
+          window.location.href = 'index.html';
           break;
         case 'signin':
-          window.location.href = '/signin.html';
+          // For now, show alert - replace with actual signin page when ready
+          alert('🔑 Sign In page coming soon!\n\nFor now, you can browse products as a guest.');
           break;
         case 'createaccount':
-          window.location.href = '/createaccount.html';
+          // For now, show alert - replace with actual page when ready
+          alert('👤 Create Account page coming soon!\n\nFor now, you can browse products as a guest.');
           break;
         case 'catalog':
-          // Already on catalog page
+          // Already on catalog page, just scroll to top
+          window.scrollTo(0, 0);
           break;
         case 'askme':
-          window.location.href = '/askme.html';
+          // For now, show alert - replace with actual page when ready
+          alert('💬 Ask Me chat page coming soon!\n\nFor now, you can search for products above.');
           break;
       }
     }
