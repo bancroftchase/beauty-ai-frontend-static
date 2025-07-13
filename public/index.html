@@ -528,23 +528,23 @@
 
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="goToPage('home')">
+            <div class="nav-item active" onclick="goToPage('home', event)">
                 <div class="nav-icon">🏠</div>
                 <div class="nav-label">Home</div>
             </div>
-            <div class="nav-item" onclick="goToPage('signin')">
+            <div class="nav-item" onclick="goToPage('signin', event)">
                 <div class="nav-icon">🔑</div>
                 <div class="nav-label">Sign In</div>
             </div>
-            <div class="nav-item" onclick="goToPage('createaccount')">
+            <div class="nav-item" onclick="goToPage('createaccount', event)">
                 <div class="nav-icon">👤</div>
                 <div class="nav-label">Create Account</div>
             </div>
-            <div class="nav-item" onclick="goToPage('catalog')">
+            <div class="nav-item" onclick="goToPage('catalog', event)">
                 <div class="nav-icon">🌍</div>
                 <div class="nav-label">Catalog</div>
             </div>
-            <div class="nav-item" onclick="goToPage('askme')">
+            <div class="nav-item" onclick="goToPage('askme', event)">
                 <div class="nav-icon">💬</div>
                 <div class="nav-label">Ask Me</div>
             </div>
@@ -560,81 +560,102 @@
             document.getElementById('basket-display').textContent = basketCount > 0 ? `${basketCount} items` : '0 items';
         }
 
-        // Chat functionality - Updated to use working backend
+        // Chat functionality - Fixed to prevent conflicts
         async function startChat() {
             const input = document.getElementById('aiInput');
             const query = input ? input.value.trim() : '';
 
-            if (!query) {
-                // If no query, go to general chat page
-                window.location.href = '/chat.html';
-                return;
-            }
+            // Add small delay to prevent conflicts
+            setTimeout(() => {
+                if (!query) {
+                    // If no query, go to general chat page
+                    window.location.href = 'chat.html';
+                    return;
+                }
 
-            // Go to chat page with the query
-            window.location.href = `/chat.html?query=${encodeURIComponent(query)}`;
+                // Go to chat page with the query
+                window.location.href = `chat.html?query=${encodeURIComponent(query)}`;
+            }, 100);
         }
 
-        // Feature navigation - Updated to use working product search
+        // Feature navigation - Fixed to prevent conflicts
         function openFeature(feature) {
-            switch(feature) {
-                case 'antiaging':
-                    window.location.href = '/chat.html?query=anti-aging';
-                    break;
-                case 'eyecare':
-                    window.location.href = '/chat.html?query=eye care';
-                    break;
-                case 'kbeauty':
-                    window.location.href = '/chat.html?query=k-beauty';
-                    break;
-                case 'tanning':
-                    window.location.href = '/chat.html?query=tanning';
-                    break;
-                case 'eyelashes':
-                    window.location.href = '/chat.html?query=eyelashes';
-                    break;
-                case 'global':
-                case 'catalog':
-                    window.location.href = '/chat.html?query=global';
-                    break;
-                case 'facial':
-                    showFacialAnalysisPrompt();
-                    break;
-                case 'analysis':
-                    window.location.href = '/account.html?tab=profile#skin-analysis';
-                    break;
-                case 'basket':
-                    showBasket();
-                    break;
-                default:
-                    startChat();
-            }
+            // Add small delay to prevent conflicts
+            setTimeout(() => {
+                switch(feature) {
+                    case 'antiaging':
+                        window.location.href = 'chat.html?query=anti-aging';
+                        break;
+                    case 'eyecare':
+                        window.location.href = 'chat.html?query=eye care';
+                        break;
+                    case 'kbeauty':
+                        window.location.href = 'chat.html?query=k-beauty';
+                        break;
+                    case 'tanning':
+                        window.location.href = 'chat.html?query=tanning';
+                        break;
+                    case 'eyelashes':
+                        window.location.href = 'chat.html?query=eyelashes';
+                        break;
+                    case 'global':
+                    case 'catalog':
+                        window.location.href = 'chat.html?query=global';
+                        break;
+                    case 'facial':
+                        showFacialAnalysisPrompt();
+                        break;
+                    case 'analysis':
+                        alert('✨ Skin Analysis coming soon!\n\nFor now, try searching for specific skin concerns in our product catalog.');
+                        break;
+                    case 'basket':
+                        showBasket();
+                        break;
+                    default:
+                        startChat();
+                }
+            }, 150);
         }
 
-        // Navigation
-        function goToPage(page) {
+        // Navigation - Fixed to prevent loops and conflicts
+        function goToPage(page, event) {
+            // Prevent default behavior and stop propagation
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            // Update active state
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             if (event && event.currentTarget) {
                 event.currentTarget.classList.add('active');
             }
 
-            switch(page) {
-                case 'home':
-                    window.location.href = '/index.html';
-                    break;
-                case 'signin':
-                    window.location.href = '/signin.html';
-                    break;
-                case 'createaccount':
-                    window.location.href = '/createaccount.html';
-                    break;
-                case 'catalog':
-                    window.location.href = '/chat.html?query=global';
-                    break;
-                case 'askme':
-                    window.location.href = '/chat.html';
-                    break;
-            }
+            // Add small delay to prevent rapid clicking
+            setTimeout(() => {
+                switch(page) {
+                    case 'home':
+                        if (window.location.pathname.includes('chat.html')) {
+                            window.location.href = 'index.html';
+                        } else {
+                            // Already on home page, scroll to top
+                            window.scrollTo(0, 0);
+                        }
+                        break;
+                    case 'signin':
+                        alert('🔑 Sign In page coming soon!\n\nFor now, you can browse products as a guest.');
+                        break;
+                    case 'createaccount':
+                        alert('👤 Create Account page coming soon!\n\nFor now, you can browse products as a guest.');
+                        break;
+                    case 'catalog':
+                        window.location.href = 'chat.html?query=global';
+                        break;
+                    case 'askme':
+                        window.location.href = 'chat.html';
+                        break;
+                }
+            }, 100);
         }
 
         // Basket functionality
