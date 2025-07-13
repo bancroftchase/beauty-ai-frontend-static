@@ -561,7 +561,7 @@
       statusElement.className = isError ? 'error' : 'status';
     }
 
-    // Search products using pagination (300 per page works perfectly)
+    // Search products using pagination with better error handling
     async function searchProducts(query, page = 1, loadMore = false) {
       const productList = document.getElementById('product-list');
       
@@ -584,15 +584,35 @@
         const proxyUrl = `${CORS_PROXY}${encodeURIComponent(searchUrl)}`;
         
         console.log('Search URL:', searchUrl);
+        console.log('Proxy URL:', proxyUrl);
         
         const response = await fetch(proxyUrl);
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        const data = await response.json();
-        console.log('Search response:', data);
+        // Check if response has content
+        const responseText = await response.text();
+        console.log('Response text length:', responseText.length);
+        console.log('Response text preview:', responseText.substring(0, 200));
+        
+        if (!responseText || responseText.trim() === '') {
+          throw new Error('Empty response from server');
+        }
+        
+        let data;
+        try {
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError);
+          console.error('Response text that failed to parse:', responseText);
+          throw new Error(`Invalid JSON response: ${parseError.message}`);
+        }
+        
+        console.log('Parsed data:', data);
         
         if (data.success && data.products && data.products.length > 0) {
           if (loadMore) {
@@ -639,6 +659,10 @@
           }
           
           setStatus(statusMsg);
+        } else if (data.success === false) {
+          // Server returned an error
+          const errorMsg = data.error || data.message || 'Unknown server error';
+          throw new Error(`Server error: ${errorMsg}`);
         } else {
           if (!loadMore) {
             productList.innerHTML = '<div class="error-message">No products found. Try terms like "skincare", "makeup", "k-beauty", or "anti-aging".</div>';
@@ -649,22 +673,37 @@
       } catch (error) {
         console.error('Search failed:', error);
         
-        if (error.message.includes('Content-Length')) {
-          if (!loadMore) {
-            productList.innerHTML = `
-              <div class="error-message">
-                ⚠️ Found too many products! The search returned so many results that it exceeded response limits.<br>
-                <strong>This is actually good news - your search found thousands of products!</strong><br>
-                <small>Try being more specific in your search terms.</small>
-              </div>
-            `;
-            setStatus('⚠️ Too many products found! Try more specific search terms.', true);
-          }
+        let errorMessage = '';
+        let userMessage = '';
+        
+        if (error.message.includes('JSON')) {
+          errorMessage = 'Invalid response format from server';
+          userMessage = 'Server returned invalid data. This might be a temporary issue.';
+        } else if (error.message.includes('Empty response')) {
+          errorMessage = 'Server returned empty response';
+          userMessage = 'Server didn\'t return any data. Please try again.';
+        } else if (error.message.includes('Content-Length')) {
+          errorMessage = 'Response too large';
+          userMessage = 'Found too many products! Try more specific search terms.';
+        } else if (error.message.includes('NetworkError') || error.message.includes('fetch')) {
+          errorMessage = 'Network connection failed';
+          userMessage = 'Connection failed. Please check your internet connection.';
         } else {
-          if (!loadMore) {
-            productList.innerHTML = `<div class="error-message">❌ Search failed: ${error.message}<br><small>Try different search terms or check your connection.</small></div>`;
-            setStatus(`❌ Search failed: ${error.message}`, true);
-          }
+          errorMessage = error.message;
+          userMessage = error.message;
+        }
+        
+        if (!loadMore) {
+          productList.innerHTML = `
+            <div class="error-message">
+              ❌ Search failed: ${userMessage}<br>
+              <small>Try different search terms or refresh the page.</small><br>
+              <button class="load-more-button" onclick="searchProducts('global')" style="margin-top: 15px;">
+                Try Global Search
+              </button>
+            </div>
+          `;
+          setStatus(`❌ ${errorMessage}`, true);
         }
       }
     }
@@ -818,10 +857,61 @@
       }, 3000);
     }
 
-    // Quick search
-    function quickSearch(query) {
-      document.getElementById('messageInput').value = query;
-      searchProducts(query);
+    // Fallback search without CORS proxy (for testing)
+    async function searchProductsDirect(query) {
+      const productList = document.getElementById('product-list');
+      
+      try {
+        setStatus('🔧 Trying direct connection...');
+        
+        const cleanQuery = (query || 'global').trim().toLowerCase();
+        const searchUrl = `${API_URL}/api/products/search?q=${encodeURIComponent(cleanQuery)}&page=1&limit=100`;
+        
+        console.log('Direct search URL:', searchUrl);
+        
+        const response = await fetch(searchUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'X-Request-ID': 'direct-' + Date.now()
+          }
+        });
+        
+        console.log('Direct response status:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`Direct connection failed: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Direct response data:', data);
+        
+        if (data.success && data.products && data.products.length > 0) {
+          currentProducts = data.products;
+          displayedProducts = 0;
+          productList.innerHTML = '';
+          renderProducts();
+          
+          setStatus(`✅ Direct connection success! Found ${data.products.length} products`);
+        } else {
+          throw new Error('No products found via direct connection');
+        }
+        
+      } catch (error) {
+        console.error('Direct search failed:', error);
+        setStatus('❌ Direct connection also failed. Server may be down.', true);
+        
+        productList.innerHTML = `
+          <div class="error-message">
+            ❌ Unable to connect to server<br>
+            <small>Both proxy and direct connections failed.</small><br>
+            <small>The server may be restarting or temporarily unavailable.</small><br>
+            <button class="load-more-button" onclick="location.reload()" style="margin-top: 15px;">
+              Refresh Page
+            </button>
+          </div>
+        `;
+      }
     }
 
     // Send message
@@ -872,16 +962,35 @@
     });
 
     // Initialize on page load
-    window.addEventListener('load', function() {
+    window.addEventListener('load', async function() {
       console.log('🚀 Beauty Products Search initialized');
-      setStatus('✅ Ready to search for beauty products!');
       
-      // Check for query parameter
-      const urlParams = new URLSearchParams(window.location.search);
-      const query = urlParams.get('query');
-      if (query) {
-        document.getElementById('messageInput').value = query;
-        searchProducts(query);
+      // Test server connection first
+      const serverOnline = await testConnection();
+      
+      if (!serverOnline) {
+        document.getElementById('product-list').innerHTML = `
+          <div class="error-message">
+            ⚠️ Server Connection Issue<br>
+            <small>Unable to connect to the beauty products server.</small><br>
+            <button class="load-more-button" onclick="testConnection()" style="margin-top: 15px;">
+              Test Connection
+            </button>
+            <button class="load-more-button" onclick="searchProductsDirect('global')" style="margin-top: 10px;">
+              Try Direct Search
+            </button>
+          </div>
+        `;
+      } else {
+        setStatus('✅ Ready to search for beauty products!');
+        
+        // Check for query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('query');
+        if (query) {
+          document.getElementById('messageInput').value = query;
+          searchProducts(query);
+        }
       }
     });
   </script>
