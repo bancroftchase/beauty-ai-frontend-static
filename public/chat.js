@@ -1,4 +1,5 @@
-// IMPORTANT: Update this URL to match your actual backend
+// CORS Proxy to bypass CORS issues
+const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
 const API_URL = 'https://beauty-ai-backend.onrender.com';
 
 let currentProducts = [];
@@ -17,63 +18,48 @@ function generateRequestId() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-// PRIMARY SEARCH FUNCTION - Uses GET /api/products/search
+// Primary function: Fetch products using GET /api/products/search with CORS proxy
 async function fetchProducts(query) {
     const productList = document.getElementById('product-list');
     
     // Show loading state
     if (productList) {
-        productList.innerHTML = '<div class="loading-message">🔍 Searching for products...</div>';
+        productList.innerHTML = '<p class="loading-message">🔍 Searching for products...</p>';
     }
     
     try {
         console.log(`Searching for: "${query}"`);
         
-        // Use GET method for /api/products/search
+        // Use CORS proxy to bypass CORS issues
         const searchUrl = `${API_URL}/api/products/search?q=${encodeURIComponent(query || 'global')}`;
-        console.log('GET Request to:', searchUrl);
+        const proxyUrl = `${CORS_PROXY}${encodeURIComponent(searchUrl)}`;
         
-        const response = await fetch(searchUrl, {
-            method: 'GET',
-            headers: { 
-                'X-Request-ID': generateRequestId(),
-                'Accept': 'application/json'
-            }
-        });
+        console.log('GET Request via proxy:', proxyUrl);
         
-        console.log('Response status:', response.status);
-        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+        const response = await fetch(proxyUrl);
         
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            const textResponse = await response.text();
-            console.error('Expected JSON but got:', contentType);
-            console.error('Response text:', textResponse);
-            throw new Error(`Expected JSON but got: ${contentType}`);
-        }
-        
         const data = await response.json();
         console.log('Search response:', data);
+        
+        if (!productList) {
+            console.error('Product list container not found');
+            return;
+        }
         
         if (data.success && data.products && data.products.length > 0) {
             currentProducts = data.products;
             displayedProducts = 0;
+            productList.innerHTML = '';
+            renderProducts();
+            toggleLoadMoreButton();
             
-            if (productList) {
-                productList.innerHTML = '';
-                renderProducts();
-                toggleLoadMoreButton();
-            }
-            
-            console.log(`✅ Loaded ${data.products.length} products`);
+            console.log(`✅ Loaded ${data.products.length} products from ${data.stats?.source || 'local'}`);
         } else {
-            if (productList) {
-                productList.innerHTML = '<div class="error-message">No products found. Try a different search term.</div>';
-            }
+            productList.innerHTML = '<p class="error-message">No products found for your search.</p>';
         }
         
     } catch (error) {
@@ -85,14 +71,17 @@ async function fetchProducts(query) {
     }
 }
 
-// FALLBACK FUNCTION - Uses POST /api/chat/claude
+// Fallback function: Use POST /api/chat/claude with CORS proxy
 async function fetchProductsWithChat(query) {
     const productList = document.getElementById('product-list');
     
     try {
         console.log(`Chat search for: "${query}"`);
         
-        // Use POST method for /api/chat/claude
+        // For POST requests, we need a different approach with CORS proxy
+        // Since most CORS proxies don't support POST, we'll try without proxy first
+        // and if that fails, show an error message about CORS
+        
         const chatUrl = `${API_URL}/api/chat/claude`;
         console.log('POST Request to:', chatUrl);
         
@@ -100,8 +89,7 @@ async function fetchProductsWithChat(query) {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'X-Request-ID': generateRequestId(),
-                'Accept': 'application/json'
+                'X-Request-ID': generateRequestId()
             },
             body: JSON.stringify({ 
                 message: query || 'global', 
@@ -109,38 +97,28 @@ async function fetchProductsWithChat(query) {
             })
         });
         
-        console.log('Chat response status:', response.status);
-        
         if (!response.ok) {
             throw new Error(`Chat API HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            const textResponse = await response.text();
-            console.error('Chat API - Expected JSON but got:', contentType);
-            console.error('Chat API - Response text:', textResponse);
-            throw new Error(`Chat API - Expected JSON but got: ${contentType}`);
         }
         
         const data = await response.json();
         console.log('Chat response:', data);
         
+        if (!productList) {
+            console.error('Product list container not found');
+            return;
+        }
+        
         if (data.success && data.products && data.products.length > 0) {
             currentProducts = data.products;
             displayedProducts = 0;
-            
-            if (productList) {
-                productList.innerHTML = '';
-                renderProducts();
-                toggleLoadMoreButton();
-            }
+            productList.innerHTML = '';
+            renderProducts();
+            toggleLoadMoreButton();
             
             console.log(`✅ Chat loaded ${data.products.length} products`);
         } else {
-            if (productList) {
-                productList.innerHTML = '<div class="error-message">❌ Unable to load products. Please try again later.</div>';
-            }
+            productList.innerHTML = '<p class="error-message">❌ Unable to load products. Please try again later.</p>';
         }
         
     } catch (error) {
@@ -149,12 +127,18 @@ async function fetchProductsWithChat(query) {
         if (productList) {
             productList.innerHTML = `
                 <div class="error-message">
-                    ❌ Error loading products: ${error.message}<br>
-                    <small>Check console for details</small>
+                    ❌ Unable to connect to server: ${error.message}<br>
+                    <small>This is likely a CORS issue. Please update your server CORS settings to include your domain.</small><br>
+                    <small>Temporary fix: Use the standalone search page which includes CORS proxy.</small>
                 </div>
             `;
         }
     }
+}
+
+// Alternative search function (keeping for compatibility)
+async function searchProducts(query) {
+    return fetchProducts(query);
 }
 
 // Render products as cards
@@ -217,7 +201,7 @@ function loadMoreProducts() {
     renderProducts();
 }
 
-// Add to basket
+// Add to basket with improved feedback
 function addToBasket(id, name, price) {
     try {
         const basket = JSON.parse(localStorage.getItem('basket') || '[]');
@@ -236,22 +220,25 @@ function addToBasket(id, name, price) {
         
         if (basketCountElement) {
             basketCountElement.textContent = basketCount;
+            // Add visual feedback
             basketCountElement.style.transform = 'scale(1.2)';
             setTimeout(() => {
                 basketCountElement.style.transform = 'scale(1)';
             }, 200);
         }
         
-        showNotification(`✅ Added ${name} to basket!`, 'success');
+        // Show success message
+        showNotification(`Added ${name} to basket!`, 'success');
         
     } catch (error) {
         console.error('Error adding to basket:', error);
-        showNotification('❌ Error adding item to basket', 'error');
+        showNotification('Error adding item to basket', 'error');
     }
 }
 
 // Show notification
 function showNotification(message, type = 'info') {
+    // Create notification element if it doesn't exist
     let notification = document.getElementById('notification');
     if (!notification) {
         notification = document.createElement('div');
@@ -261,7 +248,7 @@ function showNotification(message, type = 'info') {
             top: 20px;
             right: 20px;
             padding: 15px 20px;
-            border-radius: 8px;
+            border-radius: 5px;
             color: white;
             font-weight: bold;
             z-index: 1000;
@@ -272,41 +259,44 @@ function showNotification(message, type = 'info') {
         document.body.appendChild(notification);
     }
     
+    // Set styles based on type
     const colors = {
-        success: '#28a745',
-        error: '#dc3545',
-        info: '#007bff'
+        success: '#4CAF50',
+        error: '#f44336',
+        info: '#2196F3'
     };
     
     notification.style.backgroundColor = colors[type] || colors.info;
     notification.textContent = message;
     notification.style.opacity = '1';
     
+    // Hide after 3 seconds
     setTimeout(() => {
         notification.style.opacity = '0';
     }, 3000);
 }
 
-// Main message sending function
-function sendMessage() {
-    const messageInput = document.getElementById('messageInput');
-    const query = messageInput?.value?.trim() || 'global';
-    
-    console.log('Sending message:', query);
-    fetchProducts(query);
-}
-
-// Quick message function
+// Compatibility functions
 function sendQuickMessage(query) {
     const messageInput = document.getElementById('messageInput');
     if (messageInput) {
         messageInput.value = query;
+        sendMessage();
     }
-    console.log('Quick message:', query);
-    fetchProducts(query);
 }
 
-// Handle Enter key
+function sendMessage() {
+    const query = document.getElementById('messageInput')?.value?.trim() || 'global';
+    if (query) {
+        const productList = document.getElementById('product-list');
+        if (productList) {
+            productList.innerHTML = '<p class="loading-message">🔍 Searching for products...</p>';
+        }
+        
+        fetchProducts(query);
+    }
+}
+
 function handleKeyPress(event) {
     if (event.key === 'Enter') {
         event.preventDefault();
@@ -314,7 +304,6 @@ function handleKeyPress(event) {
     }
 }
 
-// Refresh chat
 function refreshChat() {
     const messageInput = document.getElementById('messageInput');
     const productList = document.getElementById('product-list');
@@ -330,11 +319,14 @@ function refreshChat() {
     fetchProducts('global');
 }
 
-// Check server health
+// Check server health using CORS proxy
 async function checkServerHealth() {
     try {
-        console.log('Checking server health...');
-        const response = await fetch(`${API_URL}/health`);
+        console.log('Checking server health via proxy...');
+        const healthUrl = `${API_URL}/health`;
+        const proxyUrl = `${CORS_PROXY}${encodeURIComponent(healthUrl)}`;
+        
+        const response = await fetch(proxyUrl);
         
         if (response.ok) {
             const data = await response.json();
@@ -352,18 +344,14 @@ async function checkServerHealth() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 Initializing beauty app...');
+    console.log('🚀 Beauty app initialized with CORS proxy support');
     console.log('API URL:', API_URL);
+    console.log('CORS Proxy:', CORS_PROXY);
     
     // Check server health
     const serverHealthy = await checkServerHealth();
     if (!serverHealthy) {
         console.warn('⚠️ Server may be down or unreachable');
-        const productList = document.getElementById('product-list');
-        if (productList) {
-            productList.innerHTML = '<div class="error-message">⚠️ Unable to connect to server. Please try again later.</div>';
-        }
-        return;
     }
     
     // Bind event listeners
