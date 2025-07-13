@@ -560,61 +560,55 @@
             document.getElementById('basket-display').textContent = basketCount > 0 ? `${basketCount} items` : '0 items';
         }
 
-        // Chat functionality - Fixed to prevent conflicts
+        // Chat functionality - Updated to go to chat page
         async function startChat() {
             const input = document.getElementById('aiInput');
             const query = input ? input.value.trim() : '';
 
-            // Add small delay to prevent conflicts
-            setTimeout(() => {
-                if (!query) {
-                    // If no query, go to general chat page
-                    window.location.href = 'chat.html';
-                    return;
-                }
+            if (!query) {
+                // If no query, go to general chat page
+                window.location.href = 'chat.html';
+                return;
+            }
 
-                // Go to chat page with the query
-                window.location.href = `chat.html?query=${encodeURIComponent(query)}`;
-            }, 100);
+            // Go to chat page with the query
+            window.location.href = `chat.html?query=${encodeURIComponent(query)}`;
         }
 
-        // Feature navigation - Fixed to prevent conflicts
+        // Feature navigation - Fixed for current setup
         function openFeature(feature) {
-            // Add small delay to prevent conflicts
-            setTimeout(() => {
-                switch(feature) {
-                    case 'antiaging':
-                        window.location.href = 'chat.html?query=anti-aging';
-                        break;
-                    case 'eyecare':
-                        window.location.href = 'chat.html?query=eye care';
-                        break;
-                    case 'kbeauty':
-                        window.location.href = 'chat.html?query=k-beauty';
-                        break;
-                    case 'tanning':
-                        window.location.href = 'chat.html?query=tanning';
-                        break;
-                    case 'eyelashes':
-                        window.location.href = 'chat.html?query=eyelashes';
-                        break;
-                    case 'global':
-                    case 'catalog':
-                        window.location.href = 'chat.html?query=global';
-                        break;
-                    case 'facial':
-                        showFacialAnalysisPrompt();
-                        break;
-                    case 'analysis':
-                        alert('✨ Skin Analysis coming soon!\n\nFor now, try searching for specific skin concerns in our product catalog.');
-                        break;
-                    case 'basket':
-                        showBasket();
-                        break;
-                    default:
-                        startChat();
-                }
-            }, 150);
+            switch(feature) {
+                case 'antiaging':
+                    window.location.href = 'chat.html?query=anti-aging';
+                    break;
+                case 'eyecare':
+                    window.location.href = 'chat.html?query=eye care';
+                    break;
+                case 'kbeauty':
+                    window.location.href = 'chat.html?query=k-beauty';
+                    break;
+                case 'tanning':
+                    window.location.href = 'chat.html?query=tanning';
+                    break;
+                case 'eyelashes':
+                    window.location.href = 'chat.html?query=eyelashes';
+                    break;
+                case 'global':
+                case 'catalog':
+                    window.location.href = 'chat.html?query=global';
+                    break;
+                case 'facial':
+                    showFacialAnalysisPrompt();
+                    break;
+                case 'analysis':
+                    alert('✨ Skin Analysis coming soon!\n\nFor now, try searching for specific skin concerns in our product catalog.');
+                    break;
+                case 'basket':
+                    showBasket();
+                    break;
+                default:
+                    startChat();
+            }
         }
 
         // Navigation - Fixed to prevent loops and conflicts
