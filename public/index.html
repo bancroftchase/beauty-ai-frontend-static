@@ -121,13 +121,13 @@
             debugElement.textContent = 'Debug cleared...\n';
         }
 
-        // Test pagination page 1
+        // Test pagination with small sizes
         async function testPaginationPage1() {
-            log('🔍 Testing pagination page 1...');
+            log('🔍 Testing pagination page 1 (300 products max)...');
             
             try {
-                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=1&limit=1000')}`;
-                log(`Request: Page 1, Limit 1000`);
+                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=1&limit=300')}`;
+                log(`Request: Page 1, Limit 300`);
                 
                 const response = await fetch(url);
                 
@@ -140,12 +140,16 @@
                 log(`✅ Page 1 SUCCESS: ${data.products?.length || 0} products`);
                 log(`📊 Pagination: ${data.pagination?.currentPage}/${data.pagination?.totalPages} pages`);
                 log(`📈 Total available: ${data.pagination?.totalProducts || 'unknown'}`);
+                log(`🌍 Sources: ${data.stats?.source || 'unknown'}`);
                 
                 addResult('✅ Page 1 Test - SUCCESS', {
                     productsReturned: data.products?.length || 0,
                     pagination: data.pagination,
                     stats: data.stats,
-                    status: 'Pagination working!'
+                    status: 'Smaller pagination working!',
+                    geminiCount: data.stats?.geminiCount || 0,
+                    rainforestCount: data.stats?.rainforestCount || 0,
+                    localCount: data.stats?.localCount || 0
                 }, 'success');
                 
             } catch (error) {
@@ -154,7 +158,7 @@
                 if (error.message.includes('Content-Length')) {
                     addResult('❌ Page 1 - Still Too Large', {
                         error: error.message,
-                        status: 'Need smaller limit or different approach'
+                        status: 'Need even smaller limit'
                     }, 'error');
                 } else {
                     addResult('❌ Page 1 - Other Error', {
@@ -166,20 +170,22 @@
 
         // Test pagination page 2
         async function testPaginationPage2() {
-            log('🔍 Testing pagination page 2...');
+            log('🔍 Testing pagination page 2 (300 products max)...');
             
             try {
-                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=2&limit=1000')}`;
-                log(`Request: Page 2, Limit 1000`);
+                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=2&limit=300')}`;
+                log(`Request: Page 2, Limit 300`);
                 
                 const response = await fetch(url);
                 const data = await response.json();
                 
                 log(`✅ Page 2 SUCCESS: ${data.products?.length || 0} products`);
+                log(`📊 Different products from page 1: ${data.products?.[0]?.name || 'unknown'}`);
                 
                 addResult('✅ Page 2 Test - SUCCESS', {
                     productsReturned: data.products?.length || 0,
                     pagination: data.pagination,
+                    firstProduct: data.products?.[0]?.name || 'none',
                     status: 'Multiple pages working!'
                 }, 'success');
                 
@@ -248,4 +254,3 @@
     </script>
 </body>
 </html>
- 
