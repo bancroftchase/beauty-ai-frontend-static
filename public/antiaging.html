@@ -120,6 +120,13 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ query: 'antiaging', limit: 100 })
         });
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          const errorText = await response.text();
+          throw new Error(`Expected JSON but got: ${contentType}\n${errorText.slice(0, 200)}`);
+        }
+
         const data = await response.json();
         if (data.success && Array.isArray(data.products)) {
           allProducts = data.products;
@@ -129,7 +136,7 @@
         }
       } catch (err) {
         console.error(err);
-        container.innerHTML = '<p class="error">Failed to load products.</p>';
+        container.innerHTML = '<p class="error">Failed to load products.<br>' + err.message + '</p>';
       }
     }
 
@@ -171,6 +178,7 @@
   </script>
 </body>
 </html>
+
 
 
 
