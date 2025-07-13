@@ -1,384 +1,189 @@
-// CORS Proxy to bypass CORS issues
-const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
-const API_URL = 'https://beauty-ai-backend.onrender.com';
-
-let currentProducts = [];
-let displayedProducts = 0;
-const productsPerPage = 50;
-
-// Initialize basket count
-let basketCount = parseInt(localStorage.getItem('basketCount') || '0');
-const basketCountElement = document.getElementById('basket-count');
-if (basketCountElement) {
-    basketCountElement.textContent = basketCount;
-}
-
-// Generate request ID for debugging
-function generateRequestId() {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
-
-// Primary function: Fetch products using GET /api/products/search with CORS proxy
-async function fetchProducts(query) {
-    const productList = document.getElementById('product-list');
-    
-    // Show loading state
-    if (productList) {
-        productList.innerHTML = '<p class="loading-message">🔍 Searching for products...</p>';
-    }
-    
-    try {
-        console.log(`Searching for: "${query}"`);
-        
-        // Use CORS proxy to bypass CORS issues
-        const searchUrl = `${API_URL}/api/products/search?q=${encodeURIComponent(query || 'global')}`;
-        const proxyUrl = `${CORS_PROXY}${encodeURIComponent(searchUrl)}`;
-        
-        console.log('GET Request via proxy:', proxyUrl);
-        
-        const response = await fetch(proxyUrl);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+// ======================
+// 1. CONFIGURATION & FALLBACK DATA
+// ======================
+const FALLBACK_PRODUCTS = {
+  regions: [
+    // Mexico
+    {
+      name: "Mexico",
+      products: [
+        {
+          id: "mx-1",
+          name: "Bolden Hydrating Facial Cleanser",
+          category: "Skincare",
+          description: "Gentle cleanser with aloe vera",
+          price: "150-250 MXN",
+          brand: "Bolden",
+          country: "Mexico",
+          image: "https://i.imgur.com/JQWp3RQ.png" // Placeholder
         }
-        
-        const data = await response.json();
-        console.log('Search response:', data);
-        
-        if (!productList) {
-            console.error('Product list container not found');
-            return;
+        // Add more Mexican products...
+      ]
+    },
+    // France (Paris)
+    {
+      name: "France",
+      products: [
+        {
+          id: "fr-1",
+          name: "La Roche-Posay Effaclar Cleanser",
+          category: "Skincare",
+          description: "Dermatologist-approved for acne-prone skin",
+          price: "€15-€25",
+          brand: "La Roche-Posay",
+          country: "France",
+          image: "https://i.imgur.com/fZy5Y0z.png"
         }
-        
-        if (data.success && data.products && data.products.length > 0) {
-            currentProducts = data.products;
-            displayedProducts = 0;
-            productList.innerHTML = '';
-            renderProducts();
-            toggleLoadMoreButton();
-            
-            console.log(`✅ Loaded ${data.products.length} products from ${data.stats?.source || 'local'}`);
-        } else {
-            productList.innerHTML = '<p class="error-message">No products found for your search.</p>';
+      ]
+    },
+    // Russia
+    {
+      name: "Russia",
+      products: [
+        {
+          id: "ru-1",
+          name: "Natura Siberica Hand Cream",
+          category: "Skincare",
+          description: "Organic Siberian herbs for dry skin",
+          price: "₽500-₽800",
+          brand: "Natura Siberica",
+          country: "Russia",
+          image: "https://i.imgur.com/vKb5F7t.png"
         }
-        
-    } catch (error) {
-        console.error('Search failed:', error);
-        
-        // Try fallback to chat endpoint
-        console.log('Trying fallback chat endpoint...');
-        await fetchProductsWithChat(query);
-    }
-}
-
-// Fallback function: Use POST /api/chat/claude with CORS proxy
-async function fetchProductsWithChat(query) {
-    const productList = document.getElementById('product-list');
-    
-    try {
-        console.log(`Chat search for: "${query}"`);
-        
-        // For POST requests, we need a different approach with CORS proxy
-        // Since most CORS proxies don't support POST, we'll try without proxy first
-        // and if that fails, show an error message about CORS
-        
-        const chatUrl = `${API_URL}/api/chat/claude`;
-        console.log('POST Request to:', chatUrl);
-        
-        const response = await fetch(chatUrl, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'X-Request-ID': generateRequestId()
-            },
-            body: JSON.stringify({ 
-                message: query || 'global', 
-                context: 'beauty products' 
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Chat API HTTP ${response.status}: ${response.statusText}`);
+      ]
+    },
+    // China
+    {
+      name: "China",
+      products: [
+        {
+          id: "cn-1",
+          name: "Florasis Blooming Rouge Lipstick",
+          category: "Makeup",
+          description: "Luxury Chinese makeup with intricate packaging",
+          price: "¥150-¥300",
+          brand: "Florasis",
+          country: "China",
+          image: "https://i.imgur.com/8R7Qn2E.png"
         }
-        
-        const data = await response.json();
-        console.log('Chat response:', data);
-        
-        if (!productList) {
-            console.error('Product list container not found');
-            return;
+      ]
+    },
+    // South America
+    {
+      name: "South America",
+      products: [
+        {
+          id: "sa-1",
+          name: "Natura Ekos Açaí Body Lotion",
+          category: "Skincare",
+          description: "Amazonian ingredients for hydration",
+          price: "R$40-R$70",
+          brand: "Natura",
+          country: "Brazil",
+          image: "https://i.imgur.com/3sTqW9L.png"
         }
-        
-        if (data.success && data.products && data.products.length > 0) {
-            currentProducts = data.products;
-            displayedProducts = 0;
-            productList.innerHTML = '';
-            renderProducts();
-            toggleLoadMoreButton();
-            
-            console.log(`✅ Chat loaded ${data.products.length} products`);
-        } else {
-            productList.innerHTML = '<p class="error-message">❌ Unable to load products. Please try again later.</p>';
+      ]
+    },
+    // Africa
+    {
+      name: "Africa",
+      products: [
+        {
+          id: "af-1",
+          name: "African Black Soap",
+          category: "Skincare",
+          description: "Traditional cleansing soap with shea butter",
+          price: "$5-$10",
+          brand: "Alaffia",
+          country: "Nigeria",
+          image: "https://i.imgur.com/L4j2BvP.png"
         }
-        
-    } catch (error) {
-        console.error('Chat API failed:', error);
-        
-        if (productList) {
-            productList.innerHTML = `
-                <div class="error-message">
-                    ❌ Unable to connect to server: ${error.message}<br>
-                    <small>This is likely a CORS issue. Please update your server CORS settings to include your domain.</small><br>
-                    <small>Temporary fix: Use the standalone search page which includes CORS proxy.</small>
-                </div>
-            `;
+      ]
+    },
+    // Germany
+    {
+      name: "Germany",
+      products: [
+        {
+          id: "de-1",
+          name: "Weleda Skin Food",
+          category: "Skincare",
+          description: "Cult-favorite hydrating cream",
+          price: "€12-€20",
+          brand: "Weleda",
+          country: "Germany",
+          image: "https://i.imgur.com/9ZqQY7h.png"
         }
+      ]
     }
+  ]
+};
+
+// ======================
+// 2. LAZY LOADING IMPLEMENTATION
+// ======================
+let isLoading = false;
+
+async function lazyLoadProducts() {
+  if (isLoading || displayedProducts >= currentProducts.length) return;
+  
+  isLoading = true;
+  document.querySelector('.load-more-button').textContent = "Loading...";
+  
+  // Simulate network delay (remove in production)
+  await new Promise(resolve => setTimeout(resolve, 800));
+  
+  renderProducts();
+  isLoading = false;
 }
 
-// Alternative search function (keeping for compatibility)
-async function searchProducts(query) {
-    return fetchProducts(query);
-}
-
-// Render products as cards
-function renderProducts() {
-    const productList = document.getElementById('product-list');
-    if (!productList) return;
-    
-    const nextBatch = currentProducts.slice(displayedProducts, displayedProducts + productsPerPage);
-    displayedProducts += nextBatch.length;
-
-    const html = nextBatch.map(product => {
-        const price = parseFloat(product.price) || 0;
-        const formattedPrice = price.toFixed(2);
-        
-        return `
-            <div class="product-card">
-                <div class="product-header">
-                    <h3 class="product-name">${escapeHtml(product.name)}</h3>
-                    <span class="product-category">${escapeHtml(product.category || 'Beauty')}</span>
-                </div>
-                <div class="product-details">
-                    <p class="product-brand">Brand: ${escapeHtml(product.brand)}</p>
-                    <p class="product-price">$${formattedPrice}</p>
-                    <p class="product-country">Origin: ${escapeHtml(product.country || 'Global')}</p>
-                </div>
-                <p class="product-description">${escapeHtml(product.description)}</p>
-                <button class="add-to-basket" onclick="addToBasket('${escapeHtml(product.id)}', '${escapeHtml(product.name)}', '${formattedPrice}')">
-                    Add to Basket
-                </button>
-            </div>
-        `;
-    }).join('');
-    
-    productList.innerHTML += html;
-    toggleLoadMoreButton();
-}
-
-// Escape HTML to prevent XSS
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text || '';
-    return div.innerHTML;
-}
-
-// Toggle Load More button
-function toggleLoadMoreButton() {
-    const loadMoreDiv = document.getElementById('load-more');
-    if (loadMoreDiv) {
-        if (currentProducts.length > displayedProducts) {
-            loadMoreDiv.innerHTML = '<button class="load-more-button" onclick="loadMoreProducts()">Load More Products</button>';
-            loadMoreDiv.style.display = 'block';
-        } else {
-            loadMoreDiv.style.display = 'none';
-        }
+// Intersection Observer for infinite scroll
+function initInfiniteScroll() {
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      lazyLoadProducts();
     }
+  }, { threshold: 0.1 });
+
+  const sentinel = document.createElement('div');
+  sentinel.className = 'scroll-sentinel';
+  document.getElementById('product-list').appendChild(sentinel);
+  observer.observe(sentinel);
 }
 
-// Load more products
-function loadMoreProducts() {
-    renderProducts();
+// ======================
+// 3. TYPEWRITER EFFECT (OPTIONAL)
+// ======================
+function typewriterEffect(element, text, speed = 30) {
+  let i = 0;
+  element.textContent = '';
+  const timer = setInterval(() => {
+    if (i < text.length) {
+      element.textContent += text.charAt(i);
+      i++;
+    } else {
+      clearInterval(timer);
+    }
+  }, speed);
 }
 
-// Add to basket with improved feedback
-function addToBasket(id, name, price) {
-    try {
-        const basket = JSON.parse(localStorage.getItem('basket') || '[]');
-        const newItem = { 
-            id, 
-            name, 
-            price: parseFloat(price),
-            addedAt: new Date().toISOString()
-        };
-        
-        basket.push(newItem);
-        localStorage.setItem('basket', JSON.stringify(basket));
-        
-        basketCount++;
-        localStorage.setItem('basketCount', basketCount);
-        
-        if (basketCountElement) {
-            basketCountElement.textContent = basketCount;
-            // Add visual feedback
-            basketCountElement.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                basketCountElement.style.transform = 'scale(1)';
-            }, 200);
-        }
-        
-        // Show success message
-        showNotification(`Added ${name} to basket!`, 'success');
-        
-    } catch (error) {
-        console.error('Error adding to basket:', error);
-        showNotification('Error adding item to basket', 'error');
-    }
+// Initialize on search
+function showSearchingMessage() {
+  const messageElement = document.getElementById('search-message');
+  if (messageElement) {
+    typewriterEffect(messageElement, "🔍 Searching for global beauty products...");
+  }
 }
 
-// Show notification
-function showNotification(message, type = 'info') {
-    // Create notification element if it doesn't exist
-    let notification = document.getElementById('notification');
-    if (!notification) {
-        notification = document.createElement('div');
-        notification.id = 'notification';
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 5px;
-            color: white;
-            font-weight: bold;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            max-width: 300px;
-        `;
-        document.body.appendChild(notification);
-    }
-    
-    // Set styles based on type
-    const colors = {
-        success: '#4CAF50',
-        error: '#f44336',
-        info: '#2196F3'
-    };
-    
-    notification.style.backgroundColor = colors[type] || colors.info;
-    notification.textContent = message;
-    notification.style.opacity = '1';
-    
-    // Hide after 3 seconds
-    setTimeout(() => {
-        notification.style.opacity = '0';
-    }, 3000);
+// ======================
+// 4. IMAGE HANDLING
+// ======================
+// Placeholder images are already included in FALLBACK_PRODUCTS
+// Use this for broken images:
+function handleImageError(img) {
+  img.src = "https://i.imgur.com/YJq5KP0.png"; // Generic placeholder
+  img.alt = "Product image not available";
 }
 
-// Compatibility functions
-function sendQuickMessage(query) {
-    const messageInput = document.getElementById('messageInput');
-    if (messageInput) {
-        messageInput.value = query;
-        sendMessage();
-    }
-}
-
-function sendMessage() {
-    const query = document.getElementById('messageInput')?.value?.trim() || 'global';
-    if (query) {
-        const productList = document.getElementById('product-list');
-        if (productList) {
-            productList.innerHTML = '<p class="loading-message">🔍 Searching for products...</p>';
-        }
-        
-        fetchProducts(query);
-    }
-}
-
-function handleKeyPress(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        sendMessage();
-    }
-}
-
-function refreshChat() {
-    const messageInput = document.getElementById('messageInput');
-    const productList = document.getElementById('product-list');
-    const loadMoreDiv = document.getElementById('load-more');
-    
-    if (messageInput) messageInput.value = '';
-    if (productList) productList.innerHTML = '';
-    if (loadMoreDiv) loadMoreDiv.style.display = 'none';
-    
-    currentProducts = [];
-    displayedProducts = 0;
-    
-    fetchProducts('global');
-}
-
-// Check server health using CORS proxy
-async function checkServerHealth() {
-    try {
-        console.log('Checking server health via proxy...');
-        const healthUrl = `${API_URL}/health`;
-        const proxyUrl = `${CORS_PROXY}${encodeURIComponent(healthUrl)}`;
-        
-        const response = await fetch(proxyUrl);
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('✅ Server is healthy:', data);
-            return true;
-        } else {
-            console.warn('⚠️ Server health check failed:', response.status);
-            return false;
-        }
-    } catch (error) {
-        console.error('❌ Server health check error:', error);
-        return false;
-    }
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 Beauty app initialized with CORS proxy support');
-    console.log('API URL:', API_URL);
-    console.log('CORS Proxy:', CORS_PROXY);
-    
-    // Check server health
-    const serverHealthy = await checkServerHealth();
-    if (!serverHealthy) {
-        console.warn('⚠️ Server may be down or unreachable');
-    }
-    
-    // Bind event listeners
-    const buttons = document.querySelectorAll('.quick-action-btn');
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            const query = button.textContent.trim();
-            sendQuickMessage(query);
-        });
-    });
-
-    const refreshButton = document.querySelector('.refresh-btn');
-    if (refreshButton) {
-        refreshButton.addEventListener('click', refreshChat);
-    }
-
-    const sendButton = document.querySelector('.send-btn');
-    if (sendButton) {
-        sendButton.addEventListener('click', sendMessage);
-    }
-
-    const messageInput = document.getElementById('messageInput');
-    if (messageInput) {
-        messageInput.addEventListener('keypress', handleKeyPress);
-    }
-
-    // Initial load
-    console.log('🔄 Loading initial products...');
-    fetchProducts('global');
-});
+// Update renderProducts() to include error handling:
+// `<img src="${product.image}" onerror="handleImageError(this)">`
