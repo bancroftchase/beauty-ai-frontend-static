@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔍 Debug: Find the 200 Limit</title>
+    <title>🔍 Test Pagination</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,53 +43,55 @@
             font-family: monospace;
             font-size: 12px;
             white-space: pre-wrap;
-            max-height: 500px;
+            max-height: 300px;
             overflow-y: auto;
             border: 1px solid #ddd;
-            margin: 10px 0;
-        }
-        
-        .result {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            margin: 10px 0;
-            border-left: 4px solid #007bff;
         }
         
         .success {
-            border-left-color: #28a745;
             background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
         }
         
         .error {
-            border-left-color: #dc3545;
             background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <h1>🔍 Debug: Find the 200 Product Limit</h1>
+    <h1>🔍 Test Pagination - Fix Size Limits</h1>
     
     <div class="container">
-        <h2>🔧 Debug Tests</h2>
-        <p>These tests will help us find where the 200-product limit is coming from.</p>
+        <h2>🧪 Pagination Tests</h2>
+        <p>These tests check if pagination fixes the "Content-Length exceeds response Body" error.</p>
         
-        <button onclick="testApiKeys()">1. Check API Keys</button>
-        <button onclick="testAllProducts()">2. Test All Products</button>
-        <button onclick="testDebugSearch()">3. Debug Search Logic</button>
-        <button onclick="testRegularSearch()">4. Test Regular Search</button>
-        <button onclick="clearResults()">Clear Results</button>
+        <button onclick="testPaginationPage1()">Test Page 1 (1000 products)</button>
+        <button onclick="testPaginationPage2()">Test Page 2 (next 1000)</button>
+        <button onclick="testSmallLimit()">Test Small Limit (100 products)</button>
+        <button onclick="testApiKeys()">Check API Keys</button>
+        <button onclick="clearResults()">Clear</button>
     </div>
     
-    <div class="container">
-        <h2>📊 Results</h2>
-        <div id="results"></div>
-    </div>
+    <div id="results"></div>
     
     <div class="container">
-        <h2>🐛 Debug Log</h2>
-        <div id="debug" class="debug">Debug information will appear here...\n</div>
+        <h3>Debug Log</h3>
+        <div id="debug" class="debug">Ready to test pagination...\n</div>
     </div>
 
     <script>
@@ -99,17 +101,18 @@
         const debugElement = document.getElementById('debug');
         const resultsElement = document.getElementById('results');
         
-        function log(message, type = 'info') {
-            const timestamp = new Date().toLocaleTimeString();
-            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : '💬';
-            debugElement.textContent += `${timestamp} ${prefix} ${message}\n`;
+        function log(message) {
+            debugElement.textContent += `${new Date().toLocaleTimeString()} ${message}\n`;
             debugElement.scrollTop = debugElement.scrollHeight;
         }
 
         function addResult(title, data, type = 'info') {
             const div = document.createElement('div');
-            div.className = `result ${type}`;
-            div.innerHTML = `<h3>${title}</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            div.className = `container ${type}`;
+            div.innerHTML = `
+                <h3>${title}</h3>
+                <pre style="white-space: pre-wrap; font-size: 12px;">${JSON.stringify(data, null, 2)}</pre>
+            `;
             resultsElement.appendChild(div);
         }
 
@@ -118,146 +121,129 @@
             debugElement.textContent = 'Debug cleared...\n';
         }
 
-        // Test 1: Check if API keys are working
+        // Test pagination page 1
+        async function testPaginationPage1() {
+            log('🔍 Testing pagination page 1...');
+            
+            try {
+                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=1&limit=1000')}`;
+                log(`Request: Page 1, Limit 1000`);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                log(`✅ Page 1 SUCCESS: ${data.products?.length || 0} products`);
+                log(`📊 Pagination: ${data.pagination?.currentPage}/${data.pagination?.totalPages} pages`);
+                log(`📈 Total available: ${data.pagination?.totalProducts || 'unknown'}`);
+                
+                addResult('✅ Page 1 Test - SUCCESS', {
+                    productsReturned: data.products?.length || 0,
+                    pagination: data.pagination,
+                    stats: data.stats,
+                    status: 'Pagination working!'
+                }, 'success');
+                
+            } catch (error) {
+                log(`❌ Page 1 failed: ${error.message}`);
+                
+                if (error.message.includes('Content-Length')) {
+                    addResult('❌ Page 1 - Still Too Large', {
+                        error: error.message,
+                        status: 'Need smaller limit or different approach'
+                    }, 'error');
+                } else {
+                    addResult('❌ Page 1 - Other Error', {
+                        error: error.message
+                    }, 'error');
+                }
+            }
+        }
+
+        // Test pagination page 2
+        async function testPaginationPage2() {
+            log('🔍 Testing pagination page 2...');
+            
+            try {
+                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=2&limit=1000')}`;
+                log(`Request: Page 2, Limit 1000`);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                log(`✅ Page 2 SUCCESS: ${data.products?.length || 0} products`);
+                
+                addResult('✅ Page 2 Test - SUCCESS', {
+                    productsReturned: data.products?.length || 0,
+                    pagination: data.pagination,
+                    status: 'Multiple pages working!'
+                }, 'success');
+                
+            } catch (error) {
+                log(`❌ Page 2 failed: ${error.message}`);
+                addResult('❌ Page 2 Test', { error: error.message }, 'error');
+            }
+        }
+
+        // Test small limit
+        async function testSmallLimit() {
+            log('🔍 Testing small limit (100 products)...');
+            
+            try {
+                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=1&limit=100')}`;
+                log(`Request: Page 1, Limit 100`);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                log(`✅ Small limit SUCCESS: ${data.products?.length || 0} products`);
+                
+                addResult('✅ Small Limit Test - SUCCESS', {
+                    productsReturned: data.products?.length || 0,
+                    pagination: data.pagination,
+                    status: 'Small responses work fine!'
+                }, 'success');
+                
+            } catch (error) {
+                log(`❌ Small limit failed: ${error.message}`);
+                addResult('❌ Small Limit Test', { error: error.message }, 'error');
+            }
+        }
+
+        // Test API keys
         async function testApiKeys() {
-            log('Testing API key status...');
+            log('🔑 Testing API keys...');
             
             try {
                 const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/debug/keys')}`;
                 const response = await fetch(url);
                 const data = await response.json();
                 
-                log(`API Keys Status:`, 'success');
-                log(`- Rainforest: ${data.rainforestEnabled ? 'ENABLED' : 'DISABLED'} (${data.rainforestKeyLength} chars)`);
-                log(`- Claude: ${data.claudeEnabled ? 'ENABLED' : 'DISABLED'} (${data.claudeKeyLength} chars)`);
+                log(`🔑 API Keys: Rainforest=${data.rainforestEnabled}, Gemini=${data.geminiEnabled}`);
                 
-                addResult('🔑 API Keys Status', data, data.rainforestEnabled && data.claudeEnabled ? 'success' : 'error');
+                const keysWorking = data.rainforestEnabled || data.geminiEnabled;
+                
+                addResult(keysWorking ? '✅ API Keys - Some Working' : '❌ API Keys - All Disabled', {
+                    rainforestEnabled: data.rainforestEnabled,
+                    geminiEnabled: data.geminiEnabled,
+                    rainforestKeyLength: data.rainforestKeyLength,
+                    geminiKeyLength: data.geminiKeyLength,
+                    status: keysWorking ? 'At least one API key is working' : 'No API keys detected'
+                }, keysWorking ? 'success' : 'error');
                 
             } catch (error) {
-                log(`API Keys test failed: ${error.message}`, 'error');
-                addResult('🔑 API Keys Test', { error: error.message }, 'error');
+                log(`❌ API keys test failed: ${error.message}`);
+                addResult('❌ API Keys Test', { error: error.message }, 'error');
             }
         }
 
-        // Test 2: Get ALL products from database
-        async function testAllProducts() {
-            log('Testing ALL products endpoint...');
-            
-            try {
-                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/test/all-products')}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                log(`ALL Products Test:`, 'success');
-                log(`- Total products: ${data.totalProducts}`);
-                log(`- Products returned: ${data.products.length}`);
-                log(`- Categories: ${JSON.stringify(data.categories)}`);
-                
-                if (data.products.length === data.totalProducts) {
-                    log(`✅ SUCCESS: All products returned without limits!`, 'success');
-                    addResult('📊 All Products Test', {
-                        totalProducts: data.totalProducts,
-                        productsReturned: data.products.length,
-                        categories: data.categories,
-                        status: 'ALL PRODUCTS RETURNED - NO LIMITS'
-                    }, 'success');
-                } else {
-                    log(`❌ ISSUE: Only ${data.products.length} of ${data.totalProducts} returned`, 'error');
-                    addResult('📊 All Products Test', {
-                        totalProducts: data.totalProducts,
-                        productsReturned: data.products.length,
-                        status: 'LIMIT DETECTED!'
-                    }, 'error');
-                }
-                
-            } catch (error) {
-                log(`All products test failed: ${error.message}`, 'error');
-                addResult('📊 All Products Test', { error: error.message }, 'error');
-            }
-        }
-
-        // Test 3: Debug search logic
-        async function testDebugSearch() {
-            log('Testing debug search endpoint...');
-            
-            try {
-                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/debug/search?q=global')}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                log(`Debug Search Results:`, 'success');
-                log(`- Total in database: ${data.totalInDatabase}`);
-                log(`- Local products found: ${data.localProductsFound}`);
-                log(`- After deduplication: ${data.afterDeduplication}`);
-                log(`- Final count: ${data.finalCount}`);
-                log(`- Products returned: ${data.products.length}`);
-                
-                if (data.finalCount === data.products.length) {
-                    log(`✅ SUCCESS: Debug search returns all products!`, 'success');
-                } else {
-                    log(`❌ ISSUE: finalCount (${data.finalCount}) != products.length (${data.products.length})`, 'error');
-                }
-                
-                addResult('🔍 Debug Search Test', {
-                    totalInDatabase: data.totalInDatabase,
-                    localProductsFound: data.localProductsFound,
-                    afterDeduplication: data.afterDeduplication,
-                    finalCount: data.finalCount,
-                    productsReturned: data.products.length,
-                    breakdown: data.stats.breakdown
-                }, data.finalCount === data.products.length ? 'success' : 'error');
-                
-            } catch (error) {
-                log(`Debug search test failed: ${error.message}`, 'error');
-                addResult('🔍 Debug Search Test', { error: error.message }, 'error');
-            }
-        }
-
-        // Test 4: Regular search endpoint
-        async function testRegularSearch() {
-            log('Testing regular search endpoint...');
-            
-            try {
-                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global')}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                log(`Regular Search Results:`, 'success');
-                log(`- Success: ${data.success}`);
-                log(`- Products returned: ${data.products.length}`);
-                log(`- Source: ${data.stats.source}`);
-                log(`- Rainforest count: ${data.stats.rainforestCount || 0}`);
-                log(`- Claude count: ${data.stats.claudeCount || 0}`);
-                log(`- Local count: ${data.stats.localCount || 0}`);
-                
-                if (data.products.length === 200) {
-                    log(`❌ FOUND THE ISSUE: Regular search limited to exactly 200!`, 'error');
-                } else if (data.products.length > 1000) {
-                    log(`✅ SUCCESS: Regular search returns many products!`, 'success');
-                } else {
-                    log(`⚠️ WARNING: Regular search returns ${data.products.length} products`, 'error');
-                }
-                
-                addResult('🚀 Regular Search Test', {
-                    success: data.success,
-                    productsReturned: data.products.length,
-                    source: data.stats.source,
-                    rainforestCount: data.stats.rainforestCount || 0,
-                    claudeCount: data.stats.claudeCount || 0,
-                    localCount: data.stats.localCount || 0,
-                    status: data.products.length === 200 ? 'LIMIT DETECTED AT 200!' : 'No 200 limit'
-                }, data.products.length === 200 ? 'error' : 'success');
-                
-            } catch (error) {
-                log(`Regular search test failed: ${error.message}`, 'error');
-                addResult('🚀 Regular Search Test', { error: error.message }, 'error');
-            }
-        }
-
-        // Initialize
         window.addEventListener('load', function() {
-            log('🚀 Debug test page initialized');
-            log('Click the test buttons to find the 200-product limit issue');
+            log('🚀 Pagination test ready');
+            log('This will test if pagination fixes the response size issue');
         });
     </script>
 </body>
