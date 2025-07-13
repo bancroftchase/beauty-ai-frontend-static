@@ -479,7 +479,7 @@
           <button class="search-btn" onclick="sendMessage()">🚀</button>
         </div>
         
-        <div class="quick-categories">
+        <div class="quick-categories" id="quick-categories">
           <button class="category-btn" onclick="quickSearch('global')">🌍 Global</button>
           <button class="category-btn" onclick="quickSearch('k-beauty')">🌸 K-Beauty</button>
           <button class="category-btn" onclick="quickSearch('anti-aging')">⏰ Anti-Aging</button>
@@ -487,6 +487,7 @@
           <button class="category-btn" onclick="quickSearch('tanning')">☀️ Tanning</button>
           <button class="category-btn" onclick="quickSearch('eyelashes')">👁️‍🗨️ Eyelashes</button>
           <button class="category-btn" onclick="quickSearch('lip products')">💋 Lip Products</button>
+          <button class="category-btn" onclick="showAllCategories()">🔄 Show All Categories</button>
         </div>
       </div>
 
@@ -927,57 +928,31 @@
       searchProducts(query);
     }
 
-    // Navigation - Fixed to prevent conflicts and loops
+    // Navigation - Simple and clean
     function goToPage(page, event) {
-      // Prevent default behavior and stop propagation
       if (event) {
         event.preventDefault();
         event.stopPropagation();
       }
 
-      // Update active state
-      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      if (event && event.currentTarget) {
-        event.currentTarget.classList.add('active');
+      switch(page) {
+        case 'home':
+          window.location.assign('index.html');
+          break;
+        case 'signin':
+          showNotification('🔑 Sign In page coming soon! Browse as guest for now.');
+          break;
+        case 'createaccount':
+          showNotification('👤 Create Account page coming soon! Browse as guest for now.');
+          break;
+        case 'catalog':
+          // Already on catalog, show all categories
+          showAllCategories();
+          break;
+        case 'askme':
+          showAllCategories();
+          break;
       }
-
-      // Add small delay to prevent rapid clicking
-      setTimeout(() => {
-        switch(page) {
-          case 'home':
-            if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
-              // Already on home, just scroll to top
-              window.scrollTo(0, 0);
-            } else {
-              window.location.href = 'index.html';
-            }
-            break;
-          case 'signin':
-            showNotification('🔑 Sign In page coming soon! Browse as guest for now.');
-            break;
-          case 'createaccount':
-            showNotification('👤 Create Account page coming soon! Browse as guest for now.');
-            break;
-          case 'catalog':
-            if (window.location.pathname.includes('chat.html')) {
-              // Already on catalog page, scroll to top and refresh with global
-              window.scrollTo(0, 0);
-              document.getElementById('messageInput').value = 'global';
-              searchProducts('global');
-            } else {
-              window.location.href = 'chat.html?query=global';
-            }
-            break;
-          case 'askme':
-            if (window.location.pathname.includes('chat.html')) {
-              // Already on chat page, just scroll to top
-              window.scrollTo(0, 0);
-            } else {
-              window.location.href = 'chat.html';
-            }
-            break;
-        }
-      }, 100);
     }
 
     // Handle Enter key
@@ -988,35 +963,48 @@
       }
     });
 
-    // Initialize on page load
+    // Initialize on page load - Auto-search based on URL query
     window.addEventListener('load', async function() {
       console.log('🚀 Beauty Products Search initialized');
       
-      // Test server connection first
-      const serverOnline = await testConnection();
+      // Check for query parameter and auto-search immediately
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get('query');
       
-      if (!serverOnline) {
-        document.getElementById('product-list').innerHTML = `
-          <div class="error-message">
-            ⚠️ Server Connection Issue<br>
-            <small>Unable to connect to the beauty products server.</small><br>
-            <button class="load-more-button" onclick="testConnection()" style="margin-top: 15px;">
-              Test Connection
-            </button>
-            <button class="load-more-button" onclick="searchProductsDirect('global')" style="margin-top: 10px;">
-              Try Direct Search
-            </button>
-          </div>
-        `;
+      if (query) {
+        // User came from index page with specific search - show results immediately
+        console.log(`Auto-searching for: "${query}"`);
+        document.getElementById('messageInput').value = query;
+        
+        // Hide the quick categories since user already selected one
+        document.querySelector('.quick-categories').style.display = 'none';
+        
+        // Update page title to match search
+        document.querySelector('.search-title').textContent = `✨ ${query.charAt(0).toUpperCase() + query.slice(1)} Products`;
+        document.querySelector('.search-subtitle').textContent = `Discover products in ${query}`;
+        
+        // Start search immediately
+        await searchProducts(query);
       } else {
+        // User came directly to chat page - show search interface
         setStatus('✅ Ready to search for beauty products!');
         
-        // Check for query parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const query = urlParams.get('query');
-        if (query) {
-          document.getElementById('messageInput').value = query;
-          searchProducts(query);
+        // Test server connection
+        const serverOnline = await testConnection();
+        
+        if (!serverOnline) {
+          document.getElementById('product-list').innerHTML = `
+            <div class="error-message">
+              ⚠️ Server Connection Issue<br>
+              <small>Unable to connect to the beauty products server.</small><br>
+              <button class="load-more-button" onclick="testConnection()" style="margin-top: 15px;">
+                Test Connection
+              </button>
+              <button class="load-more-button" onclick="searchProductsDirect('global')" style="margin-top: 10px;">
+                Try Direct Search
+              </button>
+            </div>
+          `;
         }
       }
     });
