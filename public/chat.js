@@ -13,7 +13,51 @@ if (basketCountElement) {
 // Fetch products using the correct endpoint
 async function fetchProducts(query, context = 'beauty') {
     try {
-        // Use the chat endpoint for AI-powered search
+        // Use the products search endpoint with GET method
+        const response = await fetch(`${API_URL}/api/products/search?q=${encodeURIComponent(query)}`, {
+            method: 'GET',
+            headers: { 
+                'X-Request-ID': generateRequestId()
+            }
+        });
+        
+        if (!response.ok) {
+            // If products search fails, try the chat endpoint as fallback
+            return await fetchProductsWithChat(query, context);
+        }
+        
+        const data = await response.json();
+        const productList = document.getElementById('product-list');
+        
+        if (!productList) {
+            console.error('Product list container not found');
+            return;
+        }
+        
+        if (data.success && data.products && data.products.length > 0) {
+            currentProducts = data.products;
+            displayedProducts = 0;
+            productList.innerHTML = '';
+            renderProducts();
+            toggleLoadMoreButton();
+            
+            // Show stats if available
+            if (data.stats) {
+                console.log(`Found ${data.stats.productCount} products from ${data.stats.source}`);
+            }
+        } else {
+            productList.innerHTML = '<p class="error-message">No products found for your search.</p>';
+        }
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        // Try chat endpoint as fallback
+        return await fetchProductsWithChat(query, context);
+    }
+}
+
+// Alternative fetch using chat endpoint (for AI-powered search)
+async function fetchProductsWithChat(query, context = 'beauty') {
+    try {
         const response = await fetch(`${API_URL}/api/chat/claude`, {
             method: 'POST',
             headers: { 
@@ -50,7 +94,7 @@ async function fetchProducts(query, context = 'beauty') {
             productList.innerHTML = '<p class="error-message">No products found for your search.</p>';
         }
     } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error with chat endpoint:', error);
         const productList = document.getElementById('product-list');
         if (productList) {
             productList.innerHTML = '<p class="error-message">Error fetching products. Please check your connection and try again.</p>';
