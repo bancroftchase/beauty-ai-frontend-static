@@ -2,255 +2,770 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔍 Test Pagination</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Luminous AI - Your Radiant Beauty Companion</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#B8860B">
+    <link rel="manifest" href="manifest.json">
+    <script>
+        // Check for splash redirect IMMEDIATELY - before any content loads
+        const splashShown = sessionStorage.getItem('splashShown');
+        if (!splashShown) {
+            // Redirect to splash screen immediately
+            window.location.href = '/splash.html';
+        }
+    </script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-charcoal: #2C2C2C;
+            --luminous-gold: #B8860B;
+            --pearl-white: #F8F8F8;
+            --radiant-rose: #E8D5D5;
+            --premium-gradient: linear-gradient(135deg, #B8860B, #DAA520);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-charcoal);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
-        
+
         .container {
-            background: white;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 414px;
+            margin: 0 auto;
+            background: var(--primary-charcoal);
+            min-height: 100vh;
+            position: relative;
         }
-        
-        button {
-            padding: 12px 20px;
-            background: #007bff;
+
+        .header {
+            background: var(--primary-charcoal);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #3A3A3A;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            background: var(--premium-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 14px;
+            color: var(--luminous-gold);
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: var(--pearl-white);
+            min-height: calc(100vh - 120px);
+            padding: 20px;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-charcoal);
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .ai-search-container {
+            margin-bottom: 20px;
+        }
+
+        .ai-search-bar {
+            background: white;
+            border-radius: 25px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid var(--luminous-gold);
+        }
+
+        .ai-icon {
+            font-size: 20px;
+            color: var(--luminous-gold);
+        }
+
+        .ai-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            color: var(--primary-charcoal);
+            background: transparent;
+        }
+
+        .ai-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        .ai-send-btn {
+            background: var(--premium-gradient);
+            border: none;
+            border-radius: 20px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ai-send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 8px 6px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .premium-feature {
+            background: linear-gradient(135deg, #FFF9E6, #FFFFFF);
+            border: 1px solid var(--luminous-gold);
+        }
+
+        .premium-star {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            font-size: 8px;
+            color: var(--luminous-gold);
+        }
+
+        .action-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 14px;
+            background: var(--premium-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 4px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .premium-feature .action-icon {
+            background: var(--premium-gradient);
+            box-shadow: 0 2px 6px rgba(184, 134, 11, 0.3);
+        }
+
+        .action-title {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--primary-charcoal);
+            margin-bottom: 2px;
+            line-height: 1.1;
+        }
+
+        .action-subtitle {
+            font-size: 8px;
+            color: #666;
+            line-height: 1.1;
+        }
+
+        .featured-section {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .featured-header {
+            background: var(--premium-gradient);
+            color: white;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .featured-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .featured-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .featured-content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-btn {
+            background: var(--premium-gradient);
             color: white;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
+            padding: 16px 32px;
+            border-radius: 25px;
+            font-weight: 600;
             font-size: 16px;
-            margin: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+            transition: all 0.2s;
         }
-        
-        button:hover {
-            background: #0056b3;
+
+        .chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.4);
         }
-        
-        .debug {
-            background: #e9ecef;
-            padding: 15px;
-            border-radius: 6px;
-            font-family: monospace;
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: var(--pearl-white);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .feature-title {
             font-size: 12px;
-            white-space: pre-wrap;
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
+            font-weight: 600;
+            color: var(--primary-charcoal);
+            margin-bottom: 4px;
         }
-        
-        .success {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 6px;
-            margin: 10px 0;
+
+        .feature-desc {
+            font-size: 10px;
+            color: #666;
         }
-        
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 6px;
-            margin: 10px 0;
+
+        .bottom-nav {
+            background: white;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid #E0E0E0;
+            padding-bottom: 20px;
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 414px;
         }
-        
-        .info {
-            background: #d1ecf1;
-            color: #0c5460;
-            padding: 15px;
-            border-radius: 6px;
-            margin: 10px 0;
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--luminous-gold);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .basket-count {
+            background: var(--luminous-gold);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 8px;
+            font-weight: 700;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        @media (max-width: 380px) {
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .action-card {
+                min-height: 80px;
+                padding: 12px 8px;
+            }
+
+            .action-title {
+                font-size: 11px;
+            }
+
+            .action-subtitle {
+                font-size: 9px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-flex;
+            gap: 2px;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background: var(--luminous-gold);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <h1>🔍 Test Pagination - Fix Size Limits</h1>
-    
     <div class="container">
-        <h2>🧪 Pagination Tests</h2>
-        <p>These tests check if pagination fixes the "Content-Length exceeds response Body" error.</p>
-        
-        <button onclick="testPaginationPage1()">Test Page 1 (1000 products)</button>
-        <button onclick="testPaginationPage2()">Test Page 2 (next 1000)</button>
-        <button onclick="testSmallLimit()">Test Small Limit (100 products)</button>
-        <button onclick="testApiKeys()">Check API Keys</button>
-        <button onclick="clearResults()">Clear</button>
-    </div>
-    
-    <div id="results"></div>
-    
-    <div class="container">
-        <h3>Debug Log</h3>
-        <div id="debug" class="debug">Ready to test pagination...\n</div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">✨ Luminous AI</div>
+            <div class="tagline">Your Radiant Beauty Companion</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <div class="welcome-title">Welcome to Your Beauty Journey</div>
+                <div class="welcome-subtitle">Get personalized AI-powered beauty recommendations from global experts</div>
+
+                <!-- AI Search Bar -->
+                <div class="ai-search-container">
+                    <div class="ai-search-bar">
+                        <div class="ai-icon">🤖</div>
+                        <input type="text" placeholder="Ask your beauty companion: 'Best anti-aging serum for sensitive skin'" class="ai-input" id="aiInput">
+                        <button class="ai-send-btn" onclick="startChat()">
+                            <span>✨</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="chat-btn" onclick="startChat()">🌟 Start Beauty Consultation</button>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="action-card premium-feature" onclick="openFeature('antiaging')">
+                    <div class="premium-star">⭐</div>
+                    <div class="action-icon">🧘</div>
+                    <div class="action-title">Anti-aging</div>
+                    <div class="action-subtitle">Wellness & skincare</div>
+                </div>
+                <div class="action-card" onclick="openFeature('eyecare')">
+                    <div class="action-icon">👁️</div>
+                    <div class="action-title">Eye Care</div>
+                    <div class="action-subtitle">500+ eye products</div>
+                </div>
+                <div class="action-card premium-feature" onclick="openFeature('analysis')">
+                    <div class="premium-star">⭐</div>
+                    <div class="action-icon">✨</div>
+                    <div class="action-title">Skin Analysis</div>
+                    <div class="action-subtitle">AI recommendations</div>
+                </div>
+                <div class="action-card premium-feature" onclick="openFeature('facial')">
+                    <div class="premium-star">⭐</div>
+                    <div class="action-icon">😊</div>
+                    <div class="action-title">Facial Analysis</div>
+                    <div class="action-subtitle">AI face scanning</div>
+                </div>
+                <div class="action-card" onclick="openFeature('kbeauty')">
+                    <div class="action-icon">🌸</div>
+                    <div class="action-title">K-Beauty</div>
+                    <div class="action-subtitle">600+ Korean products</div>
+                </div>
+                <div class="action-card" onclick="openFeature('tanning')">
+                    <div class="action-icon">☀️</div>
+                    <div class="action-title">Tanning</div>
+                    <div class="action-subtitle">400+ tanning products</div>
+                </div>
+                <div class="action-card" onclick="openFeature('eyelashes')">
+                    <div class="action-icon">👁️‍🗨️</div>
+                    <div class="action-title">Eyelashes</div>
+                    <div class="action-subtitle">400+ lash products</div>
+                </div>
+                <div class="action-card" onclick="openFeature('basket')">
+                    <div class="action-icon">🛒</div>
+                    <div class="action-title">Basket</div>
+                    <div class="action-subtitle"><span id="basket-display">0 items</span></div>
+                    <div class="basket-count" id="basket-count-badge">0</div>
+                </div>
+            </div>
+
+            <!-- Featured Section -->
+            <div class="featured-section">
+                <div class="featured-header" onclick="openFeature('catalog')" style="cursor: pointer;">
+                    <div class="featured-title">Beauty Catalog</div>
+                    <div class="featured-subtitle">3,100+ Products from Around the World</div>
+                </div>
+                <div class="featured-content">
+                    <div class="feature-card" onclick="openFeature('global')" style="cursor: pointer;">
+                        <div class="feature-icon">🌍</div>
+                        <div class="feature-title">Global Beauty Products</div>
+                        <div class="feature-desc">Discover products from around the world with AI-powered recommendations</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations Section -->
+            <div class="featured-section">
+                <div class="featured-header">
+                    <div class="featured-title">Recommendations</div>
+                    <div class="featured-subtitle">Personalized suggestions</div>
+                </div>
+                <div class="featured-content">
+                    <div class="feature-card" onclick="checkAccountForRecommendations()" style="cursor: pointer;">
+                        <div class="feature-icon">✨</div>
+                        <div class="feature-title">Get Personalized Suggestions</div>
+                        <div class="feature-desc">Create account or login for AI recommendations</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spacer for bottom nav -->
+            <div style="height: 100px;"></div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="goToPage('home')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item" onclick="goToPage('signin')">
+                <div class="nav-icon">🔑</div>
+                <div class="nav-label">Sign In</div>
+            </div>
+            <div class="nav-item" onclick="goToPage('createaccount')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Create Account</div>
+            </div>
+            <div class="nav-item" onclick="goToPage('catalog')">
+                <div class="nav-icon">🌍</div>
+                <div class="nav-label">Catalog</div>
+            </div>
+            <div class="nav-item" onclick="goToPage('askme')">
+                <div class="nav-icon">💬</div>
+                <div class="nav-label">Ask Me</div>
+            </div>
+        </div>
     </div>
 
+    <script src="index.js"></script>
     <script>
-        const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
-        const API_URL = 'https://beauty-ai-backend.onrender.com';
-        
-        const debugElement = document.getElementById('debug');
-        const resultsElement = document.getElementById('results');
-        
-        function log(message) {
-            debugElement.textContent += `${new Date().toLocaleTimeString()} ${message}\n`;
-            debugElement.scrollTop = debugElement.scrollHeight;
+        // Initialize basket from localStorage
+        function updateBasketDisplay() {
+            const basketCount = parseInt(localStorage.getItem('basketCount') || '0');
+            document.getElementById('basket-count-badge').textContent = basketCount;
+            document.getElementById('basket-display').textContent = basketCount > 0 ? `${basketCount} items` : '0 items';
         }
 
-        function addResult(title, data, type = 'info') {
-            const div = document.createElement('div');
-            div.className = `container ${type}`;
-            div.innerHTML = `
-                <h3>${title}</h3>
-                <pre style="white-space: pre-wrap; font-size: 12px;">${JSON.stringify(data, null, 2)}</pre>
-            `;
-            resultsElement.appendChild(div);
+        // Chat functionality - Updated to use working backend
+        async function startChat() {
+            const input = document.getElementById('aiInput');
+            const query = input ? input.value.trim() : '';
+
+            if (!query) {
+                // If no query, go to general chat page
+                window.location.href = '/chat.html';
+                return;
+            }
+
+            // Go to chat page with the query
+            window.location.href = `/chat.html?query=${encodeURIComponent(query)}`;
         }
 
-        function clearResults() {
-            resultsElement.innerHTML = '';
-            debugElement.textContent = 'Debug cleared...\n';
-        }
-
-        // Test pagination with small sizes
-        async function testPaginationPage1() {
-            log('🔍 Testing pagination page 1 (300 products max)...');
-            
-            try {
-                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=1&limit=300')}`;
-                log(`Request: Page 1, Limit 300`);
-                
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                
-                log(`✅ Page 1 SUCCESS: ${data.products?.length || 0} products`);
-                log(`📊 Pagination: ${data.pagination?.currentPage}/${data.pagination?.totalPages} pages`);
-                log(`📈 Total available: ${data.pagination?.totalProducts || 'unknown'}`);
-                log(`🌍 Sources: ${data.stats?.source || 'unknown'}`);
-                
-                addResult('✅ Page 1 Test - SUCCESS', {
-                    productsReturned: data.products?.length || 0,
-                    pagination: data.pagination,
-                    stats: data.stats,
-                    status: 'Smaller pagination working!',
-                    geminiCount: data.stats?.geminiCount || 0,
-                    rainforestCount: data.stats?.rainforestCount || 0,
-                    localCount: data.stats?.localCount || 0
-                }, 'success');
-                
-            } catch (error) {
-                log(`❌ Page 1 failed: ${error.message}`);
-                
-                if (error.message.includes('Content-Length')) {
-                    addResult('❌ Page 1 - Still Too Large', {
-                        error: error.message,
-                        status: 'Need even smaller limit'
-                    }, 'error');
-                } else {
-                    addResult('❌ Page 1 - Other Error', {
-                        error: error.message
-                    }, 'error');
-                }
+        // Feature navigation - Updated to use working product search
+        function openFeature(feature) {
+            switch(feature) {
+                case 'antiaging':
+                    window.location.href = '/chat.html?query=anti-aging';
+                    break;
+                case 'eyecare':
+                    window.location.href = '/chat.html?query=eye care';
+                    break;
+                case 'kbeauty':
+                    window.location.href = '/chat.html?query=k-beauty';
+                    break;
+                case 'tanning':
+                    window.location.href = '/chat.html?query=tanning';
+                    break;
+                case 'eyelashes':
+                    window.location.href = '/chat.html?query=eyelashes';
+                    break;
+                case 'global':
+                case 'catalog':
+                    window.location.href = '/chat.html?query=global';
+                    break;
+                case 'facial':
+                    showFacialAnalysisPrompt();
+                    break;
+                case 'analysis':
+                    window.location.href = '/account.html?tab=profile#skin-analysis';
+                    break;
+                case 'basket':
+                    showBasket();
+                    break;
+                default:
+                    startChat();
             }
         }
 
-        // Test pagination page 2
-        async function testPaginationPage2() {
-            log('🔍 Testing pagination page 2 (300 products max)...');
-            
-            try {
-                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=2&limit=300')}`;
-                log(`Request: Page 2, Limit 300`);
-                
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                log(`✅ Page 2 SUCCESS: ${data.products?.length || 0} products`);
-                log(`📊 Different products from page 1: ${data.products?.[0]?.name || 'unknown'}`);
-                
-                addResult('✅ Page 2 Test - SUCCESS', {
-                    productsReturned: data.products?.length || 0,
-                    pagination: data.pagination,
-                    firstProduct: data.products?.[0]?.name || 'none',
-                    status: 'Multiple pages working!'
-                }, 'success');
-                
-            } catch (error) {
-                log(`❌ Page 2 failed: ${error.message}`);
-                addResult('❌ Page 2 Test', { error: error.message }, 'error');
+        // Navigation
+        function goToPage(page) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+
+            switch(page) {
+                case 'home':
+                    window.location.href = '/index.html';
+                    break;
+                case 'signin':
+                    window.location.href = '/signin.html';
+                    break;
+                case 'createaccount':
+                    window.location.href = '/createaccount.html';
+                    break;
+                case 'catalog':
+                    window.location.href = '/chat.html?query=global';
+                    break;
+                case 'askme':
+                    window.location.href = '/chat.html';
+                    break;
             }
         }
 
-        // Test small limit
-        async function testSmallLimit() {
-            log('🔍 Testing small limit (100 products)...');
-            
-            try {
-                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/api/products/search?q=global&page=1&limit=100')}`;
-                log(`Request: Page 1, Limit 100`);
-                
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                log(`✅ Small limit SUCCESS: ${data.products?.length || 0} products`);
-                
-                addResult('✅ Small Limit Test - SUCCESS', {
-                    productsReturned: data.products?.length || 0,
-                    pagination: data.pagination,
-                    status: 'Small responses work fine!'
-                }, 'success');
-                
-            } catch (error) {
-                log(`❌ Small limit failed: ${error.message}`);
-                addResult('❌ Small Limit Test', { error: error.message }, 'error');
+        // Basket functionality
+        function showBasket() {
+            const basket = JSON.parse(localStorage.getItem('basket') || '[]');
+            if (basket.length === 0) {
+                alert('🛒 Your basket is empty!\n\nBrowse our beauty products to add items to your basket.');
+                return;
             }
+
+            const basketItems = basket.map(item => `• ${item.name} - $${item.price}`).join('\n');
+            const total = basket.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2);
+            alert(`🛒 Your Beauty Basket:\n\n${basketItems}\n\nTotal: $${total}\n\nCheckout coming soon!`);
         }
 
-        // Test API keys
-        async function testApiKeys() {
-            log('🔑 Testing API keys...');
-            
-            try {
-                const url = `${CORS_PROXY}${encodeURIComponent(API_URL + '/debug/keys')}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                log(`🔑 API Keys: Rainforest=${data.rainforestEnabled}, Gemini=${data.geminiEnabled}`);
-                
-                const keysWorking = data.rainforestEnabled || data.geminiEnabled;
-                
-                addResult(keysWorking ? '✅ API Keys - Some Working' : '❌ API Keys - All Disabled', {
-                    rainforestEnabled: data.rainforestEnabled,
-                    geminiEnabled: data.geminiEnabled,
-                    rainforestKeyLength: data.rainforestKeyLength,
-                    geminiKeyLength: data.geminiKeyLength,
-                    status: keysWorking ? 'At least one API key is working' : 'No API keys detected'
-                }, keysWorking ? 'success' : 'error');
-                
-            } catch (error) {
-                log(`❌ API keys test failed: ${error.message}`);
-                addResult('❌ API Keys Test', { error: error.message }, 'error');
+        // AI search enhancements
+        document.getElementById('aiInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startChat();
             }
-        }
-
-        window.addEventListener('load', function() {
-            log('🚀 Pagination test ready');
-            log('This will test if pagination fixes the response size issue');
         });
+
+        // Interactive elements
+        document.querySelectorAll('.action-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 100);
+            });
+        });
+
+        // Loading animation for AI responses
+        function showAIThinking() {
+            const btn = document.querySelector('.ai-send-btn span');
+            btn.innerHTML = '<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+            setTimeout(() => {
+                btn.innerHTML = '✨';
+            }, 2000);
+        }
+
+        function checkAccountForRecommendations() {
+            const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+
+            if (profile.name && profile.email && profile.password) {
+                window.location.href = 'account.html';
+            } else {
+                showAccountPrompt();
+            }
+        }
+
+        function showAccountPrompt() {
+            const promptHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;" onclick="closeAccountPrompt()">
+                    <div style="background: white; border-radius: 20px; padding: 30px; max-width: 350px; text-align: center;" onclick="event.stopPropagation()">
+                        <div style="font-size: 48px; margin-bottom: 20px;">✨</div>
+                        <h2 style="color: #2c2c2c; margin-bottom: 15px; font-size: 22px;">Get Personalized Recommendations</h2>
+                        <p style="color: #666; margin-bottom: 25px; line-height: 1.5;">Create an account or sign in to receive AI-powered beauty recommendations tailored just for you!</p>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <button onclick="window.location.href='createaccount.html'" style="background: var(--premium-gradient); color: white; border: none; padding: 15px 25px; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 16px;">
+                                Create Account
+                            </button>
+                            <button onclick="window.location.href='signin.html'" style="background: #f0f0f0; color: #333; border: none; padding: 15px 25px; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 16px;">
+                                Sign In
+                            </button>
+                            <button onclick="closeAccountPrompt()" style="background: none; border: none; color: #888; padding: 10px; cursor: pointer; font-size: 14px;">
+                                Maybe Later
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', promptHTML);
+        }
+
+        function closeAccountPrompt() {
+            const overlay = document.querySelector('[style*="position: fixed"][style*="z-index: 10000"]');
+            if (overlay) overlay.remove();
+        }
+
+         function showFacialAnalysisPrompt() {
+            const promptHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;" onclick="closeFacialAnalysisPrompt()">
+                    <div style="background: white; border-radius: 20px; padding: 30px; max-width: 350px; text-align: center;" onclick="event.stopPropagation()">
+                        <div style="font-size: 48px; margin-bottom: 20px;">😊</div>
+                        <h2 style="color: #2c2c2c; margin-bottom: 15px; font-size: 22px;">AI Facial Analysis</h2>
+                        <p style="color: #666; margin-bottom: 25px; line-height: 1.5;">Create an account and complete your profile to access our AI-powered facial analysis tool for personalized beauty recommendations!</p>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <button onclick="window.location.href='createaccount.html'" style="background: var(--premium-gradient); color: white; border: none; padding: 15px 25px; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 16px;">
+                                Create Account
+                            </button>
+                            <button onclick="window.location.href='signin.html'" style="background: #f0f0f0; color: #333; border: none; padding: 15px 25px; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 16px;">
+                                Sign In
+                            </button>
+                            <button onclick="closeFacialAnalysisPrompt()" style="background: none; border: none; color: #888; padding: 10px; cursor: pointer; font-size: 14px;">
+                                Continue as Guest
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', promptHTML);
+        }
+
+        function closeFacialAnalysisPrompt() {
+            const overlay = document.querySelector('[style*="position: fixed"][style*="z-index: 10000"]');
+            if (overlay) overlay.remove();
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✨ Luminous AI - Your Radiant Beauty Companion Loaded! 🚀');
+            
+            // Update basket display
+            updateBasketDisplay();
+
+            const logo = document.querySelector('.logo');
+            setInterval(() => {
+                logo.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    logo.style.transform = 'scale(1)';
+                }, 200);
+            }, 3000);
+        });
+
+        // Update basket display when returning to page
+        window.addEventListener('focus', updateBasketDisplay);
     </script>
 </body>
 </html>
