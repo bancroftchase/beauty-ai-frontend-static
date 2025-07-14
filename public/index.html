@@ -509,45 +509,45 @@
 
             <!-- Quick Actions -->
             <div class="quick-actions">
-                <div class="action-card premium-feature" onclick="testFeature('antiaging')">
+                <div class="action-card premium-feature" onclick="alert('🧘 Anti-aging Collection\\n\\nDiscover premium anti-aging skincare and wellness products!\\n\\n• Retinol serums\\n• Collagen creams\\n• Peptide treatments\\n• Vitamin C products\\n\\nFull collection coming soon!')">
                     <div class="premium-star">⭐</div>
                     <div class="action-icon">🧘</div>
                     <div class="action-title">Anti-aging</div>
                     <div class="action-subtitle">Wellness & skincare</div>
                 </div>
-                <div class="action-card" onclick="testFeature('eyecare')">
+                <div class="action-card" onclick="alert('👁️ Eye Care Specialists\\n\\nBrowse 500+ eye care products including:\\n\\n• Under-eye serums\\n• Dark circle treatments\\n• Anti-puffiness creams\\n• Lash growth serums\\n\\nFull catalog coming soon!')">
                     <div class="action-icon">👁️</div>
                     <div class="action-title">Eye Care</div>
                     <div class="action-subtitle">500+ eye products</div>
                 </div>
-                <div class="action-card premium-feature" onclick="testFeature('analysis')">
+                <div class="action-card premium-feature" onclick="alert('✨ AI Skin Analysis\\n\\nGet personalized skin analysis:\\n\\n• Skin type detection\\n• Problem area identification\\n• Custom product recommendations\\n• Progress tracking\\n\\nPremium AI feature coming soon!')">
                     <div class="premium-star">⭐</div>
                     <div class="action-icon">✨</div>
                     <div class="action-title">Skin Analysis</div>
                     <div class="action-subtitle">AI recommendations</div>
                 </div>
-                <div class="action-card premium-feature" onclick="testFeature('facial')">
+                <div class="action-card premium-feature" onclick="alert('😊 AI Facial Analysis\\n\\nAdvanced facial scanning technology:\\n\\n• Face shape analysis\\n• Skin tone matching\\n• Makeup recommendations\\n• Skincare routine builder\\n\\nPremium feature coming soon!')">
                     <div class="premium-star">⭐</div>
                     <div class="action-icon">😊</div>
                     <div class="action-title">Facial Analysis</div>
                     <div class="action-subtitle">AI face scanning</div>
                 </div>
-                <div class="action-card" onclick="testFeature('kbeauty')">
+                <div class="action-card" onclick="alert('🌸 K-Beauty Collection\\n\\nExplore 600+ authentic Korean beauty products:\\n\\n• Sheet masks\\n• Essence & serums\\n• BB & CC creams\\n• Snail mucin products\\n\\nFull K-beauty store coming soon!')">
                     <div class="action-icon">🌸</div>
                     <div class="action-title">K-Beauty</div>
                     <div class="action-subtitle">600+ Korean products</div>
                 </div>
-                <div class="action-card" onclick="testFeature('tanning')">
+                <div class="action-card" onclick="alert('☀️ Tanning Products\\n\\nFind perfect tanning products for your skin type:\\n\\n• Self-tanning drops\\n• Bronzing mousses\\n• Gradual tan lotions\\n• Professional sprays\\n\\n400+ products coming soon!')">
                     <div class="action-icon">☀️</div>
                     <div class="action-title">Tanning</div>
                     <div class="action-subtitle">400+ tanning products</div>
                 </div>
-                <div class="action-card" onclick="testFeature('eyelashes')">
+                <div class="action-card" onclick="alert('👁️‍🗨️ Eyelash Collection\\n\\nEnhance your lashes with 400+ products:\\n\\n• Mascara collection\\n• Lash growth serums\\n• False eyelashes\\n• Lash curlers & tools\\n\\nFull lash boutique coming soon!')">
                     <div class="action-icon">👁️‍🗨️</div>
                     <div class="action-title">Eyelashes</div>
                     <div class="action-subtitle">400+ lash products</div>
                 </div>
-                <div class="action-card" onclick="testFeature('basket')">
+                <div class="action-card" onclick="showBasketStatus()">
                     <div class="action-icon">🛒</div>
                     <div class="action-title">Basket</div>
                     <div class="action-subtitle"><span id="basket-display">0 items</span></div>
@@ -674,8 +674,8 @@
         // Global variables for product management
         let basketCount = 0;
         const GLOBAL_PRODUCTS = {
-            batchSize: 8,
-            maxProducts: 50,
+            batchSize: 12,
+            maxProducts: 200,
             currentRegion: 'global',
             loadedProducts: 0,
             allProducts: []
@@ -686,13 +686,13 @@
             const regions = ['mexico', 'france', 'germany', 'china', 'russia', 'south-america'];
             const categories = ['Skincare', 'Makeup', 'Haircare', 'Fragrance'];
             const productNames = {
-                'Skincare': ['Moisturizer', 'Cleanser', 'Serum', 'Mask', 'Toner'],
-                'Makeup': ['Lipstick', 'Foundation', 'Mascara', 'Blush', 'Eyeshadow'],
-                'Haircare': ['Shampoo', 'Conditioner', 'Hair Oil', 'Styling Gel', 'Hair Mask'],
-                'Fragrance': ['Perfume', 'Body Spray', 'Essential Oil', 'Cologne', 'Body Mist']
+                'Skincare': ['Moisturizer', 'Cleanser', 'Serum', 'Mask', 'Toner', 'Eye Cream', 'Night Cream', 'SPF Lotion'],
+                'Makeup': ['Lipstick', 'Foundation', 'Mascara', 'Blush', 'Eyeshadow', 'Concealer', 'Bronzer', 'Highlighter'],
+                'Haircare': ['Shampoo', 'Conditioner', 'Hair Oil', 'Styling Gel', 'Hair Mask', 'Leave-in Treatment', 'Dry Shampoo'],
+                'Fragrance': ['Perfume', 'Body Spray', 'Essential Oil', 'Cologne', 'Body Mist', 'Roll-on Fragrance']
             };
             
-            return Array.from({ length: 50 }, (_, i) => {
+            return Array.from({ length: 200 }, (_, i) => {
                 const region = regions[i % regions.length];
                 const category = categories[i % categories.length];
                 const productType = productNames[category][i % productNames[category].length];
@@ -748,6 +748,7 @@
             });
             
             loadMoreProducts(filteredProducts);
+            setupLazyLoadObserver(filteredProducts);
         }
 
         function loadMoreProducts(products) {
@@ -781,7 +782,29 @@
             GLOBAL_PRODUCTS.loadedProducts += batch.length;
         }
 
-        function testSearch() {
+        // Lazy loading for more products
+        function setupLazyLoadObserver(products) {
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && 
+                    GLOBAL_PRODUCTS.loadedProducts < products.length) {
+                    loadMoreProducts(products);
+                }
+            }, { threshold: 0.1 });
+
+            const sentinel = document.createElement('div');
+            sentinel.style.height = '20px';
+            sentinel.innerHTML = '<div style="text-align: center; color: #999; font-size: 12px;">Loading more products...</div>';
+            document.getElementById('global-products-grid').appendChild(sentinel);
+            observer.observe(sentinel);
+        }
+
+        function showBasketStatus() {
+            if (basketCount === 0) {
+                alert('🛒 Your Basket is Empty!\n\nStart your beauty journey:\n\n• Browse our global collection below\n• Add products to your basket\n• Get personalized recommendations\n• Enjoy exclusive member benefits\n\nHappy shopping!');
+            } else {
+                alert(`🛒 Your Beauty Basket:\n\n${basketCount} amazing products selected!\n\n• Premium beauty products\n• International brands\n• Curated just for you\n\nTotal items: ${basketCount}\n\nSecure checkout coming soon!`);
+            }
+        }
             const input = document.getElementById('aiInput');
             const query = input ? input.value.trim() : '';
             
