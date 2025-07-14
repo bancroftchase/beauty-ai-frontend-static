@@ -498,56 +498,56 @@
                     <div class="ai-search-bar">
                         <div class="ai-icon">🤖</div>
                         <input type="text" placeholder="Ask your beauty companion: 'Best anti-aging serum for sensitive skin'" class="ai-input" id="aiInput">
-                        <button class="ai-send-btn" onclick="handleSearch()">
+                        <button class="ai-send-btn" onclick="testSearch()">
                             <span>✨</span>
                         </button>
                     </div>
                 </div>
 
-                <button class="chat-btn" onclick="handleSearch()">🌟 Start Beauty Consultation</button>
+                <button class="chat-btn" onclick="testSearch()">🌟 Start Beauty Consultation</button>
             </div>
 
             <!-- Quick Actions -->
             <div class="quick-actions">
-                <div class="action-card premium-feature" onclick="handleFeature('antiaging')">
+                <div class="action-card premium-feature" onclick="testFeature('antiaging')">
                     <div class="premium-star">⭐</div>
                     <div class="action-icon">🧘</div>
                     <div class="action-title">Anti-aging</div>
                     <div class="action-subtitle">Wellness & skincare</div>
                 </div>
-                <div class="action-card" onclick="handleFeature('eyecare')">
+                <div class="action-card" onclick="testFeature('eyecare')">
                     <div class="action-icon">👁️</div>
                     <div class="action-title">Eye Care</div>
                     <div class="action-subtitle">500+ eye products</div>
                 </div>
-                <div class="action-card premium-feature" onclick="handleFeature('analysis')">
+                <div class="action-card premium-feature" onclick="testFeature('analysis')">
                     <div class="premium-star">⭐</div>
                     <div class="action-icon">✨</div>
                     <div class="action-title">Skin Analysis</div>
                     <div class="action-subtitle">AI recommendations</div>
                 </div>
-                <div class="action-card premium-feature" onclick="handleFeature('facial')">
+                <div class="action-card premium-feature" onclick="testFeature('facial')">
                     <div class="premium-star">⭐</div>
                     <div class="action-icon">😊</div>
                     <div class="action-title">Facial Analysis</div>
                     <div class="action-subtitle">AI face scanning</div>
                 </div>
-                <div class="action-card" onclick="handleFeature('kbeauty')">
+                <div class="action-card" onclick="testFeature('kbeauty')">
                     <div class="action-icon">🌸</div>
                     <div class="action-title">K-Beauty</div>
                     <div class="action-subtitle">600+ Korean products</div>
                 </div>
-                <div class="action-card" onclick="handleFeature('tanning')">
+                <div class="action-card" onclick="testFeature('tanning')">
                     <div class="action-icon">☀️</div>
                     <div class="action-title">Tanning</div>
                     <div class="action-subtitle">400+ tanning products</div>
                 </div>
-                <div class="action-card" onclick="handleFeature('eyelashes')">
+                <div class="action-card" onclick="testFeature('eyelashes')">
                     <div class="action-icon">👁️‍🗨️</div>
                     <div class="action-title">Eyelashes</div>
                     <div class="action-subtitle">400+ lash products</div>
                 </div>
-                <div class="action-card" onclick="handleFeature('basket')">
+                <div class="action-card" onclick="testFeature('basket')">
                     <div class="action-icon">🛒</div>
                     <div class="action-title">Basket</div>
                     <div class="action-subtitle"><span id="basket-display">0 items</span></div>
@@ -557,12 +557,12 @@
 
             <!-- Featured Section -->
             <div class="featured-section">
-                <div class="featured-header" onclick="handleFeature('catalog')">
+                <div class="featured-header" onclick="testFeature('catalog')">
                     <div class="featured-title">Beauty Catalog</div>
                     <div class="featured-subtitle">3,100+ Products from Around the World</div>
                 </div>
                 <div class="featured-content">
-                    <div class="feature-card" onclick="handleFeature('global')">
+                    <div class="feature-card" onclick="testFeature('global')">
                         <div class="feature-icon">🌍</div>
                         <div class="feature-title">Global Beauty Products</div>
                         <div class="feature-desc">Discover products from around the world with AI-powered recommendations</div>
@@ -579,13 +579,13 @@
                 <div class="featured-content">
                     <!-- Region Filters -->
                     <div class="region-filters">
-                        <button class="region-filter active" onclick="filterProducts('global')">All Regions</button>
-                        <button class="region-filter" onclick="filterProducts('mexico')">Mexico</button>
-                        <button class="region-filter" onclick="filterProducts('france')">France</button>
-                        <button class="region-filter" onclick="filterProducts('germany')">Germany</button>
-                        <button class="region-filter" onclick="filterProducts('china')">China</button>
-                        <button class="region-filter" onclick="filterProducts('russia')">Russia</button>
-                        <button class="region-filter" onclick="filterProducts('south-america')">South America</button>
+                        <button class="region-filter active" onclick="testFilter('global')">All Regions</button>
+                        <button class="region-filter" onclick="testFilter('mexico')">Mexico</button>
+                        <button class="region-filter" onclick="testFilter('france')">France</button>
+                        <button class="region-filter" onclick="testFilter('germany')">Germany</button>
+                        <button class="region-filter" onclick="testFilter('china')">China</button>
+                        <button class="region-filter" onclick="testFilter('russia')">Russia</button>
+                        <button class="region-filter" onclick="testFilter('south-america')">South America</button>
                     </div>
                     
                     <!-- Product Grid -->
@@ -597,7 +597,7 @@
                                 <p>Premium skincare from Mexico</p>
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
                                     <span class="product-price">$25 USD</span>
-                                    <button class="add-to-basket-btn" onclick="addToBasket('mexican-aloe')">Add</button>
+                                    <button class="add-to-basket-btn" onclick="testBasket('mexican-aloe')">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -609,7 +609,7 @@
                                 <p>Luxury skincare from France</p>
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
                                     <span class="product-price">€45</span>
-                                    <button class="add-to-basket-btn" onclick="addToBasket('french-rose')">Add</button>
+                                    <button class="add-to-basket-btn" onclick="testBasket('french-rose')">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -621,7 +621,7 @@
                                 <p>Scientific skincare from Germany</p>
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
                                     <span class="product-price">€35</span>
-                                    <button class="add-to-basket-btn" onclick="addToBasket('german-vitamin')">Add</button>
+                                    <button class="add-to-basket-btn" onclick="testBasket('german-vitamin')">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -633,7 +633,7 @@
                                 <p>Traditional beauty from China</p>
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
                                     <span class="product-price">¥180</span>
-                                    <button class="add-to-basket-btn" onclick="addToBasket('chinese-ginseng')">Add</button>
+                                    <button class="add-to-basket-btn" onclick="testBasket('chinese-ginseng')">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -647,23 +647,23 @@
 
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="handleNav('home')">
+            <div class="nav-item active" onclick="testNav('home')">
                 <div class="nav-icon">🏠</div>
                 <div class="nav-label">Home</div>
             </div>
-            <div class="nav-item" onclick="handleNav('signin')">
+            <div class="nav-item" onclick="testNav('signin')">
                 <div class="nav-icon">🔑</div>
                 <div class="nav-label">Sign In</div>
             </div>
-            <div class="nav-item" onclick="handleNav('createaccount')">
+            <div class="nav-item" onclick="testNav('createaccount')">
                 <div class="nav-icon">👤</div>
                 <div class="nav-label">Create Account</div>
             </div>
-            <div class="nav-item" onclick="handleNav('catalog')">
+            <div class="nav-item" onclick="testNav('catalog')">
                 <div class="nav-icon">🌍</div>
                 <div class="nav-label">Catalog</div>
             </div>
-            <div class="nav-item" onclick="handleNav('askme')">
+            <div class="nav-item" onclick="testNav('askme')">
                 <div class="nav-icon">💬</div>
                 <div class="nav-label">Ask Me</div>
             </div>
@@ -671,137 +671,33 @@
     </div>
 
     <script>
-        // Simple, working JavaScript functions
+        // Simple test functions to verify clicks work
         let basketCount = 0;
 
-        function handleSearch() {
-            const input = document.getElementById('aiInput');
-            const query = input ? input.value : '';
-            
-            if (query) {
-                alert(`🤖 AI Beauty Consultant says:\n\n"${query}"\n\nGreat question! I'd recommend exploring our skincare collection. Full AI chat coming soon!`);
-                input.value = '';
-            } else {
-                alert('🌟 Welcome to Luminous AI!\n\nI\'m your beauty consultant. Ask me about skincare, makeup, or any beauty concerns!\n\nFull AI chat coming soon!');
-            }
+        function testSearch() {
+            alert('🤖 Search works! Button clicked successfully.');
         }
 
-        function handleFeature(feature) {
-            console.log('Feature clicked:', feature); // Debug log
-            
-            switch(feature) {
-                case 'antiaging':
-                    alert('🧘 Anti-aging Collection\n\nDiscover premium anti-aging skincare and wellness products!\n\n• Retinol serums\n• Collagen creams\n• Peptide treatments\n• Vitamin C products\n\nFull collection coming soon!');
-                    break;
-                    
-                case 'eyecare':
-                    alert('👁️ Eye Care Specialists\n\nBrowse 500+ eye care products including:\n\n• Under-eye serums\n• Dark circle treatments\n• Anti-puffiness creams\n• Lash growth serums\n\nFull catalog coming soon!');
-                    break;
-                    
-                case 'kbeauty':
-                    alert('🌸 K-Beauty Collection\n\nExplore 600+ authentic Korean beauty products:\n\n• Sheet masks\n• Essence & serums\n• BB & CC creams\n• Snail mucin products\n\nFull K-beauty store coming soon!');
-                    break;
-                    
-                case 'tanning':
-                    alert('☀️ Tanning Products\n\nFind perfect tanning products for your skin type:\n\n• Self-tanning drops\n• Bronzing mousses\n• Gradual tan lotions\n• Professional sprays\n\n400+ products coming soon!');
-                    break;
-                    
-                case 'eyelashes':
-                    alert('👁️‍🗨️ Eyelash Collection\n\nEnhance your lashes with 400+ products:\n\n• Mascara collection\n• Lash growth serums\n• False eyelashes\n• Lash curlers & tools\n\nFull lash boutique coming soon!');
-                    break;
-                    
-                case 'analysis':
-                    alert('✨ AI Skin Analysis\n\nGet personalized skin analysis:\n\n• Skin type detection\n• Problem area identification\n• Custom product recommendations\n• Progress tracking\n\nPremium AI feature coming soon!');
-                    break;
-                    
-                case 'facial':
-                    alert('😊 AI Facial Analysis\n\nAdvanced facial scanning technology:\n\n• Face shape analysis\n• Skin tone matching\n• Makeup recommendations\n• Skincare routine builder\n\nPremium feature coming soon!');
-                    break;
-                    
-                case 'global':
-                    alert('🌍 Global Beauty Products\n\nExplore our international beauty collection below!\n\n• Products from 50+ countries\n• Traditional & modern formulas\n• Exclusive international brands\n• Cultural beauty secrets\n\nScroll down to explore!');
-                    break;
-                    
-                case 'catalog':
-                    alert('📚 Beauty Catalog\n\n3,100+ products from around the world!\n\n• Skincare essentials\n• Makeup favorites\n• Hair care products\n• Fragrance collection\n\nScroll down to browse our collection!');
-                    break;
-                    
-                case 'basket':
-                    showBasket();
-                    break;
-                    
-                default:
-                    alert('🌟 Feature Coming Soon!\n\nWe\'re working hard to bring you the best beauty experience. Stay tuned!');
-            }
+        function testFeature(feature) {
+            alert('✨ Feature "' + feature + '" clicked successfully!');
         }
 
-        function addToBasket(productId) {
+        function testBasket(product) {
             basketCount++;
             document.getElementById('basket-count-badge').textContent = basketCount;
             document.getElementById('basket-display').textContent = basketCount + ' items';
-            
-            const btn = event.target;
-            btn.textContent = 'Added!';
-            btn.style.background = '#28a745';
-            setTimeout(() => {
-                btn.textContent = 'Add';
-                btn.style.background = '';
-            }, 1000);
+            alert('🛒 Added "' + product + '" to basket! Total: ' + basketCount);
         }
 
-        function showBasket() {
-            if (basketCount === 0) {
-                alert('🛒 Your basket is empty!\n\nBrowse our beauty products to add items.');
-            } else {
-                alert(`🛒 Your Beauty Basket:\n\n${basketCount} items added\n\nCheckout coming soon!`);
-            }
+        function testFilter(region) {
+            alert('🌍 Filter "' + region + '" clicked successfully!');
         }
 
-        function filterProducts(region) {
-            // Update active filter
-            document.querySelectorAll('.region-filter').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            alert(`🌍 Filtering by: ${region}\n\nShowing products from ${region}. More products loading soon!`);
+        function testNav(page) {
+            alert('📱 Navigation "' + page + '" clicked successfully!');
         }
 
-        function handleNav(page) {
-            // Update active nav
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.closest('.nav-item').classList.add('active');
-            
-            const messages = {
-                'home': () => window.scrollTo(0, 0),
-                'signin': '🔑 Sign In\n\nSecure login coming soon!',
-                'createaccount': '👤 Create Account\n\nJoin our beauty community! Registration coming soon.',
-                'catalog': '🌍 Product Catalog\n\nBrowse our collection below!',
-                'askme': '💬 AI Chat\n\nFull AI conversation coming soon!'
-            };
-
-            const action = messages[page];
-            if (typeof action === 'function') {
-                action();
-            } else {
-                alert(action || 'Page coming soon!');
-            }
-        }
-
-        // Enter key support for search
-        document.addEventListener('DOMContentLoaded', function() {
-            const input = document.getElementById('aiInput');
-            if (input) {
-                input.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        handleSearch();
-                    }
-                });
-            }
-            console.log('✨ Luminous AI Beauty App Loaded! 🚀');
-        });
+        console.log('App loaded successfully');
     </script>
 </body>
 </html>
