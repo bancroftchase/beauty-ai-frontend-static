@@ -671,33 +671,267 @@
     </div>
 
     <script>
-        // Simple test functions to verify clicks work
+        // Global variables for product management
         let basketCount = 0;
+        const GLOBAL_PRODUCTS = {
+            batchSize: 8,
+            maxProducts: 50,
+            currentRegion: 'global',
+            loadedProducts: 0,
+            allProducts: []
+        };
+
+        // Generate sample products
+        function generateSampleProducts() {
+            const regions = ['mexico', 'france', 'germany', 'china', 'russia', 'south-america'];
+            const categories = ['Skincare', 'Makeup', 'Haircare', 'Fragrance'];
+            const productNames = {
+                'Skincare': ['Moisturizer', 'Cleanser', 'Serum', 'Mask', 'Toner'],
+                'Makeup': ['Lipstick', 'Foundation', 'Mascara', 'Blush', 'Eyeshadow'],
+                'Haircare': ['Shampoo', 'Conditioner', 'Hair Oil', 'Styling Gel', 'Hair Mask'],
+                'Fragrance': ['Perfume', 'Body Spray', 'Essential Oil', 'Cologne', 'Body Mist']
+            };
+            
+            return Array.from({ length: 50 }, (_, i) => {
+                const region = regions[i % regions.length];
+                const category = categories[i % categories.length];
+                const productType = productNames[category][i % productNames[category].length];
+                
+                return {
+                    id: `prod-${i}`,
+                    name: `${region.charAt(0).toUpperCase() + region.slice(1)} ${productType}`,
+                    description: `Premium ${category.toLowerCase()} from ${region}`,
+                    price: formatPrice(region, i),
+                    image: getProductImage(region),
+                    region: region
+                };
+            });
+        }
+
+        function formatPrice(region, index) {
+            const prices = {
+                mexico: `${(150 + (index * 5) % 150)} MXN`,
+                france: `€${(15 + index % 15)}`,
+                germany: `€${(10 + index % 20)}`,
+                china: `¥${(100 + (index * 3) % 200)}`,
+                russia: `₽${(500 + (index * 10) % 500)}`,
+                'south-america': `R${(40 + index % 30)}`
+            };
+            return prices[region] || `${(10 + index % 50)}`;
+        }
+
+        function getProductImage(region) {
+            const colors = {
+                mexico: 'ff6b6b',
+                france: '74b9ff',
+                germany: '00b894',
+                china: 'e17055',
+                russia: 'a29bfe',
+                'south-america': 'fd79a8'
+            };
+            const color = colors[region] || 'ddd';
+            const code = region.substring(0, 2).toUpperCase();
+            return `https://via.placeholder.com/120x80/${color}/fff?text=${code}`;
+        }
+
+        // Product loading functions
+        function filterAndRenderProducts() {
+            const grid = document.getElementById('global-products-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            GLOBAL_PRODUCTS.loadedProducts = 0;
+            
+            const filteredProducts = GLOBAL_PRODUCTS.allProducts.filter(product => {
+                if (GLOBAL_PRODUCTS.currentRegion === 'global') return true;
+                return product.region === GLOBAL_PRODUCTS.currentRegion;
+            });
+            
+            loadMoreProducts(filteredProducts);
+        }
+
+        function loadMoreProducts(products) {
+            const grid = document.getElementById('global-products-grid');
+            if (!grid) return;
+            
+            const batch = products.slice(
+                GLOBAL_PRODUCTS.loadedProducts,
+                GLOBAL_PRODUCTS.loadedProducts + GLOBAL_PRODUCTS.batchSize
+            );
+            
+            batch.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" loading="lazy" alt="${product.name}">
+                    <div class="product-card-content">
+                        <h4>${product.name}</h4>
+                        <p>${product.description}</p>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                            <span class="product-price">${product.price}</span>
+                            <button class="add-to-basket-btn" onclick="testBasket('${product.name.replace(/'/g, "\\'")}')">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            GLOBAL_PRODUCTS.loadedProducts += batch.length;
+        }
 
         function testSearch() {
-            alert('🤖 Search works! Button clicked successfully.');
+            const input = document.getElementById('aiInput');
+            const query = input ? input.value.trim() : '';
+            
+            if (query) {
+                alert(`🤖 AI Beauty Consultant:\n\n"${query}"\n\nGreat question! Based on your query, I recommend:\n\n• Check our skincare essentials\n• Browse anti-aging products\n• Explore K-beauty collection\n• View global beauty finds\n\nFull AI chat with personalized recommendations coming soon!`);
+                input.value = '';
+            } else {
+                alert('🌟 Welcome to Luminous AI!\n\nI\'m your personal beauty consultant. Ask me about:\n\n• Skincare routines for your skin type\n• Best products for specific concerns\n• Makeup tips and tutorials\n• International beauty trends\n• Product comparisons\n\nType your question above or browse our collections!');
+            }
         }
 
         function testFeature(feature) {
-            alert('✨ Feature "' + feature + '" clicked successfully!');
+            switch(feature) {
+                case 'antiaging':
+                    alert('🧘 Anti-aging Collection\n\nDiscover premium anti-aging skincare and wellness products!\n\n• Retinol serums\n• Collagen creams\n• Peptide treatments\n• Vitamin C products\n\nFull collection coming soon!');
+                    break;
+                    
+                case 'eyecare':
+                    alert('👁️ Eye Care Specialists\n\nBrowse 500+ eye care products including:\n\n• Under-eye serums\n• Dark circle treatments\n• Anti-puffiness creams\n• Lash growth serums\n\nFull catalog coming soon!');
+                    break;
+                    
+                case 'kbeauty':
+                    alert('🌸 K-Beauty Collection\n\nExplore 600+ authentic Korean beauty products:\n\n• Sheet masks\n• Essence & serums\n• BB & CC creams\n• Snail mucin products\n\nFull K-beauty store coming soon!');
+                    break;
+                    
+                case 'tanning':
+                    alert('☀️ Tanning Products\n\nFind perfect tanning products for your skin type:\n\n• Self-tanning drops\n• Bronzing mousses\n• Gradual tan lotions\n• Professional sprays\n\n400+ products coming soon!');
+                    break;
+                    
+                case 'eyelashes':
+                    alert('👁️‍🗨️ Eyelash Collection\n\nEnhance your lashes with 400+ products:\n\n• Mascara collection\n• Lash growth serums\n• False eyelashes\n• Lash curlers & tools\n\nFull lash boutique coming soon!');
+                    break;
+                    
+                case 'analysis':
+                    alert('✨ AI Skin Analysis\n\nGet personalized skin analysis:\n\n• Skin type detection\n• Problem area identification\n• Custom product recommendations\n• Progress tracking\n\nPremium AI feature coming soon!');
+                    break;
+                    
+                case 'facial':
+                    alert('😊 AI Facial Analysis\n\nAdvanced facial scanning technology:\n\n• Face shape analysis\n• Skin tone matching\n• Makeup recommendations\n• Skincare routine builder\n\nPremium feature coming soon!');
+                    break;
+                    
+                case 'global':
+                    alert('🌍 Global Beauty Products\n\nExplore our international beauty collection below!\n\n• Products from 50+ countries\n• Traditional & modern formulas\n• Exclusive international brands\n• Cultural beauty secrets\n\nScroll down to explore!');
+                    break;
+                    
+                case 'catalog':
+                    alert('📚 Beauty Catalog\n\n3,100+ products from around the world!\n\n• Skincare essentials\n• Makeup favorites\n• Hair care products\n• Fragrance collection\n\nScroll down to browse our collection!');
+                    break;
+                    
+                case 'basket':
+                    if (basketCount === 0) {
+                        alert('🛒 Your Basket is Empty!\n\nStart your beauty journey:\n\n• Browse our global collection below\n• Add products to your basket\n• Get personalized recommendations\n• Enjoy exclusive member benefits\n\nHappy shopping!');
+                    } else {
+                        alert(`🛒 Your Beauty Basket:\n\n${basketCount} amazing products selected!\n\n• Premium beauty products\n• International brands\n• Curated just for you\n\nTotal items: ${basketCount}\n\nSecure checkout coming soon!`);
+                    }
+                    break;
+                    
+                default:
+                    alert('🌟 Feature Coming Soon!\n\nWe\'re working hard to bring you the best beauty experience. Stay tuned!');
+            }
         }
 
         function testBasket(product) {
             basketCount++;
             document.getElementById('basket-count-badge').textContent = basketCount;
             document.getElementById('basket-display').textContent = basketCount + ' items';
-            alert('🛒 Added "' + product + '" to basket! Total: ' + basketCount);
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Added!';
+            btn.style.background = '#28a745';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 1500);
         }
 
         function testFilter(region) {
-            alert('🌍 Filter "' + region + '" clicked successfully!');
+            // Update active filter
+            document.querySelectorAll('.region-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update the current region and re-render products
+            GLOBAL_PRODUCTS.currentRegion = region;
+            filterAndRenderProducts();
         }
 
         function testNav(page) {
-            alert('📱 Navigation "' + page + '" clicked successfully!');
+            // Update active nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            switch(page) {
+                case 'home':
+                    window.scrollTo(0, 0);
+                    break;
+                    
+                case 'signin':
+                    alert('🔑 Sign In\n\nSecure member login coming soon!\n\n• Save your favorite products\n• Get personalized recommendations\n• Track your beauty journey\n• Access exclusive deals\n\nJoin our beauty community!');
+                    break;
+                    
+                case 'createaccount':
+                    alert('👤 Create Account\n\nJoin our beauty community!\n\n• Free account registration\n• Personalized AI recommendations\n• Exclusive member benefits\n• Beauty tips & tutorials\n• Early access to new products\n\nRegistration coming soon!');
+                    break;
+                    
+                case 'catalog':
+                    document.getElementById('global-products-grid').scrollIntoView({ behavior: 'smooth' });
+                    break;
+                    
+                case 'askme':
+                    alert('💬 AI Beauty Chat\n\nChat with your AI beauty consultant:\n\n• Real-time beauty advice\n• Product recommendations\n• Skincare routine builder\n• Makeup tutorials\n• Ingredient explanations\n\nFull AI conversation coming soon!');
+                    break;
+                    
+                default:
+                    alert('🌟 Page Coming Soon!\n\nWe\'re working on bringing you the best beauty experience!');
+            }
         }
 
-        console.log('App loaded successfully');
+        // Initialize the app
+        function initializeApp() {
+            console.log('✨ Luminous AI - Loading products...');
+            
+            // Generate and load products
+            GLOBAL_PRODUCTS.allProducts = generateSampleProducts();
+            filterAndRenderProducts();
+            
+            // Add search input event listener
+            const aiInput = document.getElementById('aiInput');
+            if (aiInput) {
+                aiInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        testSearch();
+                    }
+                });
+            }
+
+            console.log('✨ Luminous AI - Fully Loaded! 🚀');
+        }
+
+        // Load app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
     </script>
 </body>
 </html>
