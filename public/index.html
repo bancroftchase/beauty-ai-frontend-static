@@ -687,24 +687,51 @@
         }
 
         function handleFeature(feature) {
-            const messages = {
-                'antiaging': '🧘 Anti-aging Collection\n\nDiscover premium anti-aging skincare and wellness products. Coming soon!',
-                'eyecare': '👁️ Eye Care Specialists\n\nBrowse 500+ eye care products including serums and treatments. Coming soon!',
-                'kbeauty': '🌸 K-Beauty Collection\n\nExplore 600+ authentic Korean beauty products. Coming soon!',
-                'tanning': '☀️ Tanning Products\n\nFind perfect tanning products for your skin type. Coming soon!',
-                'eyelashes': '👁️‍🗨️ Eyelash Collection\n\nEnhance your lashes with 400+ products. Coming soon!',
-                'analysis': '✨ AI Skin Analysis\n\nGet personalized skin analysis and recommendations. Premium feature coming soon!',
-                'facial': '😊 AI Facial Analysis\n\nAdvanced facial scanning for personalized beauty advice. Premium feature coming soon!',
-                'global': '🌍 Global Beauty Products\n\nExplore our international beauty collection below!',
-                'catalog': '📚 Beauty Catalog\n\n3,100+ products from around the world. Scroll down to explore!',
-                'basket': () => showBasket()
-            };
-
-            const message = messages[feature];
-            if (typeof message === 'function') {
-                message();
-            } else {
-                alert(message || 'Feature coming soon!');
+            console.log('Feature clicked:', feature); // Debug log
+            
+            switch(feature) {
+                case 'antiaging':
+                    alert('🧘 Anti-aging Collection\n\nDiscover premium anti-aging skincare and wellness products!\n\n• Retinol serums\n• Collagen creams\n• Peptide treatments\n• Vitamin C products\n\nFull collection coming soon!');
+                    break;
+                    
+                case 'eyecare':
+                    alert('👁️ Eye Care Specialists\n\nBrowse 500+ eye care products including:\n\n• Under-eye serums\n• Dark circle treatments\n• Anti-puffiness creams\n• Lash growth serums\n\nFull catalog coming soon!');
+                    break;
+                    
+                case 'kbeauty':
+                    alert('🌸 K-Beauty Collection\n\nExplore 600+ authentic Korean beauty products:\n\n• Sheet masks\n• Essence & serums\n• BB & CC creams\n• Snail mucin products\n\nFull K-beauty store coming soon!');
+                    break;
+                    
+                case 'tanning':
+                    alert('☀️ Tanning Products\n\nFind perfect tanning products for your skin type:\n\n• Self-tanning drops\n• Bronzing mousses\n• Gradual tan lotions\n• Professional sprays\n\n400+ products coming soon!');
+                    break;
+                    
+                case 'eyelashes':
+                    alert('👁️‍🗨️ Eyelash Collection\n\nEnhance your lashes with 400+ products:\n\n• Mascara collection\n• Lash growth serums\n• False eyelashes\n• Lash curlers & tools\n\nFull lash boutique coming soon!');
+                    break;
+                    
+                case 'analysis':
+                    alert('✨ AI Skin Analysis\n\nGet personalized skin analysis:\n\n• Skin type detection\n• Problem area identification\n• Custom product recommendations\n• Progress tracking\n\nPremium AI feature coming soon!');
+                    break;
+                    
+                case 'facial':
+                    alert('😊 AI Facial Analysis\n\nAdvanced facial scanning technology:\n\n• Face shape analysis\n• Skin tone matching\n• Makeup recommendations\n• Skincare routine builder\n\nPremium feature coming soon!');
+                    break;
+                    
+                case 'global':
+                    alert('🌍 Global Beauty Products\n\nExplore our international beauty collection below!\n\n• Products from 50+ countries\n• Traditional & modern formulas\n• Exclusive international brands\n• Cultural beauty secrets\n\nScroll down to explore!');
+                    break;
+                    
+                case 'catalog':
+                    alert('📚 Beauty Catalog\n\n3,100+ products from around the world!\n\n• Skincare essentials\n• Makeup favorites\n• Hair care products\n• Fragrance collection\n\nScroll down to browse our collection!');
+                    break;
+                    
+                case 'basket':
+                    showBasket();
+                    break;
+                    
+                default:
+                    alert('🌟 Feature Coming Soon!\n\nWe\'re working hard to bring you the best beauty experience. Stay tuned!');
             }
         }
 
