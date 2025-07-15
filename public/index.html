@@ -1,1013 +1,799 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>✨ Beauty Products Search</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Beauty Chat - Luminous AI</title>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="#B8860B" name="theme-color"/>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    :root {
-      --primary-charcoal: #2C2C2C;
-      --luminous-gold: #B8860B;
-      --pearl-white: #F8F8F8;
-      --premium-gradient: linear-gradient(135deg, #B8860B, #DAA520);
-    }
+        :root {
+            --primary-charcoal: #2C2C2C;
+            --luminous-gold: #B8860B;
+            --pearl-white: #F8F8F8;
+            --premium-gradient: linear-gradient(135deg, #B8860B, #DAA520);
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--primary-charcoal);
-      color: #333;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-charcoal);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
 
-    .container {
-      max-width: 414px;
-      margin: 0 auto;
-      background: var(--primary-charcoal);
-      min-height: 100vh;
-      position: relative;
-    }
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: var(--primary-charcoal);
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .header {
-      background: var(--primary-charcoal);
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #3A3A3A;
-    }
+        .header {
+            background: var(--primary-charcoal);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #3A3A3A;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    .back-btn {
-      text-decoration: none;
-      color: var(--luminous-gold);
-      font-size: 18px;
-      font-weight: 600;
-    }
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
 
-    .cart {
-      font-size: 24px;
-      color: white;
-      position: relative;
-    }
+        .cart-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            position: relative;
+        }
 
-    .cart-count {
-      background: var(--luminous-gold);
-      color: white;
-      border-radius: 10px;
-      padding: 2px 8px;
-      font-size: 12px;
-      font-weight: 700;
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      min-width: 20px;
-      text-align: center;
-    }
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 16px;
+            text-align: center;
+        }
 
-    .main-content {
-      background: var(--pearl-white);
-      min-height: calc(100vh - 140px);
-      padding: 20px;
-    }
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            background: var(--premium-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    .search-section {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            background: var(--pearl-white);
+            color: #333;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
 
-    .search-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--primary-charcoal);
-      margin-bottom: 8px;
-      text-align: center;
-    }
+        .welcome-message {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-    .search-subtitle {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 20px;
-      text-align: center;
-    }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-    .search-bar {
-      background: white;
-      border-radius: 25px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border: 2px solid var(--luminous-gold);
-      margin-bottom: 20px;
-    }
+        .quick-action-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
 
-    .search-icon {
-      font-size: 20px;
-      color: var(--luminous-gold);
-    }
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+        }
 
-    .search-input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      color: var(--primary-charcoal);
-      background: transparent;
-    }
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
 
-    .search-input::placeholder {
-      color: #999;
-      font-style: italic;
-    }
+        .message.user {
+            flex-direction: row-reverse;
+        }
 
-    .search-btn {
-      background: var(--premium-gradient);
-      border: none;
-      border-radius: 20px;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 16px;
-    }
+        .message-content {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            max-width: 80%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
-    .search-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
-    }
+        .message.user .message-content {
+            background: var(--premium-gradient);
+            color: white;
+        }
 
-    .quick-categories {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
+        .products-header {
+            background: var(--premium-gradient);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0 15px 0;
+            text-align: center;
+        }
 
-    .category-btn {
-      background: var(--pearl-white);
-      border: 1px solid var(--luminous-gold);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      color: var(--primary-charcoal);
-    }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
 
-    .category-btn:hover {
-      background: var(--premium-gradient);
-      color: white;
-      transform: translateY(-1px);
-    }
+        .product-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
 
-    .status-section {
-      background: white;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
 
-    .status {
-      color: #28a745;
-      font-weight: 600;
-      font-size: 14px;
-    }
+        .product-image {
+            width: 100%;
+            height: 80px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--premium-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
 
-    .error {
-      color: #dc3545;
-      font-weight: 600;
-      font-size: 14px;
-    }
+        .product-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--luminous-gold);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 8px;
+            font-weight: bold;
+        }
 
-    .products-section {
-      background: white;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      margin-bottom: 100px;
-    }
+        .product-name {
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--primary-charcoal);
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
 
-    .products-header {
-      background: var(--premium-gradient);
-      color: white;
-      padding: 16px;
-      text-align: center;
-    }
+        .product-brand {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 4px;
+        }
 
-    .products-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
+        .product-price {
+            font-size: 14px;
+            color: var(--luminous-gold);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
 
-    .products-subtitle {
-      font-size: 12px;
-      opacity: 0.9;
-    }
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
 
-    #product-list {
-      padding: 20px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
+        .stars {
+            color: #ffd700;
+            font-size: 10px;
+        }
 
-    .product-card {
-      background: var(--pearl-white);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transition: all 0.3s ease;
-      border: 1px solid #e9ecef;
-    }
+        .review-count {
+            font-size: 9px;
+            color: #666;
+        }
 
-    .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-      border-color: var(--luminous-gold);
-    }
+        .product-country {
+            font-size: 9px;
+            color: var(--luminous-gold);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
 
-    .product-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-      gap: 12px;
-    }
+        .add-to-cart-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
 
-    .product-name {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--primary-charcoal);
-      margin: 0;
-      line-height: 1.3;
-      flex: 1;
-    }
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+        }
 
-    .product-category {
-      background: var(--premium-gradient);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
+        .input-area {
+            background: var(--primary-charcoal);
+            padding: 20px;
+            border-top: 1px solid #3A3A3A;
+            position: sticky;
+            bottom: 0;
+        }
 
-    .product-details {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      margin-bottom: 12px;
-      align-items: center;
-    }
+        .input-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
 
-    .product-brand {
-      font-size: 14px;
-      color: #666;
-      margin: 0;
-      font-weight: 500;
-    }
+        .refresh-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
 
-    .product-price {
-      font-size: 20px;
-      font-weight: 800;
-      color: #28a745;
-      margin: 0;
-      text-align: right;
-    }
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            border-radius: 25px;
+            padding: 12px 20px;
+        }
 
-    .product-country {
-      font-size: 12px;
-      color: #666;
-      margin: 0;
-      font-style: italic;
-    }
+        .message-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: transparent;
+        }
 
-    .product-description {
-      font-size: 14px;
-      color: #495057;
-      line-height: 1.5;
-      margin: 0 0 16px 0;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
+        .send-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-    .add-to-basket {
-      width: 100%;
-      padding: 12px 24px;
-      background: var(--premium-gradient);
-      color: white;
-      border: none;
-      border-radius: 25px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .add-to-basket:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(184, 134, 11, 0.4);
-    }
-
-    .loading-message, .error-message {
-      text-align: center;
-      padding: 40px 20px;
-      font-size: 16px;
-      border-radius: 12px;
-    }
-
-    .loading-message {
-      color: var(--luminous-gold);
-      background: #fff9e6;
-      border: 1px solid var(--luminous-gold);
-    }
-
-    .error-message {
-      color: #dc3545;
-      background: #f8d7da;
-      border: 1px solid #f5c6cb;
-    }
-
-    #load-more {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .load-more-button {
-      padding: 16px 32px;
-      background: var(--premium-gradient);
-      color: white;
-      border: none;
-      border-radius: 25px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .load-more-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(184, 134, 11, 0.4);
-    }
-
-    .bottom-nav {
-      background: white;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      border-top: 1px solid #E0E0E0;
-      padding-bottom: 20px;
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 414px;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: #666;
-      text-decoration: none;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-
-    .nav-item.active {
-      color: var(--luminous-gold);
-    }
-
-    .nav-icon {
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    .nav-label {
-      font-size: 10px;
-      font-weight: 500;
-    }
-
-    /* Responsive design */
-    @media (max-width: 380px) {
-      .container {
-        max-width: 100%;
-      }
-      
-      .quick-categories {
-        gap: 6px;
-      }
-      
-      .category-btn {
-        font-size: 11px;
-        padding: 6px 12px;
-      }
-      
-      .product-name {
-        font-size: 15px;
-      }
-      
-      .product-price {
-        font-size: 18px;
-      }
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .product-card {
-      animation: fadeIn 0.5s ease-in-out;
-    }
-  </style>
+        .status-message {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <a href="index.html" class="back-btn">← Back</a>
-      <span class="cart">🛒 <span class="cart-count" id="basket-count">0</span></span>
-    </div>
+<div class="container">
+<div class="header">
+<a class="back-btn" href="index.html">← Back</a>
+<div class="logo">✨ Beauty Chat</div>
+<button class="cart-btn" onclick="toggleCart()">
+    🛒
+    <span class="cart-count" id="cartCount">0</span>
+</button>
+</div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Search Section -->
-      <div class="search-section">
-        <div class="search-title">✨ Beauty Products Search</div>
-        <div class="search-subtitle">Discover 3,100+ products from around the world</div>
-        
-        <div class="search-bar">
-          <div class="search-icon">🔍</div>
-          <input type="text" class="search-input" id="messageInput" placeholder="Search for beauty products..." />
-          <button class="search-btn" onclick="sendMessage()">🚀</button>
-        </div>
-        
-        <div class="quick-categories" id="quick-categories">
-          <button class="category-btn" onclick="quickSearch('global')">🌍 Global</button>
-          <button class="category-btn" onclick="quickSearch('k-beauty')">🌸 K-Beauty</button>
-          <button class="category-btn" onclick="quickSearch('anti-aging')">⏰ Anti-Aging</button>
-          <button class="category-btn" onclick="quickSearch('eye care')">👁️ Eye Care</button>
-          <button class="category-btn" onclick="quickSearch('tanning')">☀️ Tanning</button>
-          <button class="category-btn" onclick="quickSearch('eyelashes')">👁️‍🗨️ Eyelashes</button>
-          <button class="category-btn" onclick="quickSearch('lip products')">💋 Lip Products</button>
-          <button class="category-btn" onclick="showAllCategories()">🔄 Show All Categories</button>
-        </div>
-      </div>
+<div class="chat-area" id="chatArea">
+<div class="welcome-message">
+<h3 style="color: var(--primary-charcoal); margin-bottom: 10px;">Hi! I'm your Beauty AI assistant ✨</h3>
+<div class="status-message">✅ Frontend-only mode - Instant beauty product search!</div>
+<div class="quick-actions">
+<button class="quick-action-btn" onclick="sendQuickMessage('🌍 Global Beauty')">🌍 Global Beauty</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('📸 Instagram Trends')">📸 Instagram Trends</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('🌸 K-Beauty')">🌸 K-Beauty</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('🛒 Amazon Finds')">🛒 Amazon Finds</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('🌿 Natural Beauty')">🌿 Natural Beauty</button>
+<button class="quick-action-btn" onclick="sendQuickMessage('💎 Luxury Skincare')">💎 Luxury Skincare</button>
+</div>
+</div>
+</div>
 
-      <!-- Status Section -->
-      <div class="status-section">
-        <div id="status" class="status">✅ Ready to search for beauty products!</div>
-      </div>
+<div class="input-area">
+<div class="input-controls">
+<button class="refresh-btn" onclick="refreshChat()">🔄 New Search</button>
+</div>
+<div class="input-container">
+<input class="message-input" id="messageInput" onkeypress="handleKeyPress(event)" placeholder="Ask about beauty products..." type="text"/>
+<button class="send-btn" onclick="sendMessage()">▶</button>
+</div>
+</div>
+</div>
 
-      <!-- Products Section -->
-      <div class="products-section">
-        <div class="products-header">
-          <div class="products-title">Beauty Products</div>
-          <div class="products-subtitle">AI-powered recommendations from global experts</div>
-        </div>
-        
-        <div id="product-list">
-          <div class="loading-message">Click search or select a category to find products...</div>
-        </div>
-        
-        <div id="load-more" style="display: none;"></div>
-      </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="goToPage('home', event)">
-        <div class="nav-icon">🏠</div>
-        <div class="nav-label">Home</div>
-      </div>
-      <div class="nav-item" onclick="goToPage('signin', event)">
-        <div class="nav-icon">🔑</div>
-        <div class="nav-label">Sign In</div>
-      </div>
-      <div class="nav-item" onclick="goToPage('createaccount', event)">
-        <div class="nav-icon">👤</div>
-        <div class="nav-label">Create Account</div>
-      </div>
-      <div class="nav-item active" onclick="goToPage('catalog', event)">
-        <div class="nav-icon">🌍</div>
-        <div class="nav-label">Catalog</div>
-      </div>
-      <div class="nav-item" onclick="goToPage('askme', event)">
-        <div class="nav-icon">💬</div>
-        <div class="nav-label">Ask Me</div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // CORS Proxy to bypass CORS issues
-    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
-    const API_URL = 'https://beauty-ai-backend.onrender.com';
-    
-    let currentProducts = [];
-    let displayedProducts = 0;
-    let currentPage = 1;
-    let totalPages = 1;
-    let totalAvailable = 0;
-    const productsPerPage = 50;
-
-    // Initialize basket count
-    let basketCount = parseInt(localStorage.getItem('basketCount') || '0');
-    const basketCountElement = document.getElementById('basket-count');
-    if (basketCountElement) {
-        basketCountElement.textContent = basketCount;
-    }
-
-    // Update status
-    function setStatus(message, isError = false) {
-      const statusElement = document.getElementById('status');
-      statusElement.textContent = message;
-      statusElement.className = isError ? 'error' : 'status';
-    }
-
-    // Search products using pagination with better error handling
-    async function searchProducts(query, page = 1, loadMore = false) {
-      const productList = document.getElementById('product-list');
-      
-      try {
-        const cleanQuery = (query || 'global').trim().toLowerCase();
-        console.log(`Starting search for: "${cleanQuery}", page: ${page}`);
-        
-        if (!loadMore) {
-          setStatus('🔍 Searching worldwide for products...');
-          productList.innerHTML = '<div class="loading-message">🔍 Searching worldwide for products...</div>';
-          currentProducts = [];
-          displayedProducts = 0;
-          currentPage = 1;
-        } else {
-          setStatus('🔍 Loading more products...');
-        }
-        
-        // Use pagination to avoid response size limits (300 per page works perfectly)
-        const searchUrl = `${API_URL}/api/products/search?q=${encodeURIComponent(cleanQuery)}&page=${page}&limit=300`;
-        const proxyUrl = `${CORS_PROXY}${encodeURIComponent(searchUrl)}`;
-        
-        console.log('Search URL:', searchUrl);
-        console.log('Proxy URL:', proxyUrl);
-        
-        const response = await fetch(proxyUrl);
-        console.log('Response status:', response.status);
-        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        // Check if response has content
-        const responseText = await response.text();
-        console.log('Response text length:', responseText.length);
-        console.log('Response text preview:', responseText.substring(0, 200));
-        
-        if (!responseText || responseText.trim() === '') {
-          throw new Error('Empty response from server');
-        }
-        
-        let data;
-        try {
-          data = JSON.parse(responseText);
-        } catch (parseError) {
-          console.error('JSON parse error:', parseError);
-          console.error('Response text that failed to parse:', responseText);
-          throw new Error(`Invalid JSON response: ${parseError.message}`);
-        }
-        
-        console.log('Parsed data:', data);
-        
-        if (data.success && data.products && data.products.length > 0) {
-          if (loadMore) {
-            currentProducts.push(...data.products);
-          } else {
-            currentProducts = data.products;
-          }
-          
-          displayedProducts = 0;
-          if (!loadMore) {
-            productList.innerHTML = '';
-          }
-          renderProducts();
-          
-          // Update pagination info
-          if (data.pagination) {
-            currentPage = data.pagination.currentPage;
-            totalPages = data.pagination.totalPages;
-            totalAvailable = data.pagination.totalProducts;
-          }
-          
-          toggleLoadMoreButton();
-          
-          const sourceInfo = data.stats?.source ? ` (${data.stats.source})` : '';
-          const currentCount = currentProducts.length;
-          const totalCount = data.pagination?.totalProducts || data.stats?.totalAvailable || currentCount;
-          
-          let statusMsg = `✅ Showing ${currentCount} of ${totalCount} products worldwide${sourceInfo}`;
-          
-          if (data.pagination && data.pagination.totalPages > 1) {
-            statusMsg += ` - Page ${currentPage} of ${totalPages}`;
-          }
-          
-          // Show API breakdown if available
-          if (data.stats?.geminiCount > 0 || data.stats?.rainforestCount > 0) {
-            const apiInfo = [];
-            if (data.stats.geminiCount > 0) apiInfo.push(`${data.stats.geminiCount} from AI`);
-            if (data.stats.rainforestCount > 0) apiInfo.push(`${data.stats.rainforestCount} from Amazon`);
-            if (data.stats.localCount > 0) apiInfo.push(`${data.stats.localCount} from global database`);
+<script>
+        // 🌟 FRONTEND-ONLY BEAUTY PRODUCT DATABASE
+        const BEAUTY_DATABASE = {
+            // Global Beauty Products from 50+ Countries
+            global: [
+                { id: 'g1', name: 'Luxury Rose Serum', brand: 'Chanel', price: '$280.00', country: 'France', category: 'Serum', description: 'Premium French luxury skincare with rare rose extracts from Grasse.' },
+                { id: 'g2', name: 'Snail Mucin Essence', brand: 'COSRX', price: '$25.00', country: 'South Korea', category: 'Essence', description: 'Korean beauty innovation with 96% snail secretion filtrate.' },
+                { id: 'g3', name: 'Açaí Anti-Aging Cream', brand: 'Natura', price: '$45.00', country: 'Brazil', category: 'Moisturizer', description: 'Brazilian botanical skincare with Amazon açaí and natural oils.' },
+                { id: 'g4', name: 'Scientific Retinol Complex', brand: 'Dr. Barbara Sturm', price: '$215.00', country: 'Germany', category: 'Treatment', description: 'German precision skincare with advanced retinol technology.' },
+                { id: 'g5', name: 'Sake Brightening Mask', brand: 'Tatcha', price: '$68.00', country: 'Japan', category: 'Mask', description: 'Japanese innovation with fermented sake and rice for radiant skin.' },
+                { id: 'g6', name: 'Vitamin C Serum', brand: 'SkinCeuticals', price: '$166.00', country: 'USA', category: 'Serum', description: 'American dermatology-grade vitamin C for protection and brightness.' },
+                { id: 'g7', name: 'Argan Oil Elixir', brand: 'Argania', price: '$32.00', country: 'Morocco', category: 'Oil', description: 'Pure Moroccan argan oil for face and hair nourishment.' },
+                { id: 'g8', name: 'Alpine Herb Cleanser', brand: 'Weleda', price: '$12.00', country: 'Switzerland', category: 'Cleanser', description: 'Swiss natural skincare with organic alpine botanicals.' },
+                { id: 'g9', name: 'Dead Sea Mud Mask', brand: 'AHAVA', price: '$38.00', country: 'Israel', category: 'Mask', description: 'Israeli mineral-rich Dead Sea mud for deep purification.' },
+                { id: 'g10', name: 'Kangaroo Paw Moisturizer', brand: 'Aesop', price: '$75.00', country: 'Australia', category: 'Moisturizer', description: 'Australian botanical skincare with native plant extracts.' }
+            ],
             
-            if (apiInfo.length > 0) {
-              statusMsg += ` - ${apiInfo.join(', ')}`;
-            }
-          }
-          
-          setStatus(statusMsg);
-        } else if (data.success === false) {
-          // Server returned an error
-          const errorMsg = data.error || data.message || 'Unknown server error';
-          throw new Error(`Server error: ${errorMsg}`);
-        } else {
-          if (!loadMore) {
-            productList.innerHTML = '<div class="error-message">No products found. Try terms like "skincare", "makeup", "k-beauty", or "anti-aging".</div>';
-            setStatus('❌ No products found. Try different search terms.', true);
-          }
-        }
-        
-      } catch (error) {
-        console.error('Search failed:', error);
-        
-        let errorMessage = '';
-        let userMessage = '';
-        
-        if (error.message.includes('JSON')) {
-          errorMessage = 'Invalid response format from server';
-          userMessage = 'Server returned invalid data. This might be a temporary issue.';
-        } else if (error.message.includes('Empty response')) {
-          errorMessage = 'Server returned empty response';
-          userMessage = 'Server didn\'t return any data. Please try again.';
-        } else if (error.message.includes('Content-Length')) {
-          errorMessage = 'Response too large';
-          userMessage = 'Found too many products! Try more specific search terms.';
-        } else if (error.message.includes('NetworkError') || error.message.includes('fetch')) {
-          errorMessage = 'Network connection failed';
-          userMessage = 'Connection failed. Please check your internet connection.';
-        } else {
-          errorMessage = error.message;
-          userMessage = error.message;
-        }
-        
-        if (!loadMore) {
-          productList.innerHTML = `
-            <div class="error-message">
-              ❌ Search failed: ${userMessage}<br>
-              <small>Try different search terms or refresh the page.</small><br>
-              <button class="load-more-button" onclick="searchProducts('global')" style="margin-top: 15px;">
-                Try Global Search
-              </button>
-            </div>
-          `;
-          setStatus(`❌ ${errorMessage}`, true);
-        }
-      }
-    }
-
-    // Render products as beautiful cards
-    function renderProducts() {
-      const productList = document.getElementById('product-list');
-      if (!productList) return;
-      
-      const nextBatch = currentProducts.slice(displayedProducts, displayedProducts + productsPerPage);
-      displayedProducts += nextBatch.length;
-
-      const html = nextBatch.map(product => {
-        const price = parseFloat(product.price) || 0;
-        const formattedPrice = price.toFixed(2);
-        
-        return `
-          <div class="product-card">
-            <div class="product-header">
-              <h3 class="product-name">${escapeHtml(product.name)}</h3>
-              <span class="product-category">${escapeHtml(product.category || 'Beauty')}</span>
-            </div>
-            <div class="product-details">
-              <p class="product-brand">Brand: ${escapeHtml(product.brand)}</p>
-              <p class="product-price">$${formattedPrice}</p>
-            </div>
-            <p class="product-country">Origin: ${escapeHtml(product.country || 'Global')}</p>
-            <p class="product-description">${escapeHtml(product.description)}</p>
-            <button class="add-to-basket" onclick="addToBasket('${escapeHtml(product.id)}', '${escapeHtml(product.name)}', '${formattedPrice}')">
-              Add to Basket
-            </button>
-          </div>
-        `;
-      }).join('');
-      
-      productList.innerHTML += html;
-      toggleLoadMoreButton();
-    }
-
-    // Escape HTML to prevent XSS
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text || '';
-      return div.innerHTML;
-    }
-
-    // Toggle Load More button
-    function toggleLoadMoreButton() {
-      const loadMoreDiv = document.getElementById('load-more');
-      if (loadMoreDiv) {
-        if (currentPage < totalPages) {
-          loadMoreDiv.innerHTML = `
-            <button class="load-more-button" onclick="loadMoreProducts()">
-              Load More Products (Page ${currentPage + 1} of ${totalPages})
-            </button>
-            <p style="text-align: center; color: #666; margin-top: 10px; font-size: 12px;">
-              Showing ${currentProducts.length} of ${totalAvailable} total products
-            </p>
-          `;
-          loadMoreDiv.style.display = 'block';
-        } else if (currentProducts.length > displayedProducts) {
-          loadMoreDiv.innerHTML = '<button class="load-more-button" onclick="renderMoreProducts()">Show More</button>';
-          loadMoreDiv.style.display = 'block';
-        } else {
-          loadMoreDiv.innerHTML = `
-            <p style="text-align: center; color: #666; margin-top: 20px; font-size: 14px;">
-              ✅ All ${currentProducts.length} products shown
-            </p>
-          `;
-          loadMoreDiv.style.display = 'block';
-        }
-      }
-    }
-
-    // Load more products from next page
-    function loadMoreProducts() {
-      const query = document.getElementById('messageInput').value.trim() || 'global';
-      searchProducts(query, currentPage + 1, true);
-    }
-
-    // Render more products from current batch
-    function renderMoreProducts() {
-      renderProducts();
-    }
-
-    // Add to basket
-    function addToBasket(id, name, price) {
-      try {
-        const basket = JSON.parse(localStorage.getItem('basket') || '[]');
-        const newItem = { 
-          id, 
-          name, 
-          price: parseFloat(price),
-          addedAt: new Date().toISOString()
+            // K-Beauty Specialties
+            kbeauty: [
+                { id: 'k1', name: 'Glass Skin Serum', brand: 'Beauty of Joseon', price: '$17.00', country: 'South Korea', category: 'Serum', description: 'Traditional Korean hanbang ingredients for glass skin effect.' },
+                { id: 'k2', name: 'Centella Calming Gel', brand: 'Purito', price: '$13.00', country: 'South Korea', category: 'Gel', description: 'Soothing centella asiatica for sensitive skin relief.' },
+                { id: 'k3', name: 'Ginseng Renewal Essence', brand: 'The History of Whoo', price: '$150.00', country: 'South Korea', category: 'Essence', description: 'Luxury Korean skincare with precious ginseng extracts.' },
+                { id: 'k4', name: 'Snail 92 All In One Cream', brand: 'COSRX', price: '$22.00', country: 'South Korea', category: 'Cream', description: 'Multi-purpose cream with 92% snail mucin for repair and hydration.' },
+                { id: 'k5', name: 'Rice Water Bright Cleansing Foam', brand: 'The Face Shop', price: '$8.00', country: 'South Korea', category: 'Cleanser', description: 'Gentle rice water cleanser for brightening and deep cleansing.' }
+            ],
+            
+            // Natural & Organic
+            natural: [
+                { id: 'n1', name: 'Organic Jojoba Oil', brand: 'Cliganic', price: '$15.99', country: 'USA', category: 'Oil', description: 'Pure organic jojoba oil for natural moisturizing and healing.' },
+                { id: 'n2', name: 'Himalayan Rose Facial Mist', brand: 'Forest Essentials', price: '$28.00', country: 'India', category: 'Mist', description: 'Ayurvedic rose water mist with Himalayan spring water.' },
+                { id: 'n3', name: 'Green Tea Cleansing Oil', brand: 'Innisfree', price: '$25.00', country: 'South Korea', category: 'Oil Cleanser', description: 'Natural Jeju green tea oil for gentle makeup removal.' },
+                { id: 'n4', name: 'Manuka Honey Face Mask', brand: 'Farmacy', price: '$56.00', country: 'USA', category: 'Mask', description: 'Clean beauty mask with New Zealand manuka honey.' },
+                { id: 'n5', name: 'Botanical Facial Oil', brand: 'Herbivore', price: '$72.00', country: 'USA', category: 'Oil', description: 'Natural facial oil blend with organic botanicals and essential oils.' }
+            ],
+            
+            // Anti-aging
+            antiaging: [
+                { id: 'a1', name: 'Retinol Treatment', brand: 'Paula\'s Choice', price: '$55.00', country: 'USA', category: 'Treatment', description: 'Clinical-strength retinol for fine lines and wrinkles.' },
+                { id: 'a2', name: 'Peptide Renewal Serum', brand: 'The Ordinary', price: '$28.90', country: 'Canada', category: 'Serum', description: 'Advanced peptide complex for skin firmness and elasticity.' },
+                { id: 'a3', name: 'Collagen Boosting Cream', brand: 'Olay', price: '$24.99', country: 'USA', category: 'Moisturizer', description: 'Anti-aging moisturizer with collagen peptides and niacinamide.' },
+                { id: 'a4', name: 'Time Revolution Serum', brand: 'Missha', price: '$49.00', country: 'South Korea', category: 'Serum', description: 'Fermented yeast extract serum for age-defying benefits.' },
+                { id: 'a5', name: 'Hyaluronic Acid Intensive', brand: 'Neutrogena', price: '$15.97', country: 'USA', category: 'Serum', description: 'Concentrated hyaluronic acid for deep hydration and plumping.' }
+            ],
+            
+            // Luxury
+            luxury: [
+                { id: 'l1', name: 'Platinum Rare Serum', brand: 'La Mer', price: '$500.00', country: 'USA', category: 'Serum', description: 'Ultra-luxury anti-aging serum with rare platinum extracts.' },
+                { id: 'l2', name: 'Diamond Radiance Cream', brand: 'Dior', price: '$395.00', country: 'France', category: 'Moisturizer', description: 'Prestige French skincare with diamond powder and precious oils.' },
+                { id: 'l3', name: 'Caviar Cellular Recovery Mask', brand: 'La Prairie', price: '$600.00', country: 'Switzerland', category: 'Mask', description: 'Swiss luxury skincare with caviar extracts and 24k gold.' },
+                { id: 'l4', name: 'Royal Jelly Renewal Serum', brand: 'Sulwhasoo', price: '$230.00', country: 'South Korea', category: 'Serum', description: 'Premium Korean luxury with royal jelly and oriental herbs.' },
+                { id: 'l5', name: 'Black Pearl Essence', brand: 'SK-II', price: '$185.00', country: 'Japan', category: 'Essence', description: 'Japanese luxury skincare with rare black pearl extracts.' }
+            ]
         };
-        
-        basket.push(newItem);
-        localStorage.setItem('basket', JSON.stringify(basket));
-        
-        basketCount++;
-        localStorage.setItem('basketCount', basketCount);
-        
-        if (basketCountElement) {
-          basketCountElement.textContent = basketCount;
-          basketCountElement.style.transform = 'scale(1.3)';
-          basketCountElement.style.color = '#28a745';
-          setTimeout(() => {
-            basketCountElement.style.transform = 'scale(1)';
-            basketCountElement.style.color = '';
-          }, 300);
+
+        let currentProducts = [];
+        let displayedCount = 0;
+        let shoppingCart = JSON.parse(localStorage.getItem('beautyCart')) || [];
+
+        // Initialize cart count
+        updateCartDisplay();
+
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cartCount');
+            const totalItems = shoppingCart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            cartCount.textContent = totalItems;
+            cartCount.style.display = totalItems > 0 ? 'block' : 'none';
         }
-        
-        // Show success notification
-        showNotification(`✅ Added ${name} to basket!`);
-        
-      } catch (error) {
-        console.error('Error adding to basket:', error);
-        showNotification('❌ Error adding item to basket');
-      }
-    }
 
-    // Show notification
-    function showNotification(message) {
-      // Create temporary notification
-      const notification = document.createElement('div');
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--premium-gradient);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 25px;
-        font-weight: 600;
-        font-size: 14px;
-        z-index: 10000;
-        opacity: 0;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 20px rgba(184, 134, 11, 0.4);
-      `;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-      
-      // Animate in
-      setTimeout(() => notification.style.opacity = '1', 100);
-      
-      // Remove after 3 seconds
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => document.body.removeChild(notification), 300);
-      }, 3000);
-    }
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
 
-    // Fallback search without CORS proxy (for testing)
-    async function searchProductsDirect(query) {
-      const productList = document.getElementById('product-list');
-      
-      try {
-        setStatus('🔧 Trying direct connection...');
-        
-        const cleanQuery = (query || 'global').trim().toLowerCase();
-        const searchUrl = `${API_URL}/api/products/search?q=${encodeURIComponent(cleanQuery)}&page=1&limit=100`;
-        
-        console.log('Direct search URL:', searchUrl);
-        
-        const response = await fetch(searchUrl, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'X-Request-ID': 'direct-' + Date.now()
-          }
+        // 🚀 INSTANT SEARCH FUNCTION - NO SERVER REQUIRED
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+
+            if (!message) return;
+
+            clearPreviousResults();
+            addUserMessage(message);
+            messageInput.value = '';
+
+            // Show typing indicator
+            showTyping();
+
+            // Simulate AI thinking time
+            setTimeout(() => {
+                hideTyping();
+                processBeautyQuery(message);
+            }, 1000);
+        }
+
+        function processBeautyQuery(query) {
+            const lowerQuery = query.toLowerCase();
+            let selectedProducts = [];
+            let aiResponse = '';
+
+            // Smart query matching
+            if (lowerQuery.includes('global') || lowerQuery.includes('countries') || lowerQuery.includes('world') || lowerQuery.includes('50')) {
+                selectedProducts = BEAUTY_DATABASE.global;
+                aiResponse = 'I found amazing beauty products from 50+ countries! From French luxury skincare to Korean innovations, Brazilian botanicals, German science, Japanese traditions, and American dermatology brands. Each product represents the best of its region\'s beauty expertise.';
+            } else if (lowerQuery.includes('k-beauty') || lowerQuery.includes('korean') || lowerQuery.includes('korea')) {
+                selectedProducts = BEAUTY_DATABASE.kbeauty;
+                aiResponse = 'K-Beauty is incredible! These Korean skincare products focus on achieving that coveted glass skin look through gentle, hydrating formulations and innovative ingredients like snail mucin, ginseng, and fermented extracts.';
+            } else if (lowerQuery.includes('natural') || lowerQuery.includes('organic') || lowerQuery.includes('clean')) {
+                selectedProducts = BEAUTY_DATABASE.natural;
+                aiResponse = 'Natural and organic beauty products are perfect for conscious consumers! These clean beauty options feature botanical ingredients, sustainable sourcing, and eco-friendly formulations that are gentle on both your skin and the environment.';
+            } else if (lowerQuery.includes('anti-aging') || lowerQuery.includes('wrinkle') || lowerQuery.includes('aging')) {
+                selectedProducts = BEAUTY_DATABASE.antiaging;
+                aiResponse = 'Anti-aging skincare focuses on proven ingredients like retinoids, peptides, and hyaluronic acid. These products help reduce fine lines, improve skin texture, and promote a more youthful appearance through scientific formulations.';
+            } else if (lowerQuery.includes('luxury') || lowerQuery.includes('premium') || lowerQuery.includes('expensive')) {
+                selectedProducts = BEAUTY_DATABASE.luxury;
+                aiResponse = 'Luxury skincare represents the pinnacle of beauty innovation! These premium products feature rare ingredients, advanced technology, and exquisite formulations from the world\'s most prestigious beauty houses.';
+            } else {
+                // Default: show a mix of all categories
+                selectedProducts = [
+                    ...BEAUTY_DATABASE.global.slice(0, 3),
+                    ...BEAUTY_DATABASE.kbeauty.slice(0, 2),
+                    ...BEAUTY_DATABASE.natural.slice(0, 2),
+                    ...BEAUTY_DATABASE.antiaging.slice(0, 2),
+                    ...BEAUTY_DATABASE.luxury.slice(0, 1)
+                ];
+                aiResponse = 'I found a curated selection of beauty products for you! This includes global favorites, K-beauty innovations, natural options, anti-aging treatments, and luxury skincare. Each product is carefully selected for its quality and effectiveness.';
+            }
+
+            // Add AI response
+            addBotMessage(aiResponse);
+
+            // Show products header
+            showProductsHeader(selectedProducts);
+
+            // Display products
+            currentProducts = selectedProducts;
+            displayedCount = 0;
+            displayProducts(selectedProducts);
+        }
+
+        function showProductsHeader(products) {
+            const chatArea = document.getElementById('chatArea');
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'products-header';
+            
+            const countries = [...new Set(products.map(p => p.country))];
+            
+            headerDiv.innerHTML = `
+                <h3>🌍 Found ${products.length} Beauty Products</h3>
+                <div style="font-size: 12px; margin-top: 5px;">
+                    From ${countries.length} countries: ${countries.slice(0, 5).join(', ')}${countries.length > 5 ? '...' : ''}
+                </div>
+            `;
+            
+            chatArea.appendChild(headerDiv);
+        }
+
+        function displayProducts(products) {
+            const chatArea = document.getElementById('chatArea');
+            const productsGrid = document.createElement('div');
+            productsGrid.className = 'products-grid';
+
+            products.forEach((product, index) => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+
+                // Generate rating
+                const rating = 3.5 + Math.random() * 1.5;
+                const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+                
+                // Product badge
+                let badge = '';
+                if (product.country === 'South Korea') badge = 'K-BEAUTY';
+                else if (parseFloat(product.price.replace('$', '')) > 100) badge = 'LUXURY';
+                else if (product.category === 'Oil' || product.brand.includes('Organic')) badge = 'NATURAL';
+
+                productCard.innerHTML = `
+                    ${badge ? `<div class="product-badge">${badge}</div>` : ''}
+                    <div class="product-image">✨</div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-brand">${product.brand}</div>
+                    <div class="product-price">${product.price}</div>
+                    <div class="product-rating">
+                        <span class="stars">${stars}</span>
+                        <span class="review-count">(${Math.floor(Math.random() * 1000) + 100})</span>
+                    </div>
+                    <div class="product-country">🌍 ${product.country}</div>
+                    <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">
+                        🛒 Add to Cart
+                    </button>
+                `;
+
+                productCard.onclick = (e) => {
+                    if (!e.target.classList.contains('add-to-cart-btn')) {
+                        showProductDetails(product);
+                    }
+                };
+
+                productsGrid.appendChild(productCard);
+            });
+
+            chatArea.appendChild(productsGrid);
+            displayedCount += products.length;
+            scrollToBottom();
+        }
+
+        function addToCart(productId) {
+            const product = findProductById(productId);
+            if (!product) return;
+
+            const existingItem = shoppingCart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity = (existingItem.quantity || 1) + 1;
+            } else {
+                shoppingCart.push({
+                    ...product,
+                    quantity: 1,
+                    addedAt: new Date().toISOString()
+                });
+            }
+            
+            localStorage.setItem('beautyCart', JSON.stringify(shoppingCart));
+            updateCartDisplay();
+            
+            showNotification(`Added ${product.name} to cart! 🛒`);
+        }
+
+        function findProductById(id) {
+            const allProducts = [
+                ...BEAUTY_DATABASE.global,
+                ...BEAUTY_DATABASE.kbeauty,
+                ...BEAUTY_DATABASE.natural,
+                ...BEAUTY_DATABASE.antiaging,
+                ...BEAUTY_DATABASE.luxury
+            ];
+            return allProducts.find(p => p.id === id);
+        }
+
+        function showProductDetails(product) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); z-index: 10000;
+                display: flex; align-items: center; justify-content: center;
+                padding: 20px;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 30px; max-width: 90%; max-height: 80%; overflow-y: auto; position: relative;">
+                    <button onclick="this.closest('[style*=position]').remove()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">×</button>
+
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <h2 style="color: #2c2c2c; margin-bottom: 8px;">${product.name}</h2>
+                        <p style="color: #666; margin-bottom: 8px; font-weight: 600;">${product.brand}</p>
+                        <p style="color: #B8860B; font-weight: 600; margin-bottom: 16px;">🌍 ${product.country}</p>
+                        <div style="font-size: 28px; color: #B8860B; font-weight: 700;">${product.price}</div>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <h3 style="color: #2c2c2c; margin-bottom: 10px;">Description</h3>
+                        <p style="color: #666; line-height: 1.5;">${product.description}</p>
+                    </div>
+
+                    <div style="text-align: center; display: flex; gap: 10px;">
+                        <button onclick="addToCart('${product.id}'); this.closest('[style*=position]').remove();" style="background: var(--premium-gradient); color: white; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-weight: bold; flex: 1;">
+                            🛒 Add to Cart
+                        </button>
+                        <button onclick="this.closest('[style*=position]').remove()" style="background: #f0f0f0; color: #333; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-weight: bold;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+
+            document.body.appendChild(modal);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 10001;
+                background: var(--premium-gradient); color: white;
+                padding: 12px 20px; border-radius: 8px;
+                font-size: 14px; font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function clearPreviousResults() {
+            const chatArea = document.getElementById('chatArea');
+            const messages = chatArea.querySelectorAll('.message, .products-grid, .products-header');
+            messages.forEach(message => message.remove());
+        }
+
+        function addUserMessage(message) {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user';
+            messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+            chatArea.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function addBotMessage(message) {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+            messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+            chatArea.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function sendQuickMessage(message) {
+            const messageInput = document.getElementById('messageInput');
+            
+            const enhancedMessages = {
+                '🌍 Global Beauty': 'Show me beauty products from 50+ countries including French luxury, K-beauty, Brazilian botanicals, German science, Japanese innovation, and American brands',
+                '📸 Instagram Trends': 'Show me trending makeup and viral beauty looks',
+                '🌸 K-Beauty': 'Show me Korean skincare and K-beauty products',
+                '🛒 Amazon Finds': 'Show me popular beauty products',
+                '🌿 Natural Beauty': 'Show me natural and organic beauty products',
+                '💎 Luxury Skincare': 'Show me luxury and premium skincare products'
+            };
+
+            messageInput.value = enhancedMessages[message] || message;
+            sendMessage();
+        }
+
+        function showTyping() {
+            const chatArea = document.getElementById('chatArea');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = '<div class="message-content" style="font-style: italic;">AI is searching beauty products... ✨</div>';
+            chatArea.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        function refreshChat() {
+            clearPreviousResults();
+            const messageInput = document.getElementById('messageInput');
+            if (messageInput) {
+                messageInput.value = '';
+                messageInput.focus();
+            }
+        }
+
+        function scrollToBottom() {
+            const chatArea = document.getElementById('chatArea');
+            setTimeout(() => {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 100);
+        }
+
+        function toggleCart() {
+            alert(`🛒 Cart: ${shoppingCart.length} items\n\nFull cart functionality coming soon!`);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✨ Frontend-only Beauty Chat loaded!');
+            
+            // Auto-load global products if query parameter exists
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('query');
+            
+            if (query) {
+                const searchInput = document.getElementById('messageInput');
+                if (searchInput) {
+                    searchInput.value = decodeURIComponent(query);
+                    setTimeout(() => sendMessage(), 500);
+                }
+            }
         });
-        
-        console.log('Direct response status:', response.status);
-        
-        if (!response.ok) {
-          throw new Error(`Direct connection failed: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Direct response data:', data);
-        
-        if (data.success && data.products && data.products.length > 0) {
-          currentProducts = data.products;
-          displayedProducts = 0;
-          productList.innerHTML = '';
-          renderProducts();
-          
-          setStatus(`✅ Direct connection success! Found ${data.products.length} products`);
-        } else {
-          throw new Error('No products found via direct connection');
-        }
-        
-      } catch (error) {
-        console.error('Direct search failed:', error);
-        setStatus('❌ Direct connection also failed. Server may be down.', true);
-        
-        productList.innerHTML = `
-          <div class="error-message">
-            ❌ Unable to connect to server<br>
-            <small>Both proxy and direct connections failed.</small><br>
-            <small>The server may be restarting or temporarily unavailable.</small><br>
-            <button class="load-more-button" onclick="location.reload()" style="margin-top: 15px;">
-              Refresh Page
-            </button>
-          </div>
-        `;
-      }
-    }
-
-    // Send message
-    function sendMessage() {
-      const query = document.getElementById('messageInput').value.trim();
-      console.log(`Manual search initiated: "${query}"`);
-      
-      if (!query) {
-        setStatus('❌ Please enter a search term', true);
-        return;
-      }
-      
-      searchProducts(query);
-    }
-
-    // Navigation - Simple and clean
-    function goToPage(page, event) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-
-      switch(page) {
-        case 'home':
-          window.location.assign('index.html');
-          break;
-        case 'signin':
-          showNotification('🔑 Sign In page coming soon! Browse as guest for now.');
-          break;
-        case 'createaccount':
-          showNotification('👤 Create Account page coming soon! Browse as guest for now.');
-          break;
-        case 'catalog':
-          // Already on catalog, show all categories
-          showAllCategories();
-          break;
-        case 'askme':
-          showAllCategories();
-          break;
-      }
-    }
-
-    // Handle Enter key
-    document.getElementById('messageInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    // Initialize on page load - Auto-search based on URL query
-    window.addEventListener('load', async function() {
-      console.log('🚀 Beauty Products Search initialized');
-      
-      // Check for query parameter and auto-search immediately
-      const urlParams = new URLSearchParams(window.location.search);
-      const query = urlParams.get('query');
-      
-      if (query) {
-        // User came from index page with specific search - show results immediately
-        console.log(`Auto-searching for: "${query}"`);
-        document.getElementById('messageInput').value = query;
-        
-        // Hide the quick categories since user already selected one
-        document.querySelector('.quick-categories').style.display = 'none';
-        
-        // Update page title to match search
-        document.querySelector('.search-title').textContent = `✨ ${query.charAt(0).toUpperCase() + query.slice(1)} Products`;
-        document.querySelector('.search-subtitle').textContent = `Discover products in ${query}`;
-        
-        // Start search immediately
-        await searchProducts(query);
-      } else {
-        // User came directly to chat page - show search interface
-        setStatus('✅ Ready to search for beauty products!');
-        
-        // Test server connection
-        const serverOnline = await testConnection();
-        
-        if (!serverOnline) {
-          document.getElementById('product-list').innerHTML = `
-            <div class="error-message">
-              ⚠️ Server Connection Issue<br>
-              <small>Unable to connect to the beauty products server.</small><br>
-              <button class="load-more-button" onclick="testConnection()" style="margin-top: 15px;">
-                Test Connection
-              </button>
-              <button class="load-more-button" onclick="searchProductsDirect('global')" style="margin-top: 10px;">
-                Try Direct Search
-              </button>
-            </div>
-          `;
-        }
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
