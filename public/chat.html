@@ -476,49 +476,98 @@
             }
         }
 
-        // 🚀 INSTANT SEARCH FUNCTION - NO SERVER REQUIRED
-        function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim();
+        // 🚀 HYBRID SEARCH FUNCTION – Gemini + Product Matcher
+function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim();
 
-            if (!message) return;
+    if (!message) return;
 
-            clearPreviousResults();
-            addUserMessage(message);
-            messageInput.value = '';
+    clearPreviousResults();
+    addUserMessage(message);
+    messageInput.value = '';
 
-            // Show typing indicator
-            showTyping();
+    // Show typing indicator
+    showTyping();
 
-            // Simulate AI thinking time
-            setTimeout(() => {
-                hideTyping();
-                processBeautyQuery(message);
-            }, 1000);
-        }
+    // Step 1: Ask Gemini backend
+    fetch('https://beauty-ai-backend.onrender.com/ask-gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        hideTyping();
 
-        function processBeautyQuery(query) {
-            const lowerQuery = query.toLowerCase();
-            let selectedProducts = [];
-            let aiResponse = '';
+        const reply = data.reply || 'Hmm… I didn’t get a good answer from Gemini 🤖';
+        addBotMessage(`💬 Gemini AI says:\n\n${reply}`);
 
-            // Smart query matching
-            if (lowerQuery.includes('global') || lowerQuery.includes('countries') || lowerQuery.includes('world') || lowerQuery.includes('50')) {
-                selectedProducts = BEAUTY_DATABASE.global;
-                aiResponse = 'I found amazing beauty products from 50+ countries! From French luxury skincare to Korean innovations, Brazilian botanicals, German science, Japanese traditions, and American dermatology brands. Each product represents the best of its region\'s beauty expertise.';
-            } else if (lowerQuery.includes('k-beauty') || lowerQuery.includes('korean') || lowerQuery.includes('korea')) {
-                selectedProducts = BEAUTY_DATABASE.kbeauty;
-                aiResponse = 'K-Beauty is incredible! These Korean skincare products focus on achieving that coveted glass skin look through gentle, hydrating formulations and innovative ingredients like snail mucin, ginseng, and fermented extracts.';
-            } else if (lowerQuery.includes('natural') || lowerQuery.includes('organic') || lowerQuery.includes('clean')) {
-                selectedProducts = BEAUTY_DATABASE.natural;
-                aiResponse = 'Natural and organic beauty products are perfect for conscious consumers! These clean beauty options feature botanical ingredients, sustainable sourcing, and eco-friendly formulations that are gentle on both your skin and the environment.';
-            } else if (lowerQuery.includes('anti-aging') || lowerQuery.includes('wrinkle') || lowerQuery.includes('aging')) {
-                selectedProducts = BEAUTY_DATABASE.antiaging;
-                aiResponse = 'Anti-aging skincare focuses on proven ingredients like retinoids, peptides, and hyaluronic acid. These products help reduce fine lines, improve skin texture, and promote a more youthful appearance through scientific formulations.';
-            } else if (lowerQuery.includes('luxury') || lowerQuery.includes('premium') || lowerQuery.includes('expensive')) {
-                selectedProducts = BEAUTY_DATABASE.luxury;
-                aiResponse = 'Luxury skincare represents the pinnacle of beauty innovation! These premium products feature rare ingredients, advanced technology, and exquisite formulations from the world\'s most prestigious beauty houses.';
-            } else {
+        // Step 2: Still run your mock product logic
+        processBeautyQuery(message);
+    })
+    .catch(err => {
+        console.error('Gemini error:', err);
+        hideTyping();
+        addBotMessage('❌ There was an error contacting Gemini AI. Try again later.');
+    });
+}
+
+function processBeautyQuery(query) {
+  const lowerQuery = query.toLowerCase();
+  let selectedProducts = [];
+  let aiResponse = '';
+
+  const keywordMap = {
+    global: ['global', 'countries', 'world', '50'],
+    kbeauty: ['k-beauty', 'korean', 'korea'],
+    natural: ['natural', 'organic', 'clean'],
+    antiaging: ['anti-aging', 'wrinkle', 'aging', 'retinol'],
+    luxury: ['luxury', 'premium', 'expensive'],
+    makeup: ['lipstick', 'foundation', 'blush'],
+    serum: ['serum', 'vitamin c', 'essence'],
+    mask: ['mask', 'mud', 'sheet']
+  };
+
+  const categoryLabels = {
+    global: '🌍 Global Beauty Products',
+    kbeauty: '🌸 K-Beauty Favorites',
+    natural: '🌿 Natural & Organic Picks',
+    antiaging: '🧬 Anti-Aging Solutions',
+    luxury: '💎 Luxury Skincare Selections',
+    makeup: '💄 Popular Makeup Items',
+    serum: '💧 Targeted Serums & Essences',
+    mask: '🎭 Hydrating & Detox Masks'
+  };
+
+  // Try to match keywords to category
+  let matchedCategory = Object.keys(keywordMap).find(category =>
+    keywordMap[category].some(word => lowerQuery.includes(word))
+  );
+
+  if (!matchedCategory) {
+    // fallback mix
+    selectedProducts = [
+      ...BEAUTY_DATABASE.global.slice(0, 3),
+      ...BEAUTY_DATABASE.kbeauty.slice(0, 2),
+      ...BEAUTY_DATABASE.natural.slice(0, 2),
+      ...BEAUTY_DATABASE.antiaging.slice(0, 2),
+      ...BEAUTY_DATABASE.luxury.slice(0, 1)
+    ];
+    aiResponse = 'Here’s a curated beauty selection just for you!';
+  } else {
+    selectedProducts = BEAUTY_DATABASE[matchedCategory] || [];
+    aiResponse = categoryLabels[matchedCategory] || 'Here are some products you might like:';
+  }
+
+  // Add bot message and show products
+  addBotMessage(`🛍️ ${aiResponse}`);
+  showProductsHeader(selectedProducts);
+  currentProducts = selectedProducts;
+  displayedCount = 0;
+  displayProducts(selectedProducts);
+}
+
                 // Default: show a mix of all categories
                 selectedProducts = [
                     ...BEAUTY_DATABASE.global.slice(0, 3),
