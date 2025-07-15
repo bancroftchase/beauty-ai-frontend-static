@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminous AI</title>
+</head>
 <body>
     <header>
         <h1>✨ Luminous AI</h1>
@@ -119,13 +126,6 @@
                 </div>
             </div>
         </section>
-        <div id="chat-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 1000; max-width: 90%; width: 400px;">
-            <h3>Beauty Consultation</h3>
-            <div id="chat-messages" style="max-height: 300px; overflow-y: auto; margin-bottom: 10px;"></div>
-            <input id="chat-input" type="text" placeholder="Ask about beauty products..." style="width: 100%; padding: 10px; margin-bottom: 10px;">
-            <button onclick="sendMessage()" style="padding: 10px; width: 100%;">Send</button>
-            <button onclick="closeModal()" style="padding: 10px; width: 100%; margin-top: 10px;">Close</button>
-        </div>
     </main>
     <footer>
         <nav>
@@ -138,67 +138,29 @@
     </footer>
     <script>
         const cards = document.querySelectorAll('.feature-card:not(.basket)');
-        const modal = document.getElementById('chat-modal');
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        let currentPrompt = '';
+        const outputArea = document.querySelector('.hero p');
 
         cards.forEach(card => {
-            card.addEventListener('click', () => {
-                currentPrompt = card.getAttribute('data-prompt');
-                modal.style.display = 'block';
-                chatMessages.innerHTML = '';
-                sendInitialMessage(currentPrompt);
+            card.addEventListener('click', async () => {
+                const prompt = card.getAttribute('data-prompt');
+                outputArea.textContent = 'Loading...';
+                try {
+                    const response = await fetch('https://beauty-ai-backend.onrender.com/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: prompt })
+                    });
+                    const data = await response.json();
+                    if (data.error) {
+                        outputArea.textContent = `Error: ${data.error}`;
+                    } else {
+                        outputArea.textContent = data.reply;
+                    }
+                } catch (error) {
+                    outputArea.textContent = 'Error connecting to server.';
+                }
             });
         });
-
-        function closeModal() {
-            modal.style.display = 'none';
-        }
-
-        async function sendInitialMessage(prompt) {
-            try {
-                chatMessages.innerHTML += '<p><strong>You:</strong> ' + prompt + '</p>';
-                const response = await fetch('https://beauty-ai-backend.onrender.com/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: prompt })
-                });
-                const data = await response.json();
-                if (data.error) {
-                    chatMessages.innerHTML += '<p><strong>AI:</strong> Error: ' + data.error + '</p>';
-                } else {
-                    chatMessages.innerHTML += '<p><strong>AI:</strong> ' + data.reply + '</p>';
-                }
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            } catch (error) {
-                chatMessages.innerHTML += '<p><strong>AI:</strong> Error connecting to server.</p>';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        }
-
-        async function sendMessage() {
-            const message = chatInput.value.trim();
-            if (!message) return;
-            chatInput.value = '';
-            chatMessages.innerHTML += '<p><strong>You:</strong> ' + message + '</p>';
-            try {
-                const response = await fetch('https://beauty-ai-backend.onrender.com/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message })
-                });
-                const data = await response.json();
-                if (data.error) {
-                    chatMessages.innerHTML += '<p><strong>AI:</strong> Error: ' + data.error + '</p>';
-                } else {
-                    chatMessages.innerHTML += '<p><strong>AI:</strong> ' + data.reply + '</p>';
-                }
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            } catch (error) {
-                chatMessages.innerHTML += '<p><strong>AI:</strong> Error connecting to server.</p>';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        }
     </script>
 </body>
+</html>
