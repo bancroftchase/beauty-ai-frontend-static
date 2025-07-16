@@ -8,7 +8,221 @@
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
 <meta content="#B8860B" name="theme-color"/>
 <style>
-/* ✅ Your original CSS (unchanged) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-charcoal: #2C2C2C;
+            --luminous-gold: #B8860B;
+            --pearl-white: #F8F8F8;
+            --premium-gradient: linear-gradient(135deg, #B8860B, #DAA520);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-charcoal);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: var(--primary-charcoal);
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--primary-charcoal);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #3A3A3A;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .cart-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            background: var(--premium-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            background: var(--pearl-white);
+            color: #333;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        .welcome-message {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-action-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-content {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            max-width: 80%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .message.user .message-content {
+            background: var(--premium-gradient);
+            color: white;
+        }
+
+        .input-area {
+            background: var(--primary-charcoal);
+            padding: 20px;
+            border-top: 1px solid #3A3A3A;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            border-radius: 25px;
+            padding: 12px 20px;
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: transparent;
+        }
+
+        .send-btn {
+            background: var(--premium-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .status-message {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 12px;
+            text-align: center;
+        }
 </style>
 </head>
 <body>
@@ -16,10 +230,9 @@
   <div class="header">
     <a class="back-btn" href="index.html">← Back</a>
     <div class="logo">✨ Beauty Chat</div>
-    <button class="cart-btn" onclick="toggleCart()">🛒<span class="cart-count" id="cartCount">0</span></button>
+    <button class="cart-btn">🛒<span class="cart-count" id="cartCount">0</span></button>
   </div>
 
-  <!-- ✅ Chat Area -->
   <div class="chat-area" id="chatArea">
     <div class="welcome-message">
       <h3 style="color: var(--primary-charcoal); margin-bottom: 10px;">Hi! I'm your Beauty AI assistant ✨</h3>
@@ -35,34 +248,15 @@
     </div>
   </div>
 
-  <!-- ✅ Input area (repurposed from brown section) -->
-  <div class="input-container" style="padding:15px;background:var(--primary-charcoal);position:sticky;bottom:0;">
-    <input id="messageInput" class="message-input" placeholder="Ask about beauty products..." type="text" onkeypress="handleKeyPress(event)" />
-    <button class="send-btn" onclick="sendMessage()">▶</button>
+  <div class="input-area">
+    <div class="input-container">
+      <input class="message-input" id="messageInput" onkeypress="handleKeyPress(event)" placeholder="Ask about beauty products..." type="text"/>
+      <button class="send-btn" onclick="sendMessage()">▶</button>
+    </div>
   </div>
 </div>
 
 <script>
-// ✅ Append message to visible chat area
-function appendMessage(sender, text) {
-  const chatArea = document.getElementById('chatArea');
-  const div = document.createElement('div');
-  div.className = `message ${sender}`;
-  const content = document.createElement('div');
-  content.className = 'message-content';
-  content.textContent = text;
-  div.appendChild(content);
-  chatArea.appendChild(div);
-  chatArea.scrollTop = chatArea.scrollHeight;
-}
-
-// ✅ Update last bot message
-function updateLastBotMessage(text) {
-  const msgs = document.querySelectorAll('.message.bot .message-content');
-  if (msgs.length) msgs[msgs.length - 1].textContent = text;
-}
-
-// ✅ Send message to Gemini backend
 function sendMessage() {
   const input = document.getElementById('messageInput');
   const message = input.value.trim();
@@ -78,16 +272,34 @@ function sendMessage() {
     body: JSON.stringify({ prompt: message })
   })
   .then(res => res.json())
-  .then(data => updateLastBotMessage(data.reply || '🤖 Sorry, no answer found.'))
-  .catch(() => updateLastBotMessage('❌ AI service error. Try again.'));
+  .then(data => {
+    updateLastBotMessage(data.reply || '🤖 Sorry, no answer found.');
+  })
+  .catch(() => {
+    updateLastBotMessage('❌ AI service error. Try again.');
+  });
 }
 
-// ✅ Handle Enter key
+function appendMessage(sender, text) {
+  const msgBox = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = `message ${sender}`;
+  div.innerHTML = `<div class="message-content">${text}</div>`;
+  msgBox.appendChild(div);
+  msgBox.scrollTop = msgBox.scrollHeight;
+}
+
+function updateLastBotMessage(text) {
+  const msgs = document.querySelectorAll('.message.bot .message-content');
+  if (msgs.length) {
+    msgs[msgs.length - 1].textContent = text;
+  }
+}
+
 function handleKeyPress(e) {
   if (e.key === 'Enter') sendMessage();
 }
 
-// ✅ Quick action buttons
 function sendQuickMessage(text) {
   document.getElementById('messageInput').value = text;
   sendMessage();
