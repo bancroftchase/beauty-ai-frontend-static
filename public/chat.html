@@ -266,7 +266,7 @@ function sendMessage() {
   input.value = '';
   appendMessage('bot', '✨ Thinking...');
 
-  fetch('https://beauty-ai-backend.onrender.com/ask-openai', {
+  fetch('https://beauty-ai-backend.onrender.com/ask-claude', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ prompt: message })
