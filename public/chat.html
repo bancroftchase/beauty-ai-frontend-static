@@ -266,11 +266,11 @@ function sendMessage() {
   input.value = '';
   appendMessage('bot', '✨ Thinking...');
 
-  fetch('https://beauty-ai-backend.onrender.com/ask-gemini', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt: message })
-  })
+  fetch('https://beauty-ai-backend.onrender.com/ask-openai', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ prompt: message })
+})
   .then(res => res.json())
   .then(data => {
     updateLastBotMessage(data.reply || '🤖 Sorry, no answer found.');
