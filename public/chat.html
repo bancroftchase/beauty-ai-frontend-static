@@ -1,100 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
-  <title>Beauty Chat - Luminous AI</title>
-  <meta content="yes" name="apple-mobile-web-app-capable"/>
-  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-  <meta content="#B8860B" name="theme-color"/>
-  <style>
-    /* (All your existing CSS here, unchanged) */
-  </style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Beauty Chat - Luminous AI</title>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="#B8860B" name="theme-color"/>
+<style>
+/* ✅ Your original CSS (unchanged) */
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <a class="back-btn" href="index.html">← Back</a>
-      <div class="logo">✨ Beauty Chat</div>
-      <button class="cart-btn" onclick="toggleCart()">
-        🛒<span class="cart-count" id="cartCount">0</span>
-      </button>
-    </div>
+<div class="container">
+  <div class="header">
+    <a class="back-btn" href="index.html">← Back</a>
+    <div class="logo">✨ Beauty Chat</div>
+    <button class="cart-btn" onclick="toggleCart()">🛒<span class="cart-count" id="cartCount">0</span></button>
+  </div>
 
-    <!-- Chat Area -->
-    <div class="chat-area" id="chatArea">
-      <div class="welcome-message">
-        <h3 style="color: var(--primary-charcoal); margin-bottom: 10px;">
-          Hi! I'm your Beauty AI assistant ✨
-        </h3>
-        <div class="status-message">💬 Powered by Luminous AI & Gemini</div>
-        <div class="quick-actions">
-          <button class="quick-action-btn" onclick="sendQuickMessage('🌍 Global Beauty')">🌍 Global Beauty</button>
-          <button class="quick-action-btn" onclick="sendQuickMessage('📸 Instagram Trends')">📸 Instagram Trends</button>
-          <button class="quick-action-btn" onclick="sendQuickMessage('🌸 K-Beauty')">🌸 K-Beauty</button>
-          <button class="quick-action-btn" onclick="sendQuickMessage('🛒 Amazon Finds')">🛒 Amazon Finds</button>
-          <button class="quick-action-btn" onclick="sendQuickMessage('🌿 Natural Beauty')">🌿 Natural Beauty</button>
-          <button class="quick-action-btn" onclick="sendQuickMessage('💎 Luxury Skincare')">💎 Luxury Skincare</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 🔝 Floating Chat Input Bar -->
-    <div id="chatInputBar" style="display:flex;position:fixed;bottom:100px;left:50%;transform:translateX(-50%);width:100%;max-width:414px;padding:10px;">
-      <div style="display:flex;gap:10px;">
-        <input id="chatInput" type="text" placeholder="Ask your AI beauty expert..." style="flex:1;padding:12px 16px;border-radius:20px;border:none;outline:none;font-size:14px;">
-        <button onclick="submitMessage()" style="background:var(--premium-gradient);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:16px;cursor:pointer;">➤</button>
+  <!-- ✅ Chat Area -->
+  <div class="chat-area" id="chatArea">
+    <div class="welcome-message">
+      <h3 style="color: var(--primary-charcoal); margin-bottom: 10px;">Hi! I'm your Beauty AI assistant ✨</h3>
+      <div class="status-message">💬 Powered by Luminous AI & Gemini</div>
+      <div class="quick-actions">
+        <button class="quick-action-btn" onclick="sendQuickMessage('🌍 Global Beauty')">🌍 Global Beauty</button>
+        <button class="quick-action-btn" onclick="sendQuickMessage('📸 Instagram Trends')">📸 Instagram Trends</button>
+        <button class="quick-action-btn" onclick="sendQuickMessage('🌸 K-Beauty')">🌸 K-Beauty</button>
+        <button class="quick-action-btn" onclick="sendQuickMessage('🛒 Amazon Finds')">🛒 Amazon Finds</button>
+        <button class="quick-action-btn" onclick="sendQuickMessage('🌿 Natural Beauty')">🌿 Natural Beauty</button>
+        <button class="quick-action-btn" onclick="sendQuickMessage('💎 Luxury Skincare')">💎 Luxury Skincare</button>
       </div>
     </div>
   </div>
 
-  <script>
-    // Render the chat UI
-    function appendMessage(sender, text) {
-      const msgBox = document.getElementById('chatArea');
-      const div = document.createElement('div');
-      div.className = `message ${sender}`;
-      const content = document.createElement('div');
-      content.className = 'message-content';
-      content.textContent = text;
-      div.appendChild(content);
-      msgBox.appendChild(div);
-      msgBox.scrollTop = msgBox.scrollHeight;
-    }
+  <!-- ✅ Input area (repurposed from brown section) -->
+  <div class="input-container" style="padding:15px;background:var(--primary-charcoal);position:sticky;bottom:0;">
+    <input id="messageInput" class="message-input" placeholder="Ask about beauty products..." type="text" onkeypress="handleKeyPress(event)" />
+    <button class="send-btn" onclick="sendMessage()">▶</button>
+  </div>
+</div>
 
-    function submitMessage() {
-      const input = document.getElementById('chatInput');
-      const message = input.value.trim();
-      if (!message) return;
+<script>
+// ✅ Append message to visible chat area
+function appendMessage(sender, text) {
+  const chatArea = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = `message ${sender}`;
+  const content = document.createElement('div');
+  content.className = 'message-content';
+  content.textContent = text;
+  div.appendChild(content);
+  chatArea.appendChild(div);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
 
-      appendMessage('user', message);
-      input.value = '';
-      appendMessage('bot', '✨ Thinking...');
+// ✅ Update last bot message
+function updateLastBotMessage(text) {
+  const msgs = document.querySelectorAll('.message.bot .message-content');
+  if (msgs.length) msgs[msgs.length - 1].textContent = text;
+}
 
-      fetch('https://beauty-ai-backend.onrender.com/ask-gemini', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: message })
-      })
-      .then(res => res.json())
-      .then(data => {
-        updateLastBotMessage(data.reply || '🤖 Sorry, no answer found.');
-      })
-      .catch(() => {
-        updateLastBotMessage('❌ AI service error. Try again.');
-      });
-    }
+// ✅ Send message to Gemini backend
+function sendMessage() {
+  const input = document.getElementById('messageInput');
+  const message = input.value.trim();
+  if (!message) return;
 
-    function updateLastBotMessage(text) {
-      const msgs = document.querySelectorAll('.message.bot .message-content');
-      const last = msgs[msgs.length - 1];
-      if (last) last.textContent = text;
-    }
+  appendMessage('user', message);
+  input.value = '';
+  appendMessage('bot', '✨ Thinking...');
 
-    function sendQuickMessage(phrase) {
-      document.getElementById('chatInput').value = phrase;
-      submitMessage();
-    }
-  </script>
+  fetch('https://beauty-ai-backend.onrender.com/ask-gemini', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt: message })
+  })
+  .then(res => res.json())
+  .then(data => updateLastBotMessage(data.reply || '🤖 Sorry, no answer found.'))
+  .catch(() => updateLastBotMessage('❌ AI service error. Try again.'));
+}
+
+// ✅ Handle Enter key
+function handleKeyPress(e) {
+  if (e.key === 'Enter') sendMessage();
+}
+
+// ✅ Quick action buttons
+function sendQuickMessage(text) {
+  document.getElementById('messageInput').value = text;
+  sendMessage();
+}
+</script>
 </body>
 </html>
