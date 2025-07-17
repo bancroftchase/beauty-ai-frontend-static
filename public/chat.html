@@ -44,109 +44,52 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 </div>
 
 <script>
-const BACKEND_URL = "https://beauty-ai-backend.onrender.com";
-let allProducts = [];
-let currentIndex = 0;
-const PAGE_SIZE = 5;
-let cart = [];
+let lastProducts = [];
+let showingCount = 0;
+const BATCH_SIZE = 25; // Load 25 at a time
 
-// ✅ Auto-load query if present
-const urlParams = new URLSearchParams(window.location.search);
-const initialQuery = urlParams.get('query');
-if (initialQuery) {
-    appendMessage('user', initialQuery);
-    fetchProducts(initialQuery);
+function showProducts(products) {
+    lastProducts = products;
+    showingCount = 0;
+    document.getElementById('chatArea').innerHTML = '';
+    showNextProducts();
 }
 
-function sendMessage() {
-    const input = document.getElementById('messageInput');
-    const query = input.value.trim();
-    if (!query) return;
-    appendMessage('user', query);
-    input.value = '';
-    fetchProducts(query);
-}
+function showNextProducts() {
+    const msgBox = document.getElementById('chatArea');
+    const nextProducts = lastProducts.slice(showingCount, showingCount + BATCH_SIZE);
+    showingCount += nextProducts.length;
 
-function handleKeyPress(e) {
-    if (e.key === 'Enter') sendMessage();
-}
-
-function appendMessage(sender, text) {
-    const area = document.getElementById('chatArea');
-    const div = document.createElement('div');
-    div.className = `message ${sender}`;
-    div.innerHTML = `<div class="message-content">${text}</div>`;
-    area.appendChild(div);
-    area.scrollTop = area.scrollHeight;
-}
-
-function fetchProducts(query) {
-    clearPreviousResults();
-    appendMessage('bot', '✨ Fetching products...');
-    fetch(`${BACKEND_URL}/ask-claude`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: query })
-    })
-    .then(res => res.json())
-    .then(data => {
-        allProducts = data.products || [];
-        currentIndex = 0;
-        if (allProducts.length > 0) {
-            showNextBatch();
-        } else {
-            updateLastBotMessage('❌ No products found.');
-        }
-    })
-    .catch(() => updateLastBotMessage('❌ AI service error. Try again.'));
-}
-
-function showNextBatch() {
-    const area = document.getElementById('chatArea');
-    const batch = allProducts.slice(currentIndex, currentIndex + PAGE_SIZE);
-    batch.forEach(p => {
+    nextProducts.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
             <div class="product-name">${p.name}</div>
-            <div class="product-price">${p.price}</div>
-            <div>${p.description}</div>
-            <button class="add-to-cart" onclick="addToCart('${p.name}', '${p.price}')">Add to Cart</button>
+            <div class="product-price">${p.price || '$?'}</div>
+            <div>${p.description || ''}</div>
         `;
-        area.appendChild(card);
+        msgBox.appendChild(card);
     });
-    currentIndex += PAGE_SIZE;
 
-    if (currentIndex < allProducts.length) {
-        const btn = document.createElement('div');
-        btn.className = 'show-more';
+    // Add Show More button if there are more products
+    if (showingCount < lastProducts.length) {
+        const btn = document.createElement('button');
         btn.textContent = 'Show More';
+        btn.style = "margin:10px auto;display:block;padding:10px 20px;background:var(--premium-gradient);color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;";
         btn.onclick = () => {
             btn.remove();
-            showNextBatch();
+            showNextProducts();
         };
-        area.appendChild(btn);
+        msgBox.appendChild(btn);
+    } else {
+        const homeBtn = document.createElement('button');
+        homeBtn.textContent = 'Return Home';
+        homeBtn.style = "margin:10px auto;display:block;padding:10px 20px;background:#444;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;";
+        homeBtn.onclick = () => window.location.href = 'index.html';
+        msgBox.appendChild(homeBtn);
     }
-    area.scrollTop = area.scrollHeight;
-    updateLastBotMessage('Here are your results:');
-}
-
-function addToCart(name, price) {
-    cart.push({ name, price });
-    document.getElementById('cartCount').textContent = cart.length;
-    alert(`${name} added to cart!`);
-}
-
-function updateLastBotMessage(text) {
-    const msgs = document.querySelectorAll('.message.bot .message-content');
-    if (msgs.length) {
-        msgs[msgs.length - 1].textContent = text;
-    }
-}
-
-function clearPreviousResults() {
-    document.getElementById('chatArea').innerHTML = '';
 }
 </script>
+
 </body>
 </html>
