@@ -46,7 +46,6 @@
 
     <div class="chat-area" id="chatArea">
         <div class="welcome-message">
-            <h3 style="color: var(--primary-charcoal); margin-bottom: 10px;">Hi! I'm your Beauty AI assistant ✨</h3>
             <div class="quick-actions">
                 <button class="quick-action-btn" onclick="sendQuickMessage('Global Beauty')">🌍 Global Beauty</button>
                 <button class="quick-action-btn" onclick="sendQuickMessage('Instagram Trends')">📸 Instagram Trends</button>
@@ -85,7 +84,6 @@ function sendMessage() {
     .then(res => res.json())
     .then(data => {
         if (data.products && data.products.length > 0) {
-            updateLastBotMessage('Here are some products for you:');
             showProducts(data.products);
         } else {
             updateLastBotMessage('❌ No products found.');
@@ -109,6 +107,7 @@ function showProducts(products) {
     });
     msgBox.appendChild(container);
     msgBox.scrollTop = msgBox.scrollHeight;
+    updateLastBotMessage('Here are some recommendations:');
 }
 
 function appendMessage(sender, text) {
