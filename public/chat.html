@@ -8,115 +8,58 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#B8860B"/>
 <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    :root{
+    * {margin:0;padding:0;box-sizing:border-box;}
+    :root {
         --primary-charcoal:#2C2C2C;
         --luminous-gold:#B8860B;
         --pearl-white:#F8F8F8;
         --premium-gradient:linear-gradient(135deg,#B8860B,#DAA520);
     }
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--primary-charcoal);color:white;}
-    .container{max-width:414px;margin:0 auto;display:flex;flex-direction:column;min-height:100vh;}
-    .header{background:var(--primary-charcoal);padding:20px;text-align:center;border-bottom:1px solid #3A3A3A;position:sticky;top:0;z-index:10;}
-    .back-btn{position:absolute;left:20px;top:50%;transform:translateY(-50%);background:var(--premium-gradient);color:white;border:none;border-radius:20px;padding:8px 16px;font-size:14px;text-decoration:none;}
-    .logo{font-size:24px;font-weight:700;background:var(--premium-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .chat-area{flex:1;padding:20px;background:var(--pearl-white);color:#333;overflow-y:auto;}
-    .message{margin-bottom:15px;display:flex;}
-    .message.user{justify-content:flex-end;}
-    .message-content{background:white;padding:12px 16px;border-radius:16px;max-width:80%;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-    .message.user .message-content{background:var(--premium-gradient);color:white;}
-    .input-area{background:var(--primary-charcoal);padding:20px;position:sticky;bottom:0;}
-    .input-container{display:flex;gap:12px;background:white;border-radius:25px;padding:12px 20px;}
-    .message-input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-    .send-btn{background:var(--premium-gradient);color:white;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-    .product-card{background:white;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-    .product-name{font-weight:bold;font-size:14px;margin-bottom:6px;}
-    .product-price{color:var(--luminous-gold);font-weight:bold;}
-    .show-more-btn{background:var(--premium-gradient);color:white;border:none;border-radius:20px;padding:10px 15px;font-size:14px;font-weight:600;margin:15px auto;display:block;cursor:pointer;}
+    body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--primary-charcoal);color:#fff;}
+    .container {max-width:414px;margin:0 auto;display:flex;flex-direction:column;min-height:100vh;}
+    .header {background:var(--primary-charcoal);padding:20px;text-align:center;border-bottom:1px solid #3A3A3A;}
+    .back-btn {position:absolute;left:20px;top:20px;background:var(--premium-gradient);color:#fff;border:none;border-radius:20px;padding:8px 16px;cursor:pointer;text-decoration:none;}
+    .logo {font-size:24px;font-weight:700;background:var(--premium-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .chat-area {flex:1;padding:20px;background:var(--pearl-white);color:#333;overflow-y:auto;}
+    .message {margin-bottom:15px;}
+    .message.user {text-align:right;}
+    .message-content {background:#fff;padding:12px;border-radius:12px;display:inline-block;max-width:80%;}
+    .message.user .message-content {background:var(--premium-gradient);color:#fff;}
+    .product-card {background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+    .product-name {font-weight:bold;margin-bottom:6px;}
+    .product-price {color:var(--luminous-gold);font-weight:bold;margin-bottom:6px;}
+    .add-btn {background:var(--premium-gradient);color:#fff;border:none;padding:8px 14px;border-radius:20px;cursor:pointer;font-size:12px;}
+    .show-more-btn {display:block;margin:15px auto;padding:10px 20px;background:var(--premium-gradient);color:#fff;border:none;border-radius:25px;font-weight:600;cursor:pointer;}
+    .input-area {padding:20px;background:var(--primary-charcoal);border-top:1px solid #3A3A3A;}
+    .input-container {display:flex;gap:12px;background:#fff;border-radius:25px;padding:12px;}
+    .message-input {flex:1;border:none;outline:none;}
+    .send-btn {background:var(--premium-gradient);color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;}
 </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <a href="index.html" class="back-btn">← Back</a>
+        <a class="back-btn" href="index.html">← Back</a>
         <div class="logo">✨ Beauty Chat</div>
     </div>
+
     <div class="chat-area" id="chatArea">
         <div class="message bot"><div class="message-content">Hi! Ask me about beauty products or click a category.</div></div>
     </div>
+
     <div class="input-area">
         <div class="input-container">
-            <input class="message-input" id="messageInput" placeholder="Ask about beauty products..." onkeypress="handleKeyPress(event)">
+            <input id="messageInput" class="message-input" placeholder="Ask about beauty products..." onkeypress="handleKeyPress(event)">
             <button class="send-btn" onclick="sendMessage()">▶</button>
         </div>
     </div>
 </div>
 
 <script>
-const BACKEND_URL="https://beauty-ai-backend.onrender.com";
-let products=[],currentIndex=0;
-
-document.addEventListener("DOMContentLoaded",()=>{
-    const urlParams=new URLSearchParams(window.location.search);
-    const query=urlParams.get('query');
-    if(query){document.getElementById('messageInput').value=query;sendMessage();}
-});
-
-function sendMessage(){
-    const input=document.getElementById('messageInput');
-    const query=input.value.trim();
-    if(!query)return;
-    appendMessage('user',query);
-    input.value='';
-    appendMessage('bot','✨ Thinking...');
-    products=[];currentIndex=0;
-    document.querySelectorAll('.product-card,.show-more-btn').forEach(el=>el.remove());
-    fetch(`${BACKEND_URL}/ask-claude`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({category:query})
-    })
-    .then(res=>res.json())
-    .then(data=>{
-        if(data.products && data.products.length>0){
-            products=data.products;
-            updateLastBotMessage('Here are some top products:');
-            showNextBatch();
-        }else{
-            updateLastBotMessage('❌ No products found.');
-        }
-    })
-    .catch(()=>updateLastBotMessage('❌ AI service error. Try again.'));
-}
-
-function showNextBatch(){
-    const batch=products.slice(currentIndex,currentIndex+25);
-    const msgBox=document.getElementById('chatArea');
-    batch.forEach(p=>{
-        const card=document.createElement('div');
-        card.className='product-card';
-        card.innerHTML=`<div class="product-name">${p.name}</div>
-                        <div class="product-price">${p.price||'$?'}</div>
-                        <div>${p.description||''}</div>`;
-        msgBox.appendChild(card);
-    });
-    currentIndex+=25;
-    if(currentIndex<products.length){
-        let btn=document.getElementById('showMoreBtn');
-        if(!btn){
-            btn=document.createElement('button');
-            btn.id='showMoreBtn';
-            btn.className='show-more-btn';
-            btn.textContent='Show More';
-            btn.onclick=showNextBatch;
-            msgBox.appendChild(btn);
-        }
-    }else{
-        const btn=document.getElementById('showMoreBtn');
-        if(btn)btn.remove();
-    }
-    msgBox.scrollTop=msgBox.scrollHeight;
-}
+const BACKEND_URL = "https://beauty-ai-backend.onrender.com";
+let currentCategory = "";
+let currentProducts = [];
+let offset = 0;
 
 function appendMessage(sender,text){
     const msgBox=document.getElementById('chatArea');
@@ -127,12 +70,88 @@ function appendMessage(sender,text){
     msgBox.scrollTop=msgBox.scrollHeight;
 }
 
-function updateLastBotMessage(text){
-    const msgs=document.querySelectorAll('.message.bot .message-content');
-    if(msgs.length){msgs[msgs.length-1].textContent=text;}
+function clearProducts(){
+    const productCards=document.querySelectorAll('.product-card, .show-more-btn');
+    productCards.forEach(el=>el.remove());
 }
 
-function handleKeyPress(e){if(e.key==='Enter')sendMessage();}
+function sendMessage(){
+    const input=document.getElementById('messageInput');
+    const message=input.value.trim();
+    if(!message)return;
+    appendMessage('user',message);
+    input.value='';
+    clearProducts();
+    offset=0;
+    currentProducts=[];
+    currentCategory=message;
+    appendMessage('bot','✨ Thinking...');
+    fetchProducts(message,false);
+}
+
+function fetchProducts(category,isMore){
+    fetch(`${BACKEND_URL}/ask-claude`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({category:category,offset:offset})
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        document.querySelectorAll('.message.bot .message-content').forEach(el=>el.textContent='');
+        if(data.products && data.products.length>0){
+            currentProducts=currentProducts.concat(data.products);
+            showProducts(data.products,isMore);
+            offset+=data.products.length;
+        }else{
+            appendMessage('bot','❌ No products found.');
+        }
+    })
+    .catch(()=>{
+        appendMessage('bot','❌ Error fetching products.');
+    });
+}
+
+function showProducts(products,isMore){
+    const chatArea=document.getElementById('chatArea');
+    products.forEach(p=>{
+        const card=document.createElement('div');
+        card.className='product-card';
+        card.innerHTML=`
+            <div class="product-name">${p.name}</div>
+            <div class="product-price">${p.price||''}</div>
+            <div>${p.description||''}</div>
+            <button class="add-btn" onclick="addToCart('${p.name}','${p.price||''}')">Add to Cart</button>
+        `;
+        chatArea.appendChild(card);
+    });
+
+    document.querySelectorAll('.show-more-btn').forEach(btn=>btn.remove());
+    const moreBtn=document.createElement('button');
+    moreBtn.className='show-more-btn';
+    moreBtn.textContent='Show More';
+    moreBtn.onclick=()=>fetchProducts(currentCategory,true);
+    chatArea.appendChild(moreBtn);
+
+    chatArea.scrollTop=chatArea.scrollHeight;
+}
+
+function addToCart(name,price){
+    let cart=JSON.parse(localStorage.getItem('cart')||'[]');
+    cart.push({name,price});
+    localStorage.setItem('cart',JSON.stringify(cart));
+    alert(`✅ ${name} added to cart!`);
+}
+
+function handleKeyPress(e){
+    if(e.key==='Enter')sendMessage();
+}
+
+const urlParams=new URLSearchParams(window.location.search);
+const query=urlParams.get('query');
+if(query){
+    document.getElementById('messageInput').value=query;
+    sendMessage();
+}
 </script>
 </body>
 </html>
