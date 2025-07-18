@@ -1,129 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
 <title>Beauty Chat - Luminous AI</title>
 <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; background: #F8F8F8; }
-    .container { max-width: 414px; margin: auto; display: flex; flex-direction: column; min-height: 100vh; }
-    .header { background: #2C2C2C; color: white; text-align: center; padding: 15px; position: sticky; top: 0; }
-    .logo { font-size: 20px; font-weight: bold; }
-    .chat-area { flex: 1; padding: 15px; overflow-y: auto; }
-    .message { margin-bottom: 12px; display: flex; }
-    .message.user { justify-content: flex-end; }
-    .message-content { background: white; padding: 10px 14px; border-radius: 16px; max-width: 75%; }
-    .message.user .message-content { background: linear-gradient(135deg,#B8860B,#DAA520); color: white; }
-    .product-card { background: #fff; border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .product-name { font-weight: bold; font-size: 14px; }
-    .product-price { color: #B8860B; font-weight: bold; margin-top: 4px; }
-    .show-more-btn { background: linear-gradient(135deg,#B8860B,#DAA520); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-size: 14px; font-weight: bold; margin-top: 10px; cursor: pointer; }
-    .input-area { padding: 10px; background: #fff; border-top: 1px solid #ccc; display: flex; gap: 10px; }
-    .message-input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #ccc; font-size: 14px; }
-    .send-btn { background: linear-gradient(135deg,#B8860B,#DAA520); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 16px; cursor: pointer; }
+body { font-family: Arial, sans-serif; background:#2C2C2C; color:#fff; margin:0; }
+.container { max-width:414px; margin:auto; display:flex; flex-direction:column; height:100vh; }
+.header { background:#2C2C2C; padding:15px; text-align:center; font-weight:bold; }
+.chat-area { flex:1; background:#F8F8F8; color:#333; padding:15px; overflow-y:auto; }
+.message { margin-bottom:10px; display:flex; }
+.message.user { justify-content:flex-end; }
+.message-content { background:white; padding:10px; border-radius:12px; max-width:75%; }
+.message.user .message-content { background:linear-gradient(135deg,#B8860B,#DAA520); color:white; }
+.product-card { background:#fff; border-radius:12px; padding:12px; margin-bottom:10px; border:1px solid #eee; }
+.product-name { font-weight:bold; }
+.show-more { background:#B8860B; color:white; border:none; padding:10px; width:100%; border-radius:8px; cursor:pointer; margin-top:10px; }
+.input-area { background:#2C2C2C; padding:10px; }
+.input-container { display:flex; gap:10px; background:white; border-radius:25px; padding:10px; }
+.message-input { flex:1; border:none; outline:none; }
+.send-btn { background:linear-gradient(135deg,#B8860B,#DAA520); border:none; color:white; border-radius:50%; width:40px; height:40px; cursor:pointer; }
 </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <div class="logo">✨ Beauty Chat</div>
+  <div class="header">✨ Beauty Chat</div>
+  <div id="chatArea" class="chat-area">
+    <div class="message bot"><div class="message-content">Hi! Ask me about beauty products or click a category.</div></div>
+  </div>
+  <div class="input-area">
+    <div class="input-container">
+      <input id="messageInput" class="message-input" placeholder="Ask about beauty products..." onkeypress="handleKey(event)"/>
+      <button class="send-btn" onclick="sendMessage()">▶</button>
     </div>
-
-    <div class="chat-area" id="chatArea">
-        <div class="message bot">
-            <div class="message-content">Hi! Ask me about beauty products or click a category.</div>
-        </div>
-    </div>
-
-    <div class="input-area">
-        <input id="messageInput" class="message-input" placeholder="Ask about beauty products..." onkeypress="if(event.key==='Enter')sendMessage()">
-        <button class="send-btn" onclick="sendMessage()">▶</button>
-    </div>
+  </div>
 </div>
 
 <script>
-const BACKEND_URL = "https://beauty-ai-backend.onrender.com";
-let currentProducts = [];
-let currentIndex = 0;
-const PAGE_SIZE = 50;
+const API_URL = "https://beauty-ai-backend.onrender.com/ask-claude";
+let currentQuery = "";
+let currentPage = 1;
 
-function sendMessage() {
-    const input = document.getElementById('messageInput');
-    const message = input.value.trim();
-    if (!message) return;
+async function sendMessage() {
+  const input = document.getElementById("messageInput");
+  const message = input.value.trim();
+  if (!message) return;
 
-    appendMessage('user', message);
-    input.value = '';
-    appendMessage('bot', '✨ Thinking...');
-
-    fetch(`${BACKEND_URL}/ask-claude`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: message })
-    })
-    .then(res => res.json())
-    .then(data => {
-        currentProducts = data.products || [];
-        currentIndex = 0;
-        updateLastBotMessage(currentProducts.length > 0 ? "Here are your results:" : "❌ No products found.");
-        displayProducts();
-    })
-    .catch(() => updateLastBotMessage('❌ AI service error. Try again.'));
+  appendMessage("user", message);
+  input.value = "";
+  currentQuery = message;
+  currentPage = 1;
+  document.getElementById("chatArea").innerHTML = ""; // Clear previous
+  appendMessage("bot", "✨ Thinking...");
+  await fetchProducts();
 }
 
-function displayProducts() {
-    const chatArea = document.getElementById('chatArea');
-
-    // Remove old product container if any
-    const oldContainer = document.getElementById('product-container');
-    if (oldContainer) oldContainer.remove();
-
-    const container = document.createElement('div');
-    container.id = 'product-container';
-
-    const productsToShow = currentProducts.slice(currentIndex, currentIndex + PAGE_SIZE);
-    productsToShow.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-            <div class="product-name">${p.name}</div>
-            <div class="product-price">${p.price || '$?'}</div>
-            <div>${p.description || ''}</div>
-        `;
-        container.appendChild(card);
+async function fetchProducts() {
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category: currentQuery, page: currentPage })
     });
-
-    chatArea.appendChild(container);
-
-    // Add Show More button if more products remain
-    if (currentIndex + PAGE_SIZE < currentProducts.length) {
-        const btn = document.createElement('button');
-        btn.className = 'show-more-btn';
-        btn.innerText = 'Show More';
-        btn.onclick = () => {
-            currentIndex += PAGE_SIZE;
-            displayProducts();
-        };
-        chatArea.appendChild(btn);
-    }
-
-    chatArea.scrollTop = chatArea.scrollHeight; // scroll down
+    const data = await res.json();
+    updateLastBotMessage("Here are some products:");
+    renderProducts(data.products);
+    if (data.products.length === 50) addShowMore();
+  } catch {
+    updateLastBotMessage("❌ Failed to load products.");
+  }
 }
 
 function appendMessage(sender, text) {
-    const chatArea = document.getElementById('chatArea');
-    const div = document.createElement('div');
-    div.className = `message ${sender}`;
-    div.innerHTML = `<div class="message-content">${text}</div>`;
-    chatArea.appendChild(div);
-    chatArea.scrollTop = chatArea.scrollHeight;
+  const chat = document.getElementById("chatArea");
+  const div = document.createElement("div");
+  div.className = `message ${sender}`;
+  div.innerHTML = `<div class="message-content">${text}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
 function updateLastBotMessage(text) {
-    const msgs = document.querySelectorAll('.message.bot .message-content');
-    if (msgs.length) {
-        msgs[msgs.length - 1].textContent = text;
-    }
+  const botMsgs = document.querySelectorAll(".message.bot .message-content");
+  if (botMsgs.length) botMsgs[botMsgs.length - 1].textContent = text;
+}
+
+function renderProducts(products) {
+  const chat = document.getElementById("chatArea");
+  products.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `<div class="product-name">${p.name}</div>
+      <div>${p.description}</div>
+      <div style="color:#B8860B;font-weight:bold;">${p.price || "$?"}</div>`;
+    chat.appendChild(card);
+  });
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function addShowMore() {
+  if (document.getElementById("showMoreBtn")) return;
+  const btn = document.createElement("button");
+  btn.id = "showMoreBtn";
+  btn.className = "show-more";
+  btn.textContent = "Show More";
+  btn.onclick = () => {
+    currentPage++;
+    btn.remove();
+    fetchProducts();
+  };
+  document.getElementById("chatArea").appendChild(btn);
+}
+
+function handleKey(e) {
+  if (e.key === "Enter") sendMessage();
+}
+
+// Auto-load if query in URL
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get("query")) {
+  currentQuery = urlParams.get("query");
+  appendMessage("bot", `✨ Loading products for "${currentQuery}"...`);
+  fetchProducts();
 }
 </script>
 </body>
