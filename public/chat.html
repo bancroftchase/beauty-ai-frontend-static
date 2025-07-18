@@ -1,107 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Beauty Chat - Luminous AI</title>
+<style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; background: #F8F8F8; }
+    .container { max-width: 414px; margin: auto; display: flex; flex-direction: column; min-height: 100vh; }
+    .header { background: #2C2C2C; color: white; text-align: center; padding: 15px; position: sticky; top: 0; }
+    .logo { font-size: 20px; font-weight: bold; }
+    .chat-area { flex: 1; padding: 15px; overflow-y: auto; }
+    .message { margin-bottom: 12px; display: flex; }
+    .message.user { justify-content: flex-end; }
+    .message-content { background: white; padding: 10px 14px; border-radius: 16px; max-width: 75%; }
+    .message.user .message-content { background: linear-gradient(135deg,#B8860B,#DAA520); color: white; }
+    .product-card { background: #fff; border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .product-name { font-weight: bold; font-size: 14px; }
+    .product-price { color: #B8860B; font-weight: bold; margin-top: 4px; }
+    .show-more-btn { background: linear-gradient(135deg,#B8860B,#DAA520); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-size: 14px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+    .input-area { padding: 10px; background: #fff; border-top: 1px solid #ccc; display: flex; gap: 10px; }
+    .message-input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #ccc; font-size: 14px; }
+    .send-btn { background: linear-gradient(135deg,#B8860B,#DAA520); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 16px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo">✨ Beauty Chat</div>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+        <div class="message bot">
+            <div class="message-content">Hi! Ask me about beauty products or click a category.</div>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input id="messageInput" class="message-input" placeholder="Ask about beauty products..." onkeypress="if(event.key==='Enter')sendMessage()">
+        <button class="send-btn" onclick="sendMessage()">▶</button>
+    </div>
+</div>
+
 <script>
 const BACKEND_URL = "https://beauty-ai-backend.onrender.com";
-
-let currentCategory = "";
-let offset = 0;
-const count = 20;
+let currentProducts = [];
+let currentIndex = 0;
+const PAGE_SIZE = 50;
 
 function sendMessage() {
-  const input = document.getElementById('messageInput');
-  const message = input.value.trim();
-  if (!message) return;
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    if (!message) return;
 
-  currentCategory = message;
-  offset = 0;
+    appendMessage('user', message);
+    input.value = '';
+    appendMessage('bot', '✨ Thinking...');
 
-  clearProducts();
-  appendMessage('user', message);
-  input.value = '';
-  appendMessage('bot', '✨ Thinking...');
-
-  fetchProducts();
+    fetch(`${BACKEND_URL}/ask-claude`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        currentProducts = data.products || [];
+        currentIndex = 0;
+        updateLastBotMessage(currentProducts.length > 0 ? "Here are your results:" : "❌ No products found.");
+        displayProducts();
+    })
+    .catch(() => updateLastBotMessage('❌ AI service error. Try again.'));
 }
 
-function fetchProducts() {
-  fetch(`${BACKEND_URL}/ask-claude`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ category: currentCategory, offset, count })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.products && data.products.length > 0) {
-      updateLastBotMessage('Here are some recommendations:');
-      showProducts(data.products);
-      offset += count;
-      toggleShowMore(true);
-    } else {
-      updateLastBotMessage('❌ No products found.');
-      toggleShowMore(false);
+function displayProducts() {
+    const chatArea = document.getElementById('chatArea');
+
+    // Remove old product container if any
+    const oldContainer = document.getElementById('product-container');
+    if (oldContainer) oldContainer.remove();
+
+    const container = document.createElement('div');
+    container.id = 'product-container';
+
+    const productsToShow = currentProducts.slice(currentIndex, currentIndex + PAGE_SIZE);
+    productsToShow.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <div class="product-name">${p.name}</div>
+            <div class="product-price">${p.price || '$?'}</div>
+            <div>${p.description || ''}</div>
+        `;
+        container.appendChild(card);
+    });
+
+    chatArea.appendChild(container);
+
+    // Add Show More button if more products remain
+    if (currentIndex + PAGE_SIZE < currentProducts.length) {
+        const btn = document.createElement('button');
+        btn.className = 'show-more-btn';
+        btn.innerText = 'Show More';
+        btn.onclick = () => {
+            currentIndex += PAGE_SIZE;
+            displayProducts();
+        };
+        chatArea.appendChild(btn);
     }
-  })
-  .catch(() => {
-    updateLastBotMessage('❌ AI service error. Try again.');
-  });
-}
 
-function showProducts(products) {
-  const msgBox = document.getElementById('chatArea');
-  const container = document.createElement('div');
-  products.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.innerHTML = `
-      <div class="product-name">${p.name}</div>
-      <div class="product-price">${p.price || '$?'}</div>
-      <div>${p.description || ''}</div>
-    `;
-    container.appendChild(card);
-  });
-  msgBox.appendChild(container);
-  msgBox.scrollTop = msgBox.scrollHeight;
+    chatArea.scrollTop = chatArea.scrollHeight; // scroll down
 }
 
 function appendMessage(sender, text) {
-  const msgBox = document.getElementById('chatArea');
-  const div = document.createElement('div');
-  div.className = `message ${sender}`;
-  div.innerHTML = `<div class="message-content">${text}</div>`;
-  msgBox.appendChild(div);
-  msgBox.scrollTop = msgBox.scrollHeight;
+    const chatArea = document.getElementById('chatArea');
+    const div = document.createElement('div');
+    div.className = `message ${sender}`;
+    div.innerHTML = `<div class="message-content">${text}</div>`;
+    chatArea.appendChild(div);
+    chatArea.scrollTop = chatArea.scrollHeight;
 }
 
 function updateLastBotMessage(text) {
-  const msgs = document.querySelectorAll('.message.bot .message-content');
-  if (msgs.length) {
-    msgs[msgs.length - 1].textContent = text;
-  }
-}
-
-function clearProducts() {
-  const msgBox = document.getElementById('chatArea');
-  msgBox.innerHTML = '';
-}
-
-function toggleShowMore(show) {
-  const btn = document.getElementById('showMoreBtn');
-  btn.style.display = show ? 'block' : 'none';
-}
-
-function showMore() {
-  appendMessage('bot', '✨ Loading more products...');
-  fetchProducts();
-}
-
-function handleKeyPress(e) {
-  if (e.key === 'Enter') sendMessage();
-}
-
-function sendQuickMessage(text) {
-  document.getElementById('messageInput').value = text;
-  sendMessage();
+    const msgs = document.querySelectorAll('.message.bot .message-content');
+    if (msgs.length) {
+        msgs[msgs.length - 1].textContent = text;
+    }
 }
 </script>
-
-<div style="text-align:center;margin:15px;">
-  <button id="showMoreBtn" style="display:none;padding:10px 20px;background:#B8860B;color:#fff;border:none;border-radius:8px;cursor:pointer;" onclick="showMore()">Show More</button>
-</div>
+</body>
+</html>
