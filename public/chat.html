@@ -1,134 +1,107 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Beauty Chat - Luminous AI</title>
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<meta content="#B8860B" name="theme-color"/>
-<style>
-    /* ✅ Your existing styles preserved */
-    body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#2C2C2C;color:white;min-height:100vh;}
-    .container {max-width:414px;margin:0 auto;background:#2C2C2C;display:flex;flex-direction:column;min-height:100vh;}
-    .header {background:#2C2C2C;padding:20px;text-align:center;border-bottom:1px solid #3A3A3A;position:sticky;top:0;}
-    .logo {font-size:24px;font-weight:700;background:linear-gradient(135deg,#B8860B,#DAA520);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .chat-area {flex:1;padding:20px;background:#F8F8F8;color:#333;overflow-y:auto;}
-    .message {margin-bottom:15px;display:flex;}
-    .message.user {justify-content:flex-end;}
-    .message-content {background:white;padding:12px 16px;border-radius:16px;max-width:80%;}
-    .message.user .message-content {background:linear-gradient(135deg,#B8860B,#DAA520);color:white;}
-    .product-card {background:white;border:1px solid #e0e0e0;border-radius:12px;padding:12px;margin-bottom:12px;}
-    .product-name {font-weight:bold;font-size:14px;margin-bottom:6px;}
-    .product-price {color:#B8860B;font-weight:bold;}
-    .add-btn {background:linear-gradient(135deg,#B8860B,#DAA520);color:white;border:none;padding:8px;border-radius:6px;width:100%;cursor:pointer;}
-    .show-more {background:#333;color:white;border:none;padding:10px;width:100%;margin-top:10px;cursor:pointer;border-radius:6px;}
-    .input-area {background:#2C2C2C;padding:20px;position:sticky;bottom:0;}
-    .input-container {display:flex;gap:12px;background:white;border-radius:25px;padding:12px 20px;}
-    .message-input {flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-    .send-btn {background:linear-gradient(135deg,#B8860B,#DAA520);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:16px;cursor:pointer;}
-</style>
-</head>
-<body>
-<div class="container">
-    <div class="header">
-        <a href="index.html" style="color:white;text-decoration:none;">← Back</a>
-        <div class="logo">✨ Beauty Chat</div>
-    </div>
-    <div class="chat-area" id="chatArea">
-        <div class="message bot"><div class="message-content">Hi! Ask me about beauty products ✨</div></div>
-    </div>
-    <div id="productSection"></div>
-    <button id="showMoreBtn" class="show-more" style="display:none;">Show More</button>
-    <div class="input-area">
-        <div class="input-container">
-            <input class="message-input" id="messageInput" placeholder="Ask about beauty products..." onkeypress="handleKeyPress(event)">
-            <button class="send-btn" onclick="sendMessage()">▶</button>
-        </div>
-    </div>
-</div>
-
 <script>
 const BACKEND_URL = "https://beauty-ai-backend.onrender.com";
-let allProducts = [];
-let visibleCount = 0;
+
+let currentCategory = "";
+let offset = 0;
+const count = 20;
 
 function sendMessage() {
-    const input = document.getElementById('messageInput');
-    const query = input.value.trim();
-    if (!query) return;
-    appendMessage('user', query);
-    input.value = '';
-    appendMessage('bot', '✨ Thinking...');
-    fetchProducts(query);
+  const input = document.getElementById('messageInput');
+  const message = input.value.trim();
+  if (!message) return;
+
+  currentCategory = message;
+  offset = 0;
+
+  clearProducts();
+  appendMessage('user', message);
+  input.value = '';
+  appendMessage('bot', '✨ Thinking...');
+
+  fetchProducts();
 }
 
-function fetchProducts(query) {
-    fetch(`${BACKEND_URL}/ask-claude`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ category: query })
-    })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById('chatArea').lastChild.querySelector('.message-content').textContent = "Here are some recommendations:";
-        if (data.products && data.products.length > 0) {
-            allProducts = data.products;
-            visibleCount = 0;
-            document.getElementById('productSection').innerHTML = '';
-            showMoreProducts();
-        } else {
-            updateLastBotMessage('❌ No products found.');
-        }
-    })
-    .catch(() => updateLastBotMessage('❌ AI service error. Try again.'));
+function fetchProducts() {
+  fetch(`${BACKEND_URL}/ask-claude`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ category: currentCategory, offset, count })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.products && data.products.length > 0) {
+      updateLastBotMessage('Here are some recommendations:');
+      showProducts(data.products);
+      offset += count;
+      toggleShowMore(true);
+    } else {
+      updateLastBotMessage('❌ No products found.');
+      toggleShowMore(false);
+    }
+  })
+  .catch(() => {
+    updateLastBotMessage('❌ AI service error. Try again.');
+  });
 }
 
-function showMoreProducts() {
-    const container = document.getElementById('productSection');
-    const slice = allProducts.slice(visibleCount, visibleCount + 10);
-    slice.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-            <div class="product-name">${p.name}</div>
-            <div class="product-price">${p.price || '$?'}</div>
-            <div>${p.description || ''}</div>
-            <button class="add-btn" onclick="addToCart('${p.name}')">Add to Cart</button>
-        `;
-        container.appendChild(card);
-    });
-    visibleCount += slice.length;
-    document.getElementById('showMoreBtn').style.display = visibleCount < allProducts.length ? 'block' : 'none';
+function showProducts(products) {
+  const msgBox = document.getElementById('chatArea');
+  const container = document.createElement('div');
+  products.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">${p.price || '$?'}</div>
+      <div>${p.description || ''}</div>
+    `;
+    container.appendChild(card);
+  });
+  msgBox.appendChild(container);
+  msgBox.scrollTop = msgBox.scrollHeight;
 }
-
-document.getElementById('showMoreBtn').onclick = showMoreProducts;
 
 function appendMessage(sender, text) {
-    const msgBox = document.getElementById('chatArea');
-    const div = document.createElement('div');
-    div.className = `message ${sender}`;
-    div.innerHTML = `<div class="message-content">${text}</div>`;
-    msgBox.appendChild(div);
-    msgBox.scrollTop = msgBox.scrollHeight;
+  const msgBox = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = `message ${sender}`;
+  div.innerHTML = `<div class="message-content">${text}</div>`;
+  msgBox.appendChild(div);
+  msgBox.scrollTop = msgBox.scrollHeight;
 }
 
 function updateLastBotMessage(text) {
-    const msgs = document.querySelectorAll('.message.bot .message-content');
-    if (msgs.length) msgs[msgs.length - 1].textContent = text;
+  const msgs = document.querySelectorAll('.message.bot .message-content');
+  if (msgs.length) {
+    msgs[msgs.length - 1].textContent = text;
+  }
 }
 
-function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+function clearProducts() {
+  const msgBox = document.getElementById('chatArea');
+  msgBox.innerHTML = '';
+}
 
-function addToCart(item) { alert(`${item} added to cart!`); }
+function toggleShowMore(show) {
+  const btn = document.getElementById('showMoreBtn');
+  btn.style.display = show ? 'block' : 'none';
+}
 
-// ✅ Auto-trigger search if query in URL
-const urlParams = new URLSearchParams(window.location.search);
-const initialQuery = urlParams.get('query');
-if (initialQuery) {
-    document.getElementById('messageInput').value = initialQuery;
-    sendMessage();
+function showMore() {
+  appendMessage('bot', '✨ Loading more products...');
+  fetchProducts();
+}
+
+function handleKeyPress(e) {
+  if (e.key === 'Enter') sendMessage();
+}
+
+function sendQuickMessage(text) {
+  document.getElementById('messageInput').value = text;
+  sendMessage();
 }
 </script>
-</body>
-</html>
+
+<div style="text-align:center;margin:15px;">
+  <button id="showMoreBtn" style="display:none;padding:10px 20px;background:#B8860B;color:#fff;border:none;border-radius:8px;cursor:pointer;" onclick="showMore()">Show More</button>
+</div>
