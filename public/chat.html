@@ -15,24 +15,29 @@
     .product-card {background:#fff;border-radius:8px;padding:10px;margin-bottom:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
     .product-name {font-weight:bold;}
     .product-price {color:#B8860B;}
-    .add-to-cart {background:#B8860B;color:white;border:none;padding:8px;margin-top:6px;border-radius:5px;cursor:pointer;}
+    .add-to-cart {background:#B8860B;color:white;border:none;padding:8px;margin-top:6px;border-radius:5px;cursor:pointer;width:100%;}
     .input-area {display:flex;padding:10px;background:#fff;border-top:1px solid #ccc;}
     .message-input {flex:1;padding:10px;border:1px solid #ccc;border-radius:4px;}
     .send-btn {background:#B8860B;color:#fff;border:none;padding:10px;border-radius:4px;margin-left:8px;cursor:pointer;}
     .show-more {background:#DAA520;color:white;border:none;padding:10px;width:100%;margin-top:10px;border-radius:4px;}
-    .home-btn {background:#444;color:white;padding:10px;display:block;text-align:center;margin:10px auto;border-radius:6px;width:80%;}
+    .bottom-nav {background:#fff;padding:10px;text-align:center;border-top:1px solid #ccc;}
+    .home-btn {background:#444;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;width:80%;}
 </style>
 </head>
 <body>
 <div class="container">
     <div class="header">✨ Beauty Chat</div>
     <div class="chat-area" id="chatArea">
-        <a href="index.html" class="home-btn">⬅ Back to Home</a>
         <div class="message bot">Hi! Ask me about beauty products or click a category.</div>
     </div>
+
     <div class="input-area">
         <input type="text" id="messageInput" class="message-input" placeholder="Type your question..." onkeypress="if(event.key==='Enter') sendMessage()">
         <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="home-btn" onclick="window.location.href='index.html'">⬅ Back to Home</button>
     </div>
 </div>
 
@@ -84,7 +89,7 @@ function sendMessage() {
 
 function showMoreProducts() {
     const msgBox = document.getElementById('chatArea');
-    const batchSize = 10; // Display 10 at a time
+    const batchSize = 10; // Show 10 products at a time
     const end = Math.min(displayedProducts + batchSize, allProducts.length);
 
     for (let i = displayedProducts; i < end; i++) {
