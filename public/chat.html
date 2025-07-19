@@ -1,84 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>Beauty Chat - Luminous AI</title>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#B8860B"/>
 <style>
-    body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; margin:0; background:#f8f8f8; }
-    .container { max-width:414px; margin:auto; display:flex; flex-direction:column; height:100vh; }
-    .header { background:#2C2C2C; color:white; padding:15px; text-align:center; position:sticky; top:0; }
-    .chat-area { flex:1; overflow-y:auto; padding:15px; background:#fff; }
-    .message { margin-bottom:12px; display:flex; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+        --primary-charcoal:#2C2C2C;
+        --luminous-gold:#B8860B;
+        --pearl-white:#F8F8F8;
+        --premium-gradient:linear-gradient(135deg,#B8860B,#DAA520);
+    }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--primary-charcoal); color:white; min-height:100vh; }
+    .container { max-width:414px; margin:0 auto; display:flex; flex-direction:column; min-height:100vh; }
+    .header { background:var(--primary-charcoal); padding:20px; text-align:center; border-bottom:1px solid #3A3A3A; position:sticky; top:0; display:flex; justify-content:center; align-items:center; }
+    .back-btn { position:absolute; left:15px; background:var(--premium-gradient); color:white; border:none; border-radius:20px; padding:8px 14px; font-size:14px; cursor:pointer; }
+    .logo { font-size:22px; font-weight:700; background:var(--premium-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .cart-btn { position:absolute; right:15px; background:var(--premium-gradient); border-radius:50%; width:40px; height:40px; display:flex; justify-content:center; align-items:center; color:white; font-size:18px; position:relative; }
+    .cart-count { position:absolute; top:-5px; right:-5px; background:red; color:white; font-size:11px; padding:2px 6px; border-radius:50%; font-weight:bold; }
+    .chat-area { flex:1; padding:15px; background:var(--pearl-white); color:#333; overflow-y:auto; }
+    .message { margin-bottom:15px; display:flex; }
     .message.user { justify-content:flex-end; }
-    .message-content { padding:10px 14px; border-radius:16px; max-width:80%; font-size:14px; }
-    .message.user .message-content { background:linear-gradient(135deg,#B8860B,#DAA520); color:#fff; }
-    .message.bot .message-content { background:#f1f1f1; }
-    .input-area { display:flex; padding:12px; background:#2C2C2C; position:sticky; bottom:0; }
-    .input-area input { flex:1; padding:10px; border-radius:20px; border:none; outline:none; }
-    .input-area button { background:linear-gradient(135deg,#B8860B,#DAA520); color:white; border:none; border-radius:50%; width:40px; height:40px; margin-left:10px; cursor:pointer; }
-    .product-card { border:1px solid #e0e0e0; border-radius:10px; padding:10px; margin-bottom:10px; background:white; }
-    .product-name { font-weight:bold; font-size:14px; }
-    .product-price { color:#B8860B; font-weight:bold; }
-    .load-more { display:block; margin:15px auto; padding:10px 15px; background:#B8860B; color:white; border:none; border-radius:8px; cursor:pointer; }
-    .home-btn { display:block; margin:15px auto; padding:10px 15px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer; }
+    .message-content { background:white; padding:12px 16px; border-radius:16px; max-width:80%; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .message.user .message-content { background:var(--premium-gradient); color:white; }
+    .product-card { background:white; border-radius:12px; padding:12px; margin-bottom:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    .product-name { font-size:14px; font-weight:bold; margin-bottom:6px; }
+    .product-price { color:var(--luminous-gold); font-weight:bold; margin-bottom:6px; }
+    .add-to-cart { background:var(--premium-gradient); color:white; border:none; border-radius:20px; padding:6px 12px; font-size:12px; cursor:pointer; margin-top:8px; }
+    .show-more { background:#f1f1f1; color:#333; border:none; padding:10px 15px; border-radius:8px; cursor:pointer; margin:15px auto; display:block; font-size:14px; }
+    .loading { text-align:center; font-size:14px; color:#888; margin-top:10px; }
+    .input-area { background:var(--primary-charcoal); padding:15px; border-top:1px solid #3A3A3A; display:flex; gap:10px; }
+    .message-input { flex:1; border:none; border-radius:20px; padding:10px 15px; font-size:14px; }
+    .send-btn { background:var(--premium-gradient); color:white; border:none; border-radius:50%; width:40px; height:40px; font-size:16px; cursor:pointer; }
 </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">✨ Beauty Chat</div>
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='index.html'">← Home</button>
+        <div class="logo">✨ Beauty Chat</div>
+        <div class="cart-btn">🛒<span class="cart-count" id="cartCount">0</span></div>
+    </div>
+
     <div class="chat-area" id="chatArea">
         <div class="message bot"><div class="message-content">Hi! Ask me about beauty products or click a category.</div></div>
     </div>
+
     <div class="input-area">
-        <input id="messageInput" placeholder="Ask about beauty products..." onkeypress="if(event.key==='Enter') sendMessage()"/>
-        <button onclick="sendMessage()">▶</button>
+        <input type="text" id="messageInput" class="message-input" placeholder="Ask about beauty products..." onkeypress="handleKeyPress(event)">
+        <button class="send-btn" onclick="sendMessage()">▶</button>
     </div>
 </div>
 
 <script>
 const BACKEND_URL = "https://beauty-ai-backend.onrender.com";
 let allProducts = [];
-let currentIndex = 0;
-const PAGE_SIZE = 10;
-
-// ✅ On load, check query param and auto-search
-const params = new URLSearchParams(window.location.search);
-if (params.get("query")) {
-    document.getElementById("messageInput").value = params.get("query");
-    sendMessage();
-}
+let displayedProducts = 0;
+let cart = [];
 
 function sendMessage() {
     const input = document.getElementById('messageInput');
-    const query = input.value.trim();
-    if (!query) return;
+    const message = input.value.trim();
+    if (!message) return;
 
-    appendMessage('user', query);
+    appendMessage('user', message);
     input.value = '';
     appendMessage('bot', '✨ Thinking...');
-
-    // Clear old products
     allProducts = [];
-    currentIndex = 0;
+    displayedProducts = 0;
+    document.getElementById('chatArea').querySelectorAll('.product-card,.show-more').forEach(el => el.remove());
 
     fetch(`${BACKEND_URL}/ask-claude`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: query })
+        body: JSON.stringify({ category: message })
     })
     .then(res => res.json())
     .then(data => {
-        const products = data.products || [];
-        if (products.length > 0) {
-            allProducts = products;
-            updateLastBotMessage(`Here are some ${query} recommendations:`);
-            showNextProducts();
+        if (data.products && data.products.length > 0) {
+            allProducts = data.products;
+            updateLastBotMessage('Here are your results:');
+            showMoreProducts();
         } else {
             updateLastBotMessage('❌ No products found.');
         }
     })
-    .catch(() => updateLastBotMessage('❌ AI service error.'));
+    .catch(() => updateLastBotMessage('❌ AI service error. Try again.'));
 }
 
 function appendMessage(sender, text) {
@@ -92,45 +103,58 @@ function appendMessage(sender, text) {
 
 function updateLastBotMessage(text) {
     const msgs = document.querySelectorAll('.message.bot .message-content');
-    if (msgs.length) msgs[msgs.length - 1].textContent = text;
+    if (msgs.length) {
+        msgs[msgs.length - 1].textContent = text;
+    }
 }
 
-function showNextProducts() {
+function showMoreProducts() {
     const msgBox = document.getElementById('chatArea');
-    const end = Math.min(currentIndex + PAGE_SIZE, allProducts.length);
-    for (let i = currentIndex; i < end; i++) {
+    const end = Math.min(displayedProducts + 25, allProducts.length);
+
+    for (let i = displayedProducts; i < end; i++) {
         const p = allProducts[i];
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
             <div class="product-name">${p.name}</div>
-            <div class="product-price">${p.price}</div>
-            <div>${p.description}</div>
+            <div class="product-price">${p.price || '$?'}</div>
+            <div>${p.description || ''}</div>
+            <button class="add-to-cart" onclick="addToCart('${p.name}','${p.price}')">Add to Cart</button>
         `;
         msgBox.appendChild(card);
     }
-    currentIndex = end;
 
-    // Remove old buttons
-    document.querySelectorAll('.load-more, .home-btn').forEach(btn => btn.remove());
+    displayedProducts = end;
+    document.querySelectorAll('.show-more').forEach(el => el.remove());
 
-    // Add buttons if more products exist
-    if (currentIndex < allProducts.length) {
+    if (displayedProducts < allProducts.length) {
         const btn = document.createElement('button');
-        btn.className = 'load-more';
+        btn.className = 'show-more';
         btn.textContent = 'Show More';
-        btn.onclick = showNextProducts;
+        btn.onclick = showMoreProducts;
         msgBox.appendChild(btn);
     }
 
-    // Add return home button
-    const homeBtn = document.createElement('button');
-    homeBtn.className = 'home-btn';
-    homeBtn.textContent = '⬅ Back to Home';
-    homeBtn.onclick = () => window.location.href = 'index.html';
-    msgBox.appendChild(homeBtn);
-
     msgBox.scrollTop = msgBox.scrollHeight;
+}
+
+function addToCart(name, price) {
+    cart.push({ name, price });
+    document.getElementById('cartCount').textContent = cart.length;
+    alert(`✅ ${name} added to cart!`);
+}
+
+function handleKeyPress(e) {
+    if (e.key === 'Enter') sendMessage();
+}
+
+// Auto-load query if passed
+const urlParams = new URLSearchParams(window.location.search);
+const query = urlParams.get('query');
+if (query) {
+    document.getElementById('messageInput').value = query;
+    sendMessage();
 }
 </script>
 </body>
