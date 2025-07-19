@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>Beauty Chat - Luminous AI</title>
+<title>Luminous AI - Your Radiant Beauty Companion</title>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#B8860B"/>
@@ -15,173 +15,108 @@
         --pearl-white:#F8F8F8;
         --premium-gradient:linear-gradient(135deg,#B8860B,#DAA520);
     }
-    body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--primary-charcoal);color:white;min-height:100vh;}
-    .container {max-width:414px;margin:0 auto;display:flex;flex-direction:column;min-height:100vh;}
-    .header {background:var(--primary-charcoal);padding:15px;text-align:center;border-bottom:1px solid #3A3A3A;position:sticky;top:0;z-index:10;}
-    .logo {font-size:22px;font-weight:700;background:var(--premium-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .chat-area {flex:1;padding:16px;background:var(--pearl-white);color:#333;overflow-y:auto;}
-    .message {margin-bottom:12px;display:flex;}
-    .message.user {justify-content:flex-end;}
-    .message-content {background:#fff;padding:10px 14px;border-radius:14px;max-width:80%;box-shadow:0 2px 6px rgba(0,0,0,0.08);}
-    .message.user .message-content {background:var(--premium-gradient);color:#fff;}
-    .product-card {background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.08);}
-    .product-name {font-weight:bold;font-size:14px;margin-bottom:4px;}
-    .product-price {color:var(--luminous-gold);font-weight:600;margin-bottom:6px;}
-    .add-cart-btn {background:var(--premium-gradient);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:0.2s;}
-    .add-cart-btn:hover {opacity:0.9;}
-    .show-more-btn {display:block;width:100%;background:var(--premium-gradient);color:#fff;border:none;padding:12px;font-size:14px;font-weight:bold;border-radius:8px;margin:10px auto;cursor:pointer;}
-    .home-btn {display:block;width:100%;margin:15px auto;background:#333;color:#fff;border:none;padding:12px;font-size:14px;border-radius:8px;cursor:pointer;}
-    .input-area {background:var(--primary-charcoal);padding:15px;position:sticky;bottom:0;}
-    .input-container {display:flex;gap:8px;background:#fff;border-radius:25px;padding:10px;}
-    .message-input {flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-    .send-btn {background:var(--premium-gradient);color:white;border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-    .price-btn {display:inline-block;width:48%;background:var(--premium-gradient);color:#fff;border:none;padding:10px;font-size:13px;border-radius:8px;margin:5px 1%;cursor:pointer;}
+    body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--primary-charcoal);color:#fff;}
+    .container {max-width:414px;margin:0 auto;background:var(--primary-charcoal);min-height:100vh;display:flex;flex-direction:column;}
+    .header {background:var(--primary-charcoal);padding:20px;text-align:center;border-bottom:1px solid #3A3A3A;position:sticky;top:0;z-index:10;}
+    .logo {font-size:28px;font-weight:700;background:var(--premium-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .tagline {font-size:14px;color:var(--luminous-gold);}
+    .main-content {flex:1;background:var(--pearl-white);padding:20px;}
+    .welcome-section {background:#fff;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.1);margin-bottom:20px;}
+    .welcome-title {font-size:20px;font-weight:700;color:var(--primary-charcoal);margin-bottom:8px;}
+    .quick-actions {display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    .quick-action-btn {background:var(--premium-gradient);color:#fff;border:none;border-radius:12px;padding:12px;font-size:12px;font-weight:600;cursor:pointer;}
+    h3 {color:var(--primary-charcoal);margin-bottom:12px;font-size:16px;}
+    .feature-grid {display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+    .feature-card {background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;transition:transform .2s;}
+    .feature-card:hover {transform:scale(1.03);}
+    .feature-icon {font-size:22px;margin-bottom:6px;}
+    .feature-title {font-size:14px;font-weight:600;color:var(--primary-charcoal);}
+    .feature-subtitle {font-size:12px;color:#777;margin-top:4px;}
+    .bottom-nav {background:#fff;height:70px;display:flex;align-items:center;justify-content:space-around;border-top:1px solid #E0E0E0;position:fixed;bottom:0;width:100%;max-width:414px;}
+    .nav-item {text-align:center;font-size:12px;color:#666;cursor:pointer;}
+    .nav-item.active {color:var(--luminous-gold);}
 </style>
 </head>
 <body>
 <div class="container">
     <!-- Header -->
     <div class="header">
-        <div class="logo">✨ Beauty Chat</div>
+        <div class="logo">✨ Luminous AI</div>
+        <div class="tagline">Your Radiant Beauty Companion</div>
     </div>
 
-    <!-- Chat Area -->
-    <div class="chat-area" id="chatArea">
-        <div class="message bot">
-            <div class="message-content">Hi! I'm your Beauty AI assistant ✨<br>✅ Connected to Beauty AI Backend - Real Claude AI responses!</div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Welcome -->
+        <div class="welcome-section">
+            <div class="welcome-title">Welcome to Your Beauty Journey</div>
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="openChat('Global Beauty')">🌍 Global Beauty</button>
+                <button class="quick-action-btn" onclick="openChat('K-Beauty')">🌸 K-Beauty</button>
+                <button class="quick-action-btn" onclick="openChat('Luxury Skincare')">💎 Luxury Skincare</button>
+                <button class="quick-action-btn" onclick="openChat('Natural Beauty')">🌿 Natural Beauty</button>
+            </div>
+        </div>
+
+        <!-- Feature Cards -->
+        <h3>Explore Categories</h3>
+        <div class="feature-grid">
+            <div class="feature-card" onclick="openChat('Anti-aging')">
+                <div class="feature-icon">🧘</div>
+                <div class="feature-title">Anti-aging</div>
+                <div class="feature-subtitle">Wellness & skincare</div>
+            </div>
+            <div class="feature-card" onclick="openChat('Eye Care')">
+                <div class="feature-icon">👁️</div>
+                <div class="feature-title">Eye Care</div>
+                <div class="feature-subtitle">500+ eye products</div>
+            </div>
+            <div class="feature-card" onclick="openChat('Skin Analysis')">
+                <div class="feature-icon">✨</div>
+                <div class="feature-title">Skin Analysis</div>
+                <div class="feature-subtitle">AI recommendations</div>
+            </div>
+            <div class="feature-card" onclick="openChat('Facial Analysis')">
+                <div class="feature-icon">😊</div>
+                <div class="feature-title">Facial Analysis</div>
+                <div class="feature-subtitle">AI face scanning</div>
+            </div>
+            <div class="feature-card" onclick="openChat('K-Beauty')">
+                <div class="feature-icon">🌸</div>
+                <div class="feature-title">K-Beauty</div>
+                <div class="feature-subtitle">600+ Korean products</div>
+            </div>
+            <div class="feature-card" onclick="openChat('Tanning')">
+                <div class="feature-icon">☀️</div>
+                <div class="feature-title">Tanning</div>
+                <div class="feature-subtitle">400+ tanning products</div>
+            </div>
+            <div class="feature-card" onclick="openChat('Eyelashes')">
+                <div class="feature-icon">👁️‍🗨️</div>
+                <div class="feature-title">Eyelashes</div>
+                <div class="feature-subtitle">400+ lash products</div>
+            </div>
+            <div class="feature-card" onclick="openChat('Basket')">
+                <div class="feature-icon">🛒</div>
+                <div class="feature-title">Basket</div>
+            </div>
         </div>
     </div>
 
-    <!-- Category Buttons -->
-    <div style="padding:10px;text-align:center;">
-        <button class="show-more-btn" onclick="sendMessage('Global Beauty')">🌍 Global Beauty</button>
-        <button class="show-more-btn" onclick="sendMessage('Instagram Trends')">📸 Instagram Trends</button>
-        <button class="show-more-btn" onclick="sendMessage('K-Beauty')">🌸 K-Beauty</button>
-        <button class="show-more-btn" onclick="sendMessage('Amazon Finds')">🛒 Amazon Finds</button>
-        <button class="show-more-btn" onclick="sendMessage('Natural Beauty')">🌿 Natural Beauty</button>
-        <button class="show-more-btn" onclick="sendMessage('Luxury Skincare')">💎 Luxury Skincare</button>
-    </div>
-
-    <!-- Price Filter Buttons -->
-    <div style="padding:10px;text-align:center;">
-        <button class="price-btn" onclick="sendMessageWithPrice('under $50')">Under $50</button>
-        <button class="price-btn" onclick="sendMessageWithPrice('over $150')">Over $150</button>
-    </div>
-
-    <!-- Buttons -->
-    <button class="show-more-btn" id="showMoreBtn" style="display:none;" onclick="showMore()">Show More Products</button>
-    <button class="home-btn" onclick="window.location.href='chat.html'">🔄 New Chat</button>
-
-    <!-- Input Area -->
-    <div class="input-area">
-        <div class="input-container">
-            <input id="messageInput" class="message-input" placeholder="Ask about beauty products..." onkeypress="handleKeyPress(event)">
-            <button class="send-btn" onclick="sendMessage()">▶</button>
-        </div>
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="openChat('Home')">🏠<br/>Home</div>
+        <div class="nav-item" onclick="openChat('Sign In')">🔑<br/>Sign In</div>
+        <div class="nav-item" onclick="openChat('Create Account')">👤<br/>Create</div>
+        <div class="nav-item" onclick="openChat('Browse Catalog')">📚<br/>Catalog</div>
+        <div class="nav-item" onclick="openChat('Ask AI')">💬<br/>Ask Me</div>
     </div>
 </div>
 
 <script>
-const BACKEND_URL = "https://beauty-ai-backend.onrender.com";
-let products = [];
-let currentIndex = 0;
-const PAGE_SIZE = 20;
-let cart = JSON.parse(localStorage.getItem("beautyCart") || "[]");
-
-const queryParams = new URLSearchParams(window.location.search);
-const initialQuery = queryParams.get("query");
-if (initialQuery) { sendMessage(initialQuery); }
-
-function sendMessageWithPrice(priceRange) {
-    const input = document.getElementById('messageInput');
-    const userQuery = input.value.trim() || 'beauty products';
-    const query = `Global ${userQuery} ${priceRange}`;
-    sendMessage(query);
+function openChat(query){
+    window.location.href = `chat.html?query=${encodeURIComponent(query)}`;
 }
-
-function sendMessage(optionalMsg) {
-    const input = document.getElementById('messageInput');
-    const message = optionalMsg || input.value.trim();
-    if (!message) return;
-    if (!optionalMsg) input.value = '';
-
-    clearProducts();
-    appendMessage('user', message);
-    appendMessage('bot', '✨ Thinking...');
-
-    // Construct query with global context and price range
-    let enhancedQuery = message.toLowerCase().includes('beauty') ? message : `Global beauty products ${message}`;
-    if (message.toLowerCase().includes('under $50') || message.toLowerCase().includes('over $150')) {
-        enhancedQuery = message;
-    }
-
-    fetch(`${BACKEND_URL}/ask-claude`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: enhancedQuery })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.products && data.products.length > 0) {
-            products = data.products;
-            currentIndex = 0;
-            showNextBatch();
-        } else {
-            updateLastBotMessage('❌ No products found. Try specifying a price range (e.g., "under $50" or "over $150") or a product type like "lipsticks".');
-        }
-    })
-    .catch(() => updateLastBotMessage('❌ AI service error. Try again.'));
-}
-
-function showNextBatch() {
-    const chatArea = document.getElementById('chatArea');
-    const slice = products.slice(currentIndex, currentIndex + PAGE_SIZE);
-    slice.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-            <div class="product-name">${p.name || 'Unknown Product'}</div>
-            <div class="product-price">${p.price || '$?'}</div>
-            <div>${p.description || 'No description available.'}</div>
-            <button class="add-cart-btn" onclick="addToCart('${p.name || 'Unknown'}','${p.price || '$?'}')">Add to Cart</button>
-        `;
-        chatArea.appendChild(card);
-    });
-    currentIndex += PAGE_SIZE;
-    document.getElementById('showMoreBtn').style.display = currentIndex < products.length ? 'block' : 'none';
-    updateLastBotMessage(`Found ${products.length} global beauty products:`);
-    chatArea.scrollTop = chatArea.scrollHeight;
-}
-
-function clearProducts() {
-    const chatArea = document.getElementById('chatArea');
-    chatArea.innerHTML = '<div class="message bot"><div class="message-content">Fetching results...</div></div>';
-    document.getElementById('showMoreBtn').style.display = 'none';
-}
-
-function appendMessage(sender, text) {
-    const chatArea = document.getElementById('chatArea');
-    const div = document.createElement('div');
-    div.className = `message ${sender}`;
-    div.innerHTML = `<div class="message-content">${text}</div>`;
-    chatArea.appendChild(div);
-    chatArea.scrollTop = chatArea.scrollHeight;
-}
-
-function updateLastBotMessage(text) {
-    const msgs = document.querySelectorAll('.message.bot .message-content');
-    if (msgs.length) msgs[msgs.length - 1].textContent = text;
-}
-
-function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
-
-function addToCart(name, price) {
-    cart.push({name, price});
-    localStorage.setItem("beautyCart", JSON.stringify(cart));
-    alert(`✅ ${name} added to cart!`);
-}
-
-function showMore() { showNextBatch(); }
 </script>
 </body>
 </html>
