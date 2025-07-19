@@ -35,6 +35,7 @@
     .input-container {display:flex;gap:8px;background:#fff;border-radius:25px;padding:10px;}
     .message-input {flex:1;border:none;outline:none;font-size:14px;background:transparent;}
     .send-btn {background:var(--premium-gradient);color:white;border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .price-btn {display:inline-block;width:48%;background:var(--premium-gradient);color:#fff;border:none;padding:10px;font-size:13px;border-radius:8px;margin:5px 1%;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -47,13 +48,29 @@
     <!-- Chat Area -->
     <div class="chat-area" id="chatArea">
         <div class="message bot">
-            <div class="message-content">Hi! Ask me about beauty products or click a category.</div>
+            <div class="message-content">Hi! I'm your Beauty AI assistant ✨<br>✅ Connected to Beauty AI Backend - Real Claude AI responses!</div>
         </div>
+    </div>
+
+    <!-- Category Buttons -->
+    <div style="padding:10px;text-align:center;">
+        <button class="show-more-btn" onclick="sendMessage('Global Beauty')">🌍 Global Beauty</button>
+        <button class="show-more-btn" onclick="sendMessage('Instagram Trends')">📸 Instagram Trends</button>
+        <button class="show-more-btn" onclick="sendMessage('K-Beauty')">🌸 K-Beauty</button>
+        <button class="show-more-btn" onclick="sendMessage('Amazon Finds')">🛒 Amazon Finds</button>
+        <button class="show-more-btn" onclick="sendMessage('Natural Beauty')">🌿 Natural Beauty</button>
+        <button class="show-more-btn" onclick="sendMessage('Luxury Skincare')">💎 Luxury Skincare</button>
+    </div>
+
+    <!-- Price Filter Buttons -->
+    <div style="padding:10px;text-align:center;">
+        <button class="price-btn" onclick="sendMessageWithPrice('under $50')">Under $50</button>
+        <button class="price-btn" onclick="sendMessageWithPrice('over $150')">Over $150</button>
     </div>
 
     <!-- Buttons -->
     <button class="show-more-btn" id="showMoreBtn" style="display:none;" onclick="showMore()">Show More Products</button>
-    <button class="home-btn" onclick="window.location.href='index.html'">🏠 Return to Home</button>
+    <button class="home-btn" onclick="window.location.href='chat.html'">🔄 New Chat</button>
 
     <!-- Input Area -->
     <div class="input-area">
@@ -73,7 +90,14 @@ let cart = JSON.parse(localStorage.getItem("beautyCart") || "[]");
 
 const queryParams = new URLSearchParams(window.location.search);
 const initialQuery = queryParams.get("query");
-if(initialQuery){ sendMessage(initialQuery); }
+if (initialQuery) { sendMessage(initialQuery); }
+
+function sendMessageWithPrice(priceRange) {
+    const input = document.getElementById('messageInput');
+    const userQuery = input.value.trim() || 'beauty products';
+    const query = `Global ${userQuery} ${priceRange}`;
+    sendMessage(query);
+}
 
 function sendMessage(optionalMsg) {
     const input = document.getElementById('messageInput');
@@ -85,10 +109,16 @@ function sendMessage(optionalMsg) {
     appendMessage('user', message);
     appendMessage('bot', '✨ Thinking...');
 
+    // Construct query with global context and price range
+    let enhancedQuery = message.toLowerCase().includes('beauty') ? message : `Global beauty products ${message}`;
+    if (message.toLowerCase().includes('under $50') || message.toLowerCase().includes('over $150')) {
+        enhancedQuery = message;
+    }
+
     fetch(`${BACKEND_URL}/ask-claude`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: message })
+        body: JSON.stringify({ category: enhancedQuery })
     })
     .then(res => res.json())
     .then(data => {
@@ -97,7 +127,7 @@ function sendMessage(optionalMsg) {
             currentIndex = 0;
             showNextBatch();
         } else {
-            updateLastBotMessage('❌ No products found.');
+            updateLastBotMessage('❌ No products found. Try specifying a price range (e.g., "under $50" or "over $150") or a product type like "lipsticks".');
         }
     })
     .catch(() => updateLastBotMessage('❌ AI service error. Try again.'));
@@ -110,16 +140,16 @@ function showNextBatch() {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-            <div class="product-name">${p.name}</div>
+            <div class="product-name">${p.name || 'Unknown Product'}</div>
             <div class="product-price">${p.price || '$?'}</div>
-            <div>${p.description || ''}</div>
-            <button class="add-cart-btn" onclick="addToCart('${p.name}','${p.price}')">Add to Cart</button>
+            <div>${p.description || 'No description available.'}</div>
+            <button class="add-cart-btn" onclick="addToCart('${p.name || 'Unknown'}','${p.price || '$?'}')">Add to Cart</button>
         `;
         chatArea.appendChild(card);
     });
     currentIndex += PAGE_SIZE;
     document.getElementById('showMoreBtn').style.display = currentIndex < products.length ? 'block' : 'none';
-    updateLastBotMessage('Here are your products:');
+    updateLastBotMessage(`Found ${products.length} global beauty products:`);
     chatArea.scrollTop = chatArea.scrollHeight;
 }
 
