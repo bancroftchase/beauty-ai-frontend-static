@@ -51,52 +51,52 @@
         <div class="welcome-section">
             <div class="welcome-title">Welcome to Your Beauty Journey</div>
             <div class="quick-actions">
-                <button class="quick-action-btn" onclick="openChat('Global Beauty')">🌍 Global Beauty</button>
-                <button class="quick-action-btn" onclick="openChat('K-Beauty')">🌸 K-Beauty</button>
-                <button class="quick-action-btn" onclick="openChat('Luxury Skincare')">💎 Luxury Skincare</button>
-                <button class="quick-action-btn" onclick="openChat('Natural Beauty')">🌿 Natural Beauty</button>
+                <button class="quick-action-btn" onclick="location.href='chat.html?query=Global+Beauty'">🌍 Global Beauty</button>
+                <button class="quick-action-btn" onclick="location.href='chat.html?query=K-Beauty'">🌸 K-Beauty</button>
+                <button class="quick-action-btn" onclick="location.href='chat.html?query=Luxury+Skincare'">💎 Luxury Skincare</button>
+                <button class="quick-action-btn" onclick="location.href='chat.html?query=Natural+Beauty'">🌿 Natural Beauty</button>
             </div>
         </div>
 
         <!-- Feature Cards -->
         <h3>Explore Categories</h3>
         <div class="feature-grid">
-            <div class="feature-card" onclick="openChat('Anti-aging')">
+            <div class="feature-card" onclick="location.href='chat.html?query=Anti-aging'">
                 <div class="feature-icon">🧘</div>
                 <div class="feature-title">Anti-aging</div>
                 <div class="feature-subtitle">Wellness & skincare</div>
             </div>
-            <div class="feature-card" onclick="openChat('Eye Care')">
+            <div class="feature-card" onclick="location.href='chat.html?query=Eye+Care'">
                 <div class="feature-icon">👁️</div>
                 <div class="feature-title">Eye Care</div>
                 <div class="feature-subtitle">500+ eye products</div>
             </div>
-            <div class="feature-card" onclick="openChat('Skin Analysis')">
+            <div class="feature-card" onclick="location.href='chat.html?query=Skin+Analysis'">
                 <div class="feature-icon">✨</div>
                 <div class="feature-title">Skin Analysis</div>
                 <div class="feature-subtitle">AI recommendations</div>
             </div>
-            <div class="feature-card" onclick="openChat('Facial Analysis')">
+            <div class="feature-card" onclick="location.href='chat.html?query=Facial+Analysis'">
                 <div class="feature-icon">😊</div>
                 <div class="feature-title">Facial Analysis</div>
                 <div class="feature-subtitle">AI face scanning</div>
             </div>
-            <div class="feature-card" onclick="openChat('K-Beauty')">
+            <div class="feature-card" onclick="location.href='chat.html?query=K-Beauty'">
                 <div class="feature-icon">🌸</div>
                 <div class="feature-title">K-Beauty</div>
                 <div class="feature-subtitle">600+ Korean products</div>
             </div>
-            <div class="feature-card" onclick="openChat('Tanning')">
+            <div class="feature-card" onclick="location.href='chat.html?query=Tanning'">
                 <div class="feature-icon">☀️</div>
                 <div class="feature-title">Tanning</div>
                 <div class="feature-subtitle">400+ tanning products</div>
             </div>
-            <div class="feature-card" onclick="openChat('Eyelashes')">
+            <div class="feature-card" onclick="location.href='chat.html?query=Eyelashes'">
                 <div class="feature-icon">👁️‍🗨️</div>
                 <div class="feature-title">Eyelashes</div>
                 <div class="feature-subtitle">400+ lash products</div>
             </div>
-            <div class="feature-card" onclick="openChat('Basket')">
+            <div class="feature-card" onclick="location.href='basket.html'">
                 <div class="feature-icon">🛒</div>
                 <div class="feature-title">Basket</div>
             </div>
@@ -105,16 +105,17 @@
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="openChat('Home')">🏠<br/>Home</div>
-        <div class="nav-item" onclick="openChat('Sign In')">🔑<br/>Sign In</div>
-        <div class="nav-item" onclick="openChat('Create Account')">👤<br/>Create</div>
-        <div class="nav-item" onclick="openChat('Browse Catalog')">📚<br/>Catalog</div>
-        <div class="nav-item" onclick="openChat('Ask AI')">💬<br/>Ask Me</div>
+        <div class="nav-item active" onclick="location.href='index.html'">🏠<br/>Home</div>
+        <div class="nav-item" onclick="location.href='login.html'">🔑<br/>Sign In</div>
+        <div class="nav-item" onclick="location.href='register.html'">👤<br/>Create</div>
+        <div class="nav-item" onclick="location.href='catalog.html'">📚<br/>Catalog</div>
+        <div class="nav-item" onclick="location.href='chat.html'">💬<br/>Ask Me</div>
     </div>
 </div>
 
 <script>
-function openChat(query){
+// Simple function to handle query parameters
+function openChat(query) {
     window.location.href = `chat.html?query=${encodeURIComponent(query)}`;
 }
 </script>
